@@ -8,6 +8,7 @@ import {
   Undo2,
   ZoomIn,
   ZoomOut,
+  Maximize2,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -20,6 +21,7 @@ interface WallCanvasToolbarProps {
   onUndo: () => void;
   onZoomIn: () => void;
   onZoomOut: () => void;
+  onZoomReset: () => void;
   canUndo: boolean;
   canDelete: boolean;
 }
@@ -39,6 +41,7 @@ export default function WallCanvasToolbar({
   onUndo,
   onZoomIn,
   onZoomOut,
+  onZoomReset,
   canUndo,
   canDelete,
 }: WallCanvasToolbarProps) {
@@ -101,6 +104,14 @@ export default function WallCanvasToolbar({
         className="p-2.5 rounded-lg text-rock-light-400 hover:text-white hover:bg-rock-dark-700 transition-all duration-200"
       >
         <ZoomOut size={18} />
+      </button>
+
+      <button
+        onClick={onZoomReset}
+        title="还原"
+        className="p-2.5 rounded-lg text-rock-light-400 hover:text-white hover:bg-rock-dark-700 transition-all duration-200"
+      >
+        <Maximize2 size={18} />
       </button>
 
       <button

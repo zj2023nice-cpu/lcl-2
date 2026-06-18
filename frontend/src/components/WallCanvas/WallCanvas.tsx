@@ -1,5 +1,6 @@
 import { useRef, useEffect, useState, useCallback } from 'react';
 import { Canvas, Rect, Line, Circle, Group, FabricObject, Gradient } from 'fabric';
+import { ZoomIn, ZoomOut, Maximize2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import WallCanvasToolbar, { ToolType } from './WallCanvasToolbar';
 import type { Route } from '@/types';
@@ -24,6 +25,7 @@ interface WallCanvasProps {
   selectedRouteId?: number | null;
   onRouteSelect?: (routeId: number | null) => void;
   onRouteUpdate?: (routeId: number, points: RoutePoint[]) => void;
+  onZoomChange?: (zoom: number) => void;
   isEditable?: boolean;
   wallWidth?: number;
   wallHeight?: number;
@@ -43,6 +45,7 @@ export default function WallCanvas({
   selectedRouteId,
   onRouteSelect,
   onRouteUpdate,
+  onZoomChange,
   isEditable = false,
   wallWidth = 800,
   wallHeight = 600,
@@ -306,7 +309,8 @@ export default function WallCanvas({
     const newZoom = Math.min(zoom * 1.2, 3);
     setZoom(newZoom);
     canvas.setZoom(newZoom);
-  }, [zoom]);
+    onZoomChange?.(newZoom);
+  }, [zoom, onZoomChange]);
 
   const handleZoomOut = useCallback(() => {
     const canvas = fabricCanvasRef.current;
@@ -314,7 +318,18 @@ export default function WallCanvas({
     const newZoom = Math.max(zoom / 1.2, 0.3);
     setZoom(newZoom);
     canvas.setZoom(newZoom);
-  }, [zoom]);
+    onZoomChange?.(newZoom);
+  }, [zoom, onZoomChange]);
+
+  const handleZoomReset = useCallback(() => {
+    const canvas = fabricCanvasRef.current;
+    if (!canvas) return;
+    const newZoom = 1;
+    setZoom(newZoom);
+    canvas.setZoom(newZoom);
+    canvas.setViewportTransform([1, 0, 0, 1, 0, 0]);
+    onZoomChange?.(newZoom);
+  }, [onZoomChange]);
 
   const handleToolChange = useCallback((tool: ToolType) => {
     setActiveTool(tool);
@@ -414,6 +429,7 @@ export default function WallCanvas({
       const point = canvas.getPointer(opt.e);
       canvas.zoomToPoint(point, currentZoom);
       setZoom(currentZoom);
+      onZoomChange?.(currentZoom);
     };
 
     canvas.on('mouse:wheel', handleWheel);
@@ -421,7 +437,7 @@ export default function WallCanvas({
     return () => {
       canvas.off('mouse:wheel', handleWheel);
     };
-  }, []);
+  }, [onZoomChange]);
 
   return (
     <div className={cn('relative w-full h-full', className)}>
@@ -434,9 +450,36 @@ export default function WallCanvas({
             onUndo={handleUndo}
             onZoomIn={handleZoomIn}
             onZoomOut={handleZoomOut}
+            onZoomReset={handleZoomReset}
             canUndo={history.length > 0}
             canDelete={selectedPointIndex !== null}
           />
+        </div>
+      )}
+
+      {!isEditable && (
+        <div className="absolute top-4 right-4 z-10 flex items-center gap-1 p-2 bg-rock-dark-800/90 backdrop-blur-sm rounded-xl border border-rock-dark-700 shadow-xl">
+          <button
+            onClick={handleZoomOut}
+            title="缩小"
+            className="p-2.5 rounded-lg text-rock-light-400 hover:text-white hover:bg-rock-dark-700 transition-all duration-200"
+          >
+            <ZoomOut size={18} />
+          </button>
+          <button
+            onClick={handleZoomReset}
+            title="还原"
+            className="p-2.5 rounded-lg text-rock-light-400 hover:text-white hover:bg-rock-dark-700 transition-all duration-200"
+          >
+            <Maximize2 size={18} />
+          </button>
+          <button
+            onClick={handleZoomIn}
+            title="放大"
+            className="p-2.5 rounded-lg text-rock-light-400 hover:text-white hover:bg-rock-dark-700 transition-all duration-200"
+          >
+            <ZoomIn size={18} />
+          </button>
         </div>
       )}
 
