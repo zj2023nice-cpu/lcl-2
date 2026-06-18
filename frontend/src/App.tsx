@@ -18,6 +18,7 @@ import Overview from '@/pages/Overview';
 import OperationLogs from '@/pages/OperationLogs';
 import ArchivedRoutes from '@/pages/ArchivedRoutes';
 import MessageTest from '@/pages/MessageTest';
+import BadgeShare from '@/pages/BadgeShare';
 
 function ProtectedLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -35,6 +36,7 @@ export default function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/message-test" element={<MessageTest />} />
+          <Route path="/badge/share/:shareId" element={<BadgeShare />} />
 
           <Route
             path="/"

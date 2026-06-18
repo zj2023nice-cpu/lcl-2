@@ -435,4 +435,41 @@ export class BadgeService implements OnModuleInit {
   async getUserStatsForBadges(userId: number): Promise<UserStats> {
     return this.calculateUserStats(userId);
   }
+
+  async getSharedBadgeData(
+    userBadgeId: number,
+  ): Promise<{
+    badge: Badge;
+    user: {
+      id: number;
+      name: string;
+      totalPoints: number;
+      unlockedCount: number;
+    };
+    unlockedAt: Date | null;
+    progress: number;
+  }> {
+    const userBadge = await this.userBadgeRepository.findOne({
+      where: { id: userBadgeId, unlocked: true },
+      relations: ['badge', 'user'],
+    });
+
+    if (!userBadge) {
+      throw new Error('Shared badge not found or not unlocked');
+    }
+
+    const { stats } = await this.getUserBadges(userBadge.user_id);
+
+    return {
+      badge: userBadge.badge,
+      user: {
+        id: userBadge.user.id,
+        name: userBadge.user.name,
+        totalPoints: stats.totalPoints,
+        unlockedCount: stats.unlocked,
+      },
+      unlockedAt: userBadge.unlocked_at,
+      progress: userBadge.progress,
+    };
+  }
 }

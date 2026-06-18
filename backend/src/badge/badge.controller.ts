@@ -10,15 +10,16 @@ import {
 } from '@nestjs/common';
 import { BadgeService } from './badge.service';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
+import { OptionalJwtAuthGuard } from '../common/guards/optional-jwt-auth.guard';
 import { CurrentUser } from '../common/decorators/current-user.decorator';
 import { User } from '../entities/user.entity';
 import { UserBadge } from '../entities/user-badge.entity';
 
 @Controller('badges')
-@UseGuards(JwtAuthGuard)
 export class BadgeController {
   constructor(private readonly badgeService: BadgeService) {}
 
+  @UseGuards(JwtAuthGuard)
   @Get('me')
   async getMyBadges(@CurrentUser() user: User) {
     const result = await this.badgeService.getUserBadges(user.id);
@@ -28,6 +29,7 @@ export class BadgeController {
     };
   }
 
+  @UseGuards(JwtAuthGuard)
   @Post('check')
   async checkAndUnlockBadges(@CurrentUser() user: User) {
     try {
@@ -47,6 +49,7 @@ export class BadgeController {
     }
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get('stats')
   async getMyBadgeStats(@CurrentUser() user: User) {
     const stats = await this.badgeService.getUserStatsForBadges(user.id);
@@ -56,6 +59,7 @@ export class BadgeController {
     };
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get('user/:userId')
   async getUserBadges(@Param('userId') userId: string) {
     const result = await this.badgeService.getUserBadges(parseInt(userId, 10));
@@ -65,6 +69,7 @@ export class BadgeController {
     };
   }
 
+  @UseGuards(JwtAuthGuard)
   @Post(':badgeId/notify')
   async markBadgeNotified(
     @CurrentUser() user: User,
@@ -86,6 +91,7 @@ export class BadgeController {
     };
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get(':badgeId/poster')
   async getBadgePosterData(
     @CurrentUser() user: User,
@@ -111,15 +117,31 @@ export class BadgeController {
     }
   }
 
+  @UseGuards(OptionalJwtAuthGuard)
   @Get('share/:shareId')
   async getSharedBadge(@Param('shareId') shareId: string) {
     const id = parseInt(shareId, 10);
     if (isNaN(id)) {
       throw new HttpException('Invalid share ID', HttpStatus.BAD_REQUEST);
     }
-    return {
-      success: true,
-      data: { shareId: id },
-    };
+
+    try {
+      const data = await this.badgeService.getSharedBadgeData(id);
+      return {
+        success: true,
+        data,
+      };
+    } catch (error) {
+      if (error.message === 'Shared badge not found or not unlocked') {
+        throw new HttpException(
+          'Shared badge not found or not unlocked',
+          HttpStatus.NOT_FOUND,
+        );
+      }
+      throw new HttpException(
+        'Failed to get shared badge',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 }

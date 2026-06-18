@@ -1,4 +1,4 @@
-import type { ApiResponse, User, AuthResponse, EmailLoginCredentials, PhoneLoginCredentials, RegisterCredentials, Gym, Wall, Route, PaginatedResponse, Ascent, GradeVote, Hold, RouteHeat, ColdRoute, SetterWorkload, ActiveUsersStats, UserBadge, BadgeStats, BadgeProgressStats, BadgeCheckResult, BadgePosterData } from '@/types';
+import type { ApiResponse, User, AuthResponse, EmailLoginCredentials, PhoneLoginCredentials, RegisterCredentials, Gym, Wall, Route, PaginatedResponse, Ascent, GradeVote, Hold, RouteHeat, ColdRoute, SetterWorkload, ActiveUsersStats, UserBadge, BadgeStats, BadgeProgressStats, BadgeCheckResult, BadgePosterData, BadgeShareData } from '@/types';
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api';
 
@@ -473,8 +473,8 @@ export const badgeApi = {
     return response.data;
   },
 
-  getSharedBadge: async (shareId: number): Promise<{ shareId: number }> => {
-    const response = await get<{ success: boolean; data: { shareId: number } }>(`/badges/share/${shareId}`);
+  getSharedBadge: async (shareId: number): Promise<BadgeShareData> => {
+    const response = await get<{ success: boolean; data: BadgeShareData }>(`/badges/share/${shareId}`);
     return response.data;
   },
 };

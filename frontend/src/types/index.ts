@@ -389,3 +389,15 @@ export interface BadgePosterData {
   unlockedAt: string;
   qrContent: string;
 }
+
+export interface BadgeShareData {
+  badge: Badge;
+  user: {
+    id: number;
+    name: string;
+    totalPoints: number;
+    unlockedCount: number;
+  };
+  unlockedAt: string;
+  progress: number;
+}
