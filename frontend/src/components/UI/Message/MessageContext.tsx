@@ -45,7 +45,7 @@ export function MessageProvider({ children }: MessageProviderProps) {
 
   const remove = useCallback((id: string) => {
     clearTimer(id);
-    setMessages((prev) => prev.filter((m) => m.id !== id);
+    setMessages((prev) => prev.filter((m) => m.id !== id));
   }, [clearTimer]);
 
   const clearAll = useCallback(() => {

@@ -239,3 +239,32 @@ export interface MessageContextType {
   remove: (id: string) => void;
   clearAll: () => void;
 }
+
+export type SortField = 'grade' | 'createdAt' | 'ascentCount' | 'avgRating' | 'setterRating';
+export type SortDirection = 'asc' | 'desc';
+
+export interface SortCriterion {
+  id: string;
+  field: SortField;
+  direction: SortDirection;
+}
+
+export interface SortPreset {
+  id: string;
+  name: string;
+  criteria: SortCriterion[];
+  createdAt: number;
+}
+
+export interface SortFieldOption {
+  value: SortField;
+  label: string;
+  icon: string;
+}
+
+export interface AdvancedSortProps {
+  criteria: SortCriterion[];
+  onChange: (criteria: SortCriterion[]) => void;
+  onReset: () => void;
+  onClearFilters?: () => void;
+}

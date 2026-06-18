@@ -1,5 +1,7 @@
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
+import type { Route } from '@/types';
+import type { SortCriterion, SortField } from '@/types';
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -135,4 +137,59 @@ export function formatDurationHuman(ms: number): string {
     return `${minutes}分${seconds}秒`;
   }
   return `${seconds}秒`;
+}
+
+function getGradeNumericValue(grade: string): number {
+  const match = grade?.toUpperCase().match(/^V(\d+)$/);
+  if (!match) return -1;
+  return parseInt(match[1], 10);
+}
+
+function compareValues<T>(a: T, b: T, direction: 'asc' | 'desc'): number {
+  if (a === b) return 0;
+  if (a === null || a === undefined) return direction === 'asc' ? 1 : -1;
+  if (b === null || b === undefined) return direction === 'asc' ? -1 : 1;
+  if (a < b) return direction === 'asc' ? -1 : 1;
+  return direction === 'asc' ? 1 : -1;
+}
+
+function getRouteFieldValue(route: Route, field: SortField): string | number | null {
+  switch (field) {
+    case 'grade':
+      return getGradeNumericValue(route.grade);
+    case 'createdAt':
+      return new Date(route.createdAt).getTime();
+    case 'ascentCount':
+      return route.ascentCount ?? 0;
+    case 'avgRating':
+      return (route as unknown as { avgRating?: number }).avgRating ?? null;
+    case 'setterRating':
+      return (route as unknown as { setterRating?: number }).setterRating ?? null;
+    default:
+      return null;
+  }
+}
+
+export function sortRoutes(routes: Route[], criteria: SortCriterion[]): Route[] {
+  if (!criteria || criteria.length === 0) return routes;
+
+  return [...routes].sort((a, b) => {
+    for (const criterion of criteria) {
+      const valueA = getRouteFieldValue(a, criterion.field);
+      const valueB = getRouteFieldValue(b, criterion.field);
+      const result = compareValues(valueA, valueB, criterion.direction);
+      if (result !== 0) return result;
+    }
+    return 0;
+  });
+}
+
+export function getDefaultSortCriteria(): SortCriterion[] {
+  return [
+    {
+      id: Math.random().toString(36).slice(2, 10) + Date.now().toString(36),
+      field: 'createdAt',
+      direction: 'desc',
+    },
+  ];
 }

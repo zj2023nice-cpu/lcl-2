@@ -12,10 +12,11 @@ import {
 } from 'lucide-react';
 import Card from '@/components/UI/Card';
 import Button from '@/components/UI/Button';
+import AdvancedSort from '@/components/AdvancedSort';
 import { routeApi, wallApi } from '@/utils/api';
 import { useGymStore } from '@/store/gym';
-import type { Route as RouteType } from '@/types';
-import { getGradeFullClass, getGradeLabel } from '@/lib/utils';
+import type { Route as RouteType, SortCriterion } from '@/types';
+import { getGradeFullClass, getGradeLabel, sortRoutes, getDefaultSortCriteria } from '@/lib/utils';
 
 const routeTypeLabels: Record<string, string> = {
   boulder: '抱石',
@@ -59,6 +60,7 @@ export default function RouteList() {
   const [filterGrade, setFilterGrade] = useState('all');
   const [filterStatus, setFilterStatus] = useState('all');
   const [filterColor, setFilterColor] = useState('all');
+  const [sortCriteria, setSortCriteria] = useState<SortCriterion[]>(getDefaultSortCriteria());
   const [walls, setWalls] = useState<{ id: number; name: string }[]>([]);
 
   useEffect(() => {
@@ -108,6 +110,7 @@ export default function RouteList() {
               r.setterName?.toLowerCase().includes(searchQuery.toLowerCase())
           );
         }
+        mergedRoutes = sortRoutes(mergedRoutes, sortCriteria);
         setRoutes(mergedRoutes);
       } catch (err) {
         console.error('Failed to fetch routes:', err);
@@ -118,7 +121,7 @@ export default function RouteList() {
     };
 
     fetchRoutes();
-  }, [currentGym, filterType, filterGrade, filterStatus, filterColor]);
+  }, [currentGym, filterType, filterGrade, filterStatus, filterColor, sortCriteria, searchQuery]);
 
   const getWallName = (wallId: number) => {
     return walls.find(w => w.id === wallId)?.name || '未知岩壁';
@@ -131,6 +134,18 @@ export default function RouteList() {
       month: 'short',
       day: 'numeric',
     });
+  };
+
+  const handleClearFilters = () => {
+    setSearchQuery('');
+    setFilterType('all');
+    setFilterGrade('all');
+    setFilterStatus('all');
+    setFilterColor('all');
+  };
+
+  const handleResetSort = () => {
+    setSortCriteria(getDefaultSortCriteria());
   };
 
   return (
@@ -216,6 +231,12 @@ export default function RouteList() {
                 ))}
               </select>
             </div>
+            <AdvancedSort
+              criteria={sortCriteria}
+              onChange={setSortCriteria}
+              onReset={handleResetSort}
+              onClearFilters={handleClearFilters}
+            />
           </div>
         </div>
       </Card>
