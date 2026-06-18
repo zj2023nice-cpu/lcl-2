@@ -17,6 +17,7 @@ import { UpdateCommentDto } from './dto/update-comment.dto';
 import { ReportCommentDto } from './dto/report-comment.dto';
 import { QueryCommentsDto } from './dto/query-comments.dto';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
+import { OptionalJwtAuthGuard } from '../common/guards/optional-jwt-auth.guard';
 import { RolesGuard } from '../common/guards/roles.guard';
 import { Roles } from '../common/decorators/roles.decorator';
 import { UserRole } from '../entities/user.entity';
@@ -26,7 +27,7 @@ export class CommentController {
   constructor(private readonly commentService: CommentService) {}
 
   @Get('routes/:routeId/comments')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(OptionalJwtAuthGuard)
   getComments(
     @Param('routeId', ParseIntPipe) routeId: number,
     @Query() queryDto: QueryCommentsDto,
@@ -36,7 +37,7 @@ export class CommentController {
   }
 
   @Get('comments/:commentId/replies')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(OptionalJwtAuthGuard)
   getReplies(
     @Param('commentId', ParseIntPipe) commentId: number,
     @Query('page', ParseIntPipe) page?: number,
