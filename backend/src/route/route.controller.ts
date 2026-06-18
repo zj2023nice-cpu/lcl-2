@@ -20,6 +20,8 @@ import { RouteShareService } from './route-share.service';
 import { CreateRouteDto } from './dto/create-route.dto';
 import { UpdateRouteDto } from './dto/update-route.dto';
 import { UpdateRouteStatusDto } from './dto/update-route-status.dto';
+import { ArchiveRouteDto } from './dto/archive-route.dto';
+import { QueryArchivedRoutesDto } from './dto/query-archived-routes.dto';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { RolesGuard } from '../common/guards/roles.guard';
 import { Roles } from '../common/decorators/roles.decorator';
@@ -41,8 +43,9 @@ export class RouteController {
     @Query('type') type?: RouteType,
     @Query('grade') grade?: string,
     @Query('status') status?: RouteStatus,
+    @Query('includeArchived') includeArchived?: boolean,
   ) {
-    return this.routeService.findAllByWall(wallId, { type, grade, status });
+    return this.routeService.findAllByWall(wallId, { type, grade, status, includeArchived });
   }
 
   @Get('routes/:id')
@@ -128,5 +131,35 @@ export class RouteController {
     const baseUrl = `${protocol}://${host}`;
 
     return this.routeShareService.getShareMetadata(id, baseUrl);
+  }
+
+  @Patch('routes/:id/archive')
+  @Roles(UserRole.GYM_ADMIN, UserRole.PLATFORM_ADMIN)
+  async archive(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() archiveRouteDto: ArchiveRouteDto,
+    @CurrentUser() user: { id: number; role: UserRole; gym_id?: number },
+  ) {
+    await this.routeService.checkCanEditRoute(id, user);
+    return this.routeService.archive(id, archiveRouteDto.reason, user.id);
+  }
+
+  @Patch('routes/:id/restore')
+  @Roles(UserRole.GYM_ADMIN, UserRole.PLATFORM_ADMIN)
+  async restore(
+    @Param('id', ParseIntPipe) id: number,
+    @CurrentUser() user: { id: number; role: UserRole; gym_id?: number },
+  ) {
+    await this.routeService.checkCanEditRoute(id, user);
+    return this.routeService.restore(id, user.id);
+  }
+
+  @Get('archived-routes')
+  @Roles(UserRole.GYM_ADMIN, UserRole.PLATFORM_ADMIN)
+  async findArchived(
+    @Query() query: QueryArchivedRoutesDto,
+    @CurrentUser() user: { id: number; role: UserRole; gym_id?: number },
+  ) {
+    return this.routeService.findArchived(query, user);
   }
 }

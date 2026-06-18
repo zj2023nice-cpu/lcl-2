@@ -10,6 +10,7 @@ import {
   Users,
   PieChart,
   FileText,
+  Archive,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -30,6 +31,7 @@ const navItems: NavItem[] = [
   { path: '/profile', label: '个人中心', icon: User },
   { path: '/dashboard', label: '运营数据', icon: LayoutDashboard, adminOnly: true },
   { path: '/admin/users', label: '用户管理', icon: Users, adminOnly: true },
+  { path: '/admin/archived-routes', label: '归档线路', icon: Archive, adminOnly: true },
   { path: '/admin/logs', label: '操作日志', icon: FileText, adminOnly: true },
 ];
 

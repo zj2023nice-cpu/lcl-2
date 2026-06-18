@@ -16,6 +16,8 @@ import {
   Clock,
   ChevronDown,
   ChevronUp,
+  Archive,
+  RotateCcw,
 } from 'lucide-react';
 import {
   BarChart,
@@ -28,6 +30,7 @@ import {
 } from 'recharts';
 import Card from '@/components/UI/Card';
 import Button from '@/components/UI/Button';
+import Modal from '@/components/UI/Modal';
 import WallCanvas, { RouteWithPoints, RoutePoint } from '@/components/WallCanvas/WallCanvas';
 import RouteEditorPanel from '@/components/RouteEditor/RouteEditorPanel';
 import CommentSection from '@/components/Comment/CommentSection';
@@ -96,7 +99,7 @@ export default function RouteDetail() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { user } = useAuthStore();
-  const { error } = useMessage();
+  const { error, success } = useMessage();
   const [route, setRoute] = useState<Route | null>(null);
   const [wall, setWall] = useState<Wall | null>(null);
   const [ascents, setAscents] = useState<Ascent[]>([]);
@@ -106,6 +109,11 @@ export default function RouteDetail() {
   const [selectedGrade, setSelectedGrade] = useState<string | null>(null);
   const [showAllAscents, setShowAllAscents] = useState(false);
   const [routePoints, setRoutePoints] = useState<RoutePoint[]>([]);
+  const [isArchiveModalOpen, setIsArchiveModalOpen] = useState(false);
+  const [isRestoreConfirmOpen, setIsRestoreConfirmOpen] = useState(false);
+  const [archiveReason, setArchiveReason] = useState('');
+  const [isArchiving, setIsArchiving] = useState(false);
+  const [isRestoring, setIsRestoring] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -211,6 +219,46 @@ export default function RouteDetail() {
     setIsEditorOpen(false);
   };
 
+  const handleArchive = async () => {
+    if (!route || !archiveReason.trim()) return;
+    setIsArchiving(true);
+    try {
+      const updated = await routeApi.archiveRoute(route.id, archiveReason.trim());
+      setRoute(updated);
+      setIsArchiveModalOpen(false);
+      setArchiveReason('');
+      success('线路已归档');
+    } catch (err) {
+      const reason = (err as { message?: string })?.message || '归档失败，请稍后重试';
+      error(reason);
+    } finally {
+      setIsArchiving(false);
+    }
+  };
+
+  const handleRestore = async () => {
+    if (!route) return;
+    setIsRestoring(true);
+    try {
+      const updated = await routeApi.restoreRoute(route.id);
+      setRoute(updated);
+      setIsRestoreConfirmOpen(false);
+      success('线路已恢复');
+    } catch (err) {
+      const reason = (err as { message?: string })?.message || '恢复失败，请稍后重试';
+      error(reason);
+    } finally {
+      setIsRestoring(false);
+    }
+  };
+
+  const canArchiveOrRestore = useMemo(() => {
+    if (!user || !route) return false;
+    if (user.role === 'platform_admin') return true;
+    if (user.role !== 'gym_admin') return false;
+    return wall ? wall.gymId === user.gymId : false;
+  }, [user, route, wall]);
+
   const handleVote = async (grade: string) => {
     if (!id || !user) return;
     try {
@@ -314,10 +362,37 @@ export default function RouteDetail() {
           </div>
         </div>
         <div className="flex items-center gap-3">
+          {route?.isArchived && (
+            <span className="px-3 py-1 bg-purple-500/20 text-purple-400 border border-purple-500/30 rounded-full text-sm font-medium flex items-center gap-1">
+              <Archive size={14} />
+              已归档
+            </span>
+          )}
           {userCanEditRoute && (
             <Button variant="outline" onClick={() => setIsEditorOpen(true)}>
               <Edit size={16} className="mr-2" />
               编辑线路
+            </Button>
+          )}
+          {canArchiveOrRestore && !route?.isArchived && (
+            <Button
+              variant="secondary"
+              onClick={() => {
+                setArchiveReason('');
+                setIsArchiveModalOpen(true);
+              }}
+            >
+              <Archive size={16} className="mr-2" />
+              归档
+            </Button>
+          )}
+          {canArchiveOrRestore && route?.isArchived && (
+            <Button
+              variant="primary"
+              onClick={() => setIsRestoreConfirmOpen(true)}
+            >
+              <RotateCcw size={16} className="mr-2" />
+              恢复线路
             </Button>
           )}
           <Button>
@@ -396,6 +471,50 @@ export default function RouteDetail() {
                 </span>
                 <span className="text-white">{formatDate(route.createdAt)}</span>
               </div>
+              {route.isArchived && (
+                <>
+                  <div className="pt-3 border-t border-rock-dark-700">
+                    <div className="flex items-center justify-between">
+                      <span className="text-rock-light-500 flex items-center gap-2">
+                        <Archive size={14} />
+                        归档原因
+                      </span>
+                      <span className="text-white text-right max-w-[60%] text-sm">
+                        {route.archiveReason}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-rock-light-500 flex items-center gap-2">
+                      <User size={14} />
+                      归档操作人
+                    </span>
+                    <span className="text-white">
+                      {route.archivedByName || `用户 #${route.archivedBy}`}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-rock-light-500 flex items-center gap-2">
+                      <Clock size={14} />
+                      归档时间
+                    </span>
+                    <span className="text-white">
+                      {route.archivedAt ? formatDateTime(route.archivedAt) : '-'}
+                    </span>
+                  </div>
+                  {route.restoredAt && (
+                    <div className="flex items-center justify-between">
+                      <span className="text-rock-light-500 flex items-center gap-2">
+                        <RotateCcw size={14} />
+                        恢复时间
+                      </span>
+                      <span className="text-white">
+                        {formatDateTime(route.restoredAt)}
+                      </span>
+                    </div>
+                  )}
+                </>
+              )}
             </div>
           </Card>
 
@@ -612,6 +731,123 @@ export default function RouteDetail() {
         route={route}
         wallId={route.wallId}
       />
+
+      <Modal
+        isOpen={isArchiveModalOpen}
+        onClose={() => setIsArchiveModalOpen(false)}
+        title="归档线路"
+        size="md"
+      >
+        <div className="space-y-4">
+          <div className="p-4 bg-yellow-500/10 border border-yellow-500/30 rounded-lg">
+            <div className="flex items-start gap-3">
+              <AlertTriangle size={20} className="text-yellow-400 flex-shrink-0 mt-0.5" />
+              <div>
+                <p className="font-medium text-yellow-400">归档提示</p>
+                <p className="text-sm text-yellow-400/80 mt-1">
+                  归档后该线路将在前台不可见，但所有关联数据（攀爬记录、评论、投票等）将被保留。
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-white mb-2">
+              归档原因 <span className="text-red-400">*</span>
+            </label>
+            <textarea
+              value={archiveReason}
+              onChange={(e) => setArchiveReason(e.target.value)}
+              placeholder="请填写归档原因（如：线路磨损、季节性调整、临时检修等）..."
+              rows={4}
+              className="w-full px-4 py-3 bg-rock-dark-900 border border-rock-dark-700 rounded-lg text-white placeholder-rock-light-600 focus:outline-none focus:border-climbing-orange-500 transition-colors resize-none"
+            />
+            <p className="mt-2 text-xs text-rock-light-500">
+              {archiveReason.length} / 1000
+            </p>
+          </div>
+
+          <div className="flex justify-end gap-3 pt-2">
+            <Button
+              variant="ghost"
+              onClick={() => setIsArchiveModalOpen(false)}
+              disabled={isArchiving}
+            >
+              取消
+            </Button>
+            <Button
+              variant="danger"
+              onClick={handleArchive}
+              disabled={!archiveReason.trim() || isArchiving}
+              isLoading={isArchiving}
+            >
+              <Archive size={16} className="mr-2" />
+              确认归档
+            </Button>
+          </div>
+        </div>
+      </Modal>
+
+      <Modal
+        isOpen={isRestoreConfirmOpen}
+        onClose={() => setIsRestoreConfirmOpen(false)}
+        title="恢复线路"
+        size="md"
+      >
+        <div className="space-y-4">
+          <div className="p-4 bg-green-500/10 border border-green-500/30 rounded-lg">
+            <div className="flex items-start gap-3">
+              <RotateCcw size={20} className="text-green-400 flex-shrink-0 mt-0.5" />
+              <div>
+                <p className="font-medium text-green-400">恢复确认</p>
+                <p className="text-sm text-green-400/80 mt-1">
+                  恢复后该线路将重新在前台可见，所有关联数据将继续可用。
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="p-4 bg-rock-dark-900 rounded-lg space-y-2">
+            <div className="flex justify-between text-sm">
+              <span className="text-rock-light-500">线路名称</span>
+              <span className="text-white font-medium">{route?.name}</span>
+            </div>
+            <div className="flex justify-between text-sm">
+              <span className="text-rock-light-500">线路定级</span>
+              <span className="text-white font-medium">{route?.grade}</span>
+            </div>
+            <div className="flex justify-between text-sm">
+              <span className="text-rock-light-500">归档原因</span>
+              <span className="text-white text-right max-w-[60%]">{route?.archiveReason}</span>
+            </div>
+            {route?.archivedAt && (
+              <div className="flex justify-between text-sm">
+                <span className="text-rock-light-500">归档时间</span>
+                <span className="text-white">{formatDateTime(route.archivedAt)}</span>
+              </div>
+            )}
+          </div>
+
+          <div className="flex justify-end gap-3 pt-2">
+            <Button
+              variant="ghost"
+              onClick={() => setIsRestoreConfirmOpen(false)}
+              disabled={isRestoring}
+            >
+              取消
+            </Button>
+            <Button
+              variant="primary"
+              onClick={handleRestore}
+              disabled={isRestoring}
+              isLoading={isRestoring}
+            >
+              <RotateCcw size={16} className="mr-2" />
+              确认恢复
+            </Button>
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 }

@@ -58,6 +58,14 @@ export interface Route {
   ascentCount?: number;
   createdAt: string;
   updatedAt: string;
+  isArchived: boolean;
+  archiveReason?: string | null;
+  archivedBy?: number | null;
+  archivedAt?: string | null;
+  restoredBy?: number | null;
+  restoredAt?: string | null;
+  archivedByName?: string;
+  restoredByName?: string;
 }
 
 export interface Hold {

@@ -238,7 +238,7 @@ export const wallApi = {
 };
 
 export const routeApi = {
-  getRoutes: async (wallId: number, filters?: { type?: string; grade?: string; status?: string }): Promise<Route[]> => {
+  getRoutes: async (wallId: number, filters?: { type?: string; grade?: string; status?: string; includeArchived?: boolean }): Promise<Route[]> => {
     return get<Route[]>(`/walls/${wallId}/routes`, { params: filters });
   },
 
@@ -260,6 +260,18 @@ export const routeApi = {
 
   deleteRoute: async (id: number): Promise<void> => {
     return del<void>(`/routes/${id}`);
+  },
+
+  archiveRoute: async (id: number, reason: string): Promise<Route> => {
+    return patch<Route>(`/routes/${id}/archive`, { reason });
+  },
+
+  restoreRoute: async (id: number): Promise<Route> => {
+    return patch<Route>(`/routes/${id}/restore`, {});
+  },
+
+  getArchivedRoutes: async (filters?: { reason?: string; startDate?: string; endDate?: string; archivedBy?: number; wallId?: number }): Promise<Route[]> => {
+    return get<Route[]>('/archived-routes', { params: filters });
   },
 };
 

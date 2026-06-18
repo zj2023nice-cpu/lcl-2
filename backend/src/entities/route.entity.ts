@@ -33,6 +33,7 @@ export enum RouteStatus {
 @Index('idx_route_wall', ['wall_id'])
 @Index('idx_route_status', ['status'])
 @Index('idx_route_setter', ['setter_id'])
+@Index('idx_route_archived', ['isArchived'])
 export class Route {
   @PrimaryGeneratedColumn()
   id: number;
@@ -85,6 +86,24 @@ export class Route {
 
   @UpdateDateColumn({ name: 'updated_at' })
   updated_at: Date;
+
+  @Column({ type: 'boolean', name: 'is_archived', default: false })
+  isArchived: boolean;
+
+  @Column({ type: 'text', name: 'archive_reason', nullable: true })
+  archiveReason: string | null;
+
+  @Column({ type: 'int', name: 'archived_by', nullable: true })
+  archivedBy: number | null;
+
+  @Column({ type: 'datetime', name: 'archived_at', nullable: true })
+  archivedAt: Date | null;
+
+  @Column({ type: 'int', name: 'restored_by', nullable: true })
+  restoredBy: number | null;
+
+  @Column({ type: 'datetime', name: 'restored_at', nullable: true })
+  restoredAt: Date | null;
 
   @ManyToOne(() => Wall, (wall) => wall.routes)
   @JoinColumn({ name: 'wall_id' })

@@ -16,6 +16,7 @@ import Dashboard from '@/pages/Dashboard';
 import AdminUsers from '@/pages/AdminUsers';
 import Overview from '@/pages/Overview';
 import OperationLogs from '@/pages/OperationLogs';
+import ArchivedRoutes from '@/pages/ArchivedRoutes';
 import MessageTest from '@/pages/MessageTest';
 
 function ProtectedLayout({ children }: { children: React.ReactNode }) {
@@ -128,6 +129,14 @@ export default function App() {
             element={
               <ProtectedLayout>
                 <OperationLogs />
+              </ProtectedLayout>
+            }
+          />
+          <Route
+            path="/admin/archived-routes"
+            element={
+              <ProtectedLayout>
+                <ArchivedRoutes />
               </ProtectedLayout>
             }
           />

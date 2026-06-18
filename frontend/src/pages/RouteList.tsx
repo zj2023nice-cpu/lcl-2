@@ -39,6 +39,8 @@ const routeStatusLabels: Record<string, string> = {
   removing: '拆除中',
 };
 
+const archivedBadge = 'bg-purple-500/20 text-purple-400 border border-purple-500/30';
+
 const colorOptions = [
   { value: 'all', label: '全部颜色', color: '' },
   { value: '#FF6B35', label: '橙色', color: '#FF6B35' },
@@ -303,6 +305,11 @@ export default function RouteList() {
                         <span className={`px-2 py-0.5 rounded text-xs border ${routeStatusColors[route.status]}`}>
                           {routeStatusLabels[route.status]}
                         </span>
+                        {route.isArchived && (
+                          <span className={`px-2 py-0.5 rounded text-xs border ${archivedBadge}`}>
+                            已归档
+                          </span>
+                        )}
                       </div>
                       <div className="space-y-2 text-sm">
                         <div className="flex items-center gap-2 text-rock-light-400">
