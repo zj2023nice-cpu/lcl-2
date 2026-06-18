@@ -174,3 +174,47 @@ export interface ActiveUsersStats {
   totalMembers: number;
   avgRoutesPerUser: number;
 }
+
+export type TimerState = 'idle' | 'running' | 'paused' | 'finished';
+
+export interface TimerSegment {
+  id: string;
+  routeId: number;
+  routeName?: string;
+  routeGrade?: string;
+  routeColor?: string;
+  startTime: number;
+  endTime: number;
+  duration: number;
+  index: number;
+}
+
+export interface RestInterval {
+  id: string;
+  previousSegmentId: string;
+  nextSegmentId: string;
+  startTime: number;
+  endTime: number;
+  duration: number;
+}
+
+export interface TimerResult {
+  totalDuration: number;
+  totalClimbTime: number;
+  totalRestTime: number;
+  segments: TimerSegment[];
+  restIntervals: RestInterval[];
+  restStats: {
+    count: number;
+    averageRest: number;
+    shortestRest: number;
+    longestRest: number;
+  };
+  startedAt: number;
+  endedAt: number;
+}
+
+export interface UseClimbTimerOptions {
+  onFinish?: (result: TimerResult) => void;
+  onSegmentAdd?: (segment: TimerSegment, allSegments: TimerSegment[]) => void;
+}
