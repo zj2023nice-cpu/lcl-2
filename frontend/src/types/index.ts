@@ -218,3 +218,24 @@ export interface UseClimbTimerOptions {
   onFinish?: (result: TimerResult) => void;
   onSegmentAdd?: (segment: TimerSegment, allSegments: TimerSegment[]) => void;
 }
+
+export type MessageType = 'success' | 'error' | 'warning' | 'loading';
+
+export interface Message {
+  id: string;
+  type: MessageType;
+  content: string;
+  duration?: number;
+  createdAt: number;
+  mergedCount: number;
+}
+
+export interface MessageContextType {
+  messages: Message[];
+  success: (content: string, duration?: number) => string;
+  error: (content: string, duration?: number) => string;
+  warning: (content: string, duration?: number) => string;
+  loading: (content: string, duration?: number) => string;
+  remove: (id: string) => void;
+  clearAll: () => void;
+}
