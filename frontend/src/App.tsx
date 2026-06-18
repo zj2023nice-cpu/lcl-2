@@ -17,6 +17,7 @@ import AdminUsers from '@/pages/AdminUsers';
 import Overview from '@/pages/Overview';
 import OperationLogs from '@/pages/OperationLogs';
 import ArchivedRoutes from '@/pages/ArchivedRoutes';
+import RouteManagement from '@/pages/RouteManagement';
 import MessageTest from '@/pages/MessageTest';
 import BadgeShare from '@/pages/BadgeShare';
 
@@ -139,6 +140,14 @@ export default function App() {
             element={
               <ProtectedLayout>
                 <ArchivedRoutes />
+              </ProtectedLayout>
+            }
+          />
+          <Route
+            path="/admin/routes"
+            element={
+              <ProtectedLayout>
+                <RouteManagement />
               </ProtectedLayout>
             }
           />

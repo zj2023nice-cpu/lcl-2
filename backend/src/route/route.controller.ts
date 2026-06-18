@@ -20,6 +20,7 @@ import { RouteShareService } from './route-share.service';
 import { CreateRouteDto } from './dto/create-route.dto';
 import { UpdateRouteDto } from './dto/update-route.dto';
 import { UpdateRouteStatusDto } from './dto/update-route-status.dto';
+import { BatchUpdateRouteStatusDto } from './dto/batch-update-route-status.dto';
 import { ArchiveRouteDto } from './dto/archive-route.dto';
 import { QueryArchivedRoutesDto } from './dto/query-archived-routes.dto';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
@@ -54,6 +55,25 @@ export class RouteController {
       status,
       includeArchived: canIncludeArchived,
     });
+  }
+
+  @Post('routes/batch/status/preview')
+  @Roles(UserRole.GYM_ADMIN, UserRole.SETTER, UserRole.PLATFORM_ADMIN)
+  async batchStatusPreview(
+    @Body() dto: BatchUpdateRouteStatusDto,
+    @CurrentUser() user: { id: number; role: UserRole; gym_id?: number },
+  ) {
+    return this.routeService.previewBatchStatus(dto, user);
+  }
+
+  @Patch('routes/batch/status')
+  @Roles(UserRole.GYM_ADMIN, UserRole.SETTER, UserRole.PLATFORM_ADMIN)
+  async batchUpdateStatus(
+    @Body() dto: BatchUpdateRouteStatusDto,
+    @CurrentUser() user: { id: number; role: UserRole; gym_id?: number },
+    @Req() req: Request,
+  ) {
+    return this.routeService.batchUpdateStatus(dto, user, req.ip);
   }
 
   @Get('routes/:id')

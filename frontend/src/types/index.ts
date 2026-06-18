@@ -68,6 +68,54 @@ export interface Route {
   restoredByName?: string;
 }
 
+export interface RouteBatchFilters {
+  type?: RouteType;
+  grade?: string;
+  status?: RouteStatus;
+  color?: string;
+  wallId?: number;
+}
+
+export interface BatchUpdateStatusPayload {
+  status: RouteStatus;
+  routeIds?: number[];
+  filters?: RouteBatchFilters;
+  includeArchived?: boolean;
+}
+
+export interface BatchStatusPreviewRoute {
+  id: number;
+  name: string;
+  grade: string;
+  color: string | null;
+  type: RouteType;
+  status: RouteStatus;
+  wallId: number;
+  wallName: string;
+  setterId: number | null;
+  setterName: string | null;
+  isArchived: boolean;
+}
+
+export interface BatchStatusPreviewResult {
+  total: number;
+  routes: BatchStatusPreviewRoute[];
+}
+
+export interface BatchStatusFailure {
+  routeId: number;
+  routeName: string;
+  reason: string;
+}
+
+export interface BatchStatusResult {
+  success: boolean;
+  total: number;
+  successCount: number;
+  failureCount: number;
+  failures: BatchStatusFailure[];
+}
+
 export interface Hold {
   id: number;
   routeId: number;

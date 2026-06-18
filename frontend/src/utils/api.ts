@@ -1,4 +1,4 @@
-import type { ApiResponse, User, AuthResponse, EmailLoginCredentials, PhoneLoginCredentials, RegisterCredentials, Gym, Wall, Route, PaginatedResponse, Ascent, GradeVote, Hold, RouteHeat, ColdRoute, SetterWorkload, ActiveUsersStats, UserBadge, BadgeStats, BadgeProgressStats, BadgeCheckResult, BadgePosterData, BadgeShareData } from '@/types';
+import type { ApiResponse, User, AuthResponse, EmailLoginCredentials, PhoneLoginCredentials, RegisterCredentials, Gym, Wall, Route, PaginatedResponse, Ascent, GradeVote, Hold, RouteHeat, ColdRoute, SetterWorkload, ActiveUsersStats, UserBadge, BadgeStats, BadgeProgressStats, BadgeCheckResult, BadgePosterData, BadgeShareData, BatchUpdateStatusPayload, BatchStatusPreviewResult, BatchStatusResult } from '@/types';
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api';
 
@@ -272,6 +272,14 @@ export const routeApi = {
 
   getArchivedRoutes: async (filters?: { reason?: string; startDate?: string; endDate?: string; archivedBy?: number; wallId?: number }): Promise<Route[]> => {
     return get<Route[]>('/archived-routes', { params: filters });
+  },
+
+  batchStatusPreview: async (payload: BatchUpdateStatusPayload): Promise<BatchStatusPreviewResult> => {
+    return post<BatchStatusPreviewResult>('/routes/batch/status/preview', payload);
+  },
+
+  batchUpdateStatus: async (payload: BatchUpdateStatusPayload): Promise<BatchStatusResult> => {
+    return patch<BatchStatusResult>('/routes/batch/status', payload);
   },
 };
 
