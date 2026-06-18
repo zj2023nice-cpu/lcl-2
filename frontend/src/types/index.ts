@@ -1,3 +1,18 @@
+export type Theme = 'light' | 'dark';
+
+export type ThemeStrategy = 'system' | 'manual' | 'schedule';
+
+export interface ThemeSchedule {
+  lightStart: string;
+  darkStart: string;
+}
+
+export interface ThemePreferences {
+  strategy: ThemeStrategy;
+  manualTheme: Theme;
+  schedule: ThemeSchedule;
+}
+
 export type UserRole = 'platform_admin' | 'gym_admin' | 'setter' | 'verified_climber' | 'guest';
 
 export interface User {

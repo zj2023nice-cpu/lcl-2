@@ -4,12 +4,32 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
+:root.light {
+  --color-primary: #FF6B35;
+  --color-primary-hover: #E5501A;
+  --color-bg-dark: #FFFFFF;
+  --color-bg-card: #F8F8F8;
+  --color-bg-hover: #EDEDED;
+  --color-bg-subtle: #F5F5F5;
+  --color-text-primary: #1A1A1A;
+  --color-text-secondary: #4D4D4D;
+  --color-text-muted: #808080;
+  --color-border: #E0E0E0;
+  --color-success: #16A34A;
+  --color-danger: #DC2626;
+  --color-warning: #D97706;
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.07);
+  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+}
+
+:root.dark {
   --color-primary: #FF6B35;
   --color-primary-hover: #E5501A;
   --color-bg-dark: #0D0D0D;
   --color-bg-card: #1A1A1A;
   --color-bg-hover: #333333;
+  --color-bg-subtle: #141414;
   --color-text-primary: #F5F5F5;
   --color-text-secondary: #B3B3B3;
   --color-text-muted: #808080;
@@ -17,6 +37,9 @@
   --color-success: #22C55E;
   --color-danger: #EF4444;
   --color-warning: #F59E0B;
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.5);
 }
 
 * {
@@ -33,16 +56,29 @@ html {
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 body {
   min-height: 100vh;
   background-color: var(--color-bg-dark);
   color: var(--color-text-primary);
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 #root {
   min-height: 100vh;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.theme-transition,
+.theme-transition * {
+  transition: background-color 0.3s ease,
+              color 0.3s ease,
+              border-color 0.3s ease,
+              fill 0.3s ease,
+              stroke 0.3s ease,
+              box-shadow 0.3s ease !important;
 }
 
 ::-webkit-scrollbar {
@@ -52,11 +88,13 @@ body {
 
 ::-webkit-scrollbar-track {
   background: var(--color-bg-dark);
+  transition: background-color 0.3s ease;
 }
 
 ::-webkit-scrollbar-thumb {
   background: var(--color-bg-hover);
   border-radius: 4px;
+  transition: background-color 0.3s ease;
 }
 
 ::-webkit-scrollbar-thumb:hover {

@@ -1,4 +1,4 @@
-import type { ApiResponse, User, AuthResponse, EmailLoginCredentials, PhoneLoginCredentials, RegisterCredentials, Gym, Wall, Route, PaginatedResponse, Ascent, GradeVote, Hold, RouteHeat, ColdRoute, SetterWorkload, ActiveUsersStats, UserBadge, BadgeStats, BadgeProgressStats, BadgeCheckResult, BadgePosterData, BadgeShareData, BatchUpdateStatusPayload, BatchStatusPreviewResult, BatchStatusResult } from '@/types';
+import type { ApiResponse, User, AuthResponse, EmailLoginCredentials, PhoneLoginCredentials, RegisterCredentials, Gym, Wall, Route, PaginatedResponse, Ascent, GradeVote, Hold, RouteHeat, ColdRoute, SetterWorkload, ActiveUsersStats, UserBadge, BadgeStats, BadgeProgressStats, BadgeCheckResult, BadgePosterData, BadgeShareData, BatchUpdateStatusPayload, BatchStatusPreviewResult, BatchStatusResult, ThemePreferences } from '@/types';
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api';
 
@@ -392,6 +392,18 @@ export const profileApi = {
 
   getAscentCalendar: async (userId: number, month: string): Promise<unknown> => {
     return get(`/users/${userId}/ascent-calendar`, { params: { month } });
+  },
+
+  getThemePreferences: async (): Promise<ThemePreferences | null> => {
+    try {
+      return get<ThemePreferences>('/auth/theme-preferences');
+    } catch {
+      return null;
+    }
+  },
+
+  updateThemePreferences: async (preferences: ThemePreferences): Promise<ThemePreferences> => {
+    return put<ThemePreferences>('/auth/theme-preferences', preferences);
   },
 };
 

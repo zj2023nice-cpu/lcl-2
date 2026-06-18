@@ -2,7 +2,9 @@ import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Mountain, Phone, Mail, Lock, Eye, EyeOff } from 'lucide-react';
 import Button from '@/components/UI/Button';
+import ThemeToggle from '@/components/UI/ThemeToggle';
 import useAuthStore from '@/store/auth';
+import { useThemeStore } from '@/store/theme';
 import { cn } from '@/lib/utils';
 
 type LoginTab = 'email' | 'phone';
@@ -17,6 +19,7 @@ export default function Login() {
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
 
   const { loginWithPhone, loginWithEmail, loading, error, clearError, isAuthenticated } = useAuthStore();
+  const { isTransitioning } = useThemeStore();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -91,7 +94,7 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 py-8 relative overflow-hidden">
+    <div className={cn('min-h-screen flex items-center justify-center px-4 py-8 relative overflow-hidden', isTransitioning && 'theme-transition')}>
       <div className="absolute inset-0 bg-rock-dark-950">
         <div className="absolute inset-0 bg-gradient-to-br from-rock-dark-900 via-rock-dark-950 to-rock-dark-900" />
         <div
@@ -102,6 +105,10 @@ export default function Login() {
         />
         <div className="absolute top-1/4 -left-32 w-96 h-96 bg-climbing-orange-500/10 rounded-full blur-3xl" />
         <div className="absolute bottom-1/4 -right-32 w-96 h-96 bg-climbing-orange-600/10 rounded-full blur-3xl" />
+      </div>
+
+      <div className="absolute top-4 right-4 z-20">
+        <ThemeToggle />
       </div>
 
       <div className="relative w-full max-w-md z-10">

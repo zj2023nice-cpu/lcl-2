@@ -5,6 +5,41 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>My Trae Project</title>
+    <script>
+      (function() {
+        try {
+          var stored = localStorage.getItem('theme-preferences');
+          var prefs = stored ? JSON.parse(stored) : { strategy: 'system' };
+          var theme = 'light';
+          
+          if (prefs.strategy === 'manual') {
+            theme = prefs.manualTheme || 'light';
+          } else if (prefs.strategy === 'schedule') {
+            var schedule = prefs.schedule || { lightStart: '07:00', darkStart: '19:00' };
+            var now = new Date();
+            var currentMinutes = now.getHours() * 60 + now.getMinutes();
+            var lightParts = schedule.lightStart.split(':').map(Number);
+            var darkParts = schedule.darkStart.split(':').map(Number);
+            var lightStart = lightParts[0] * 60 + lightParts[1];
+            var darkStart = darkParts[0] * 60 + darkParts[1];
+            if (lightStart < darkStart) {
+              theme = currentMinutes >= lightStart && currentMinutes < darkStart ? 'light' : 'dark';
+            } else {
+              theme = currentMinutes >= darkStart && currentMinutes < lightStart ? 'dark' : 'light';
+            }
+          } else {
+            theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+          }
+          
+          var root = document.documentElement;
+          root.classList.add(theme);
+          root.style.colorScheme = theme;
+        } catch (e) {
+          document.documentElement.classList.add('light');
+          document.documentElement.style.colorScheme = 'light';
+        }
+      })();
+    </script>
     <script type="module">
       if (import.meta.hot?.on) {
         import.meta.hot.on('vite:error', (error) => {
