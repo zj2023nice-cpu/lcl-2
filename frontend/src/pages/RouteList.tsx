@@ -15,6 +15,7 @@ import Button from '@/components/UI/Button';
 import { routeApi, wallApi } from '@/utils/api';
 import { useGymStore } from '@/store/gym';
 import type { Route as RouteType } from '@/types';
+import { getGradeFullClass, getGradeLabel } from '@/lib/utils';
 
 const routeTypeLabels: Record<string, string> = {
   boulder: '抱石',
@@ -270,8 +271,8 @@ export default function RouteList() {
                         <h3 className="font-semibold text-white line-clamp-1 group-hover:text-climbing-orange-400 transition-colors">
                           {route.name}
                         </h3>
-                        <span className="px-2 py-0.5 bg-climbing-orange-500/20 text-climbing-orange-400 rounded text-xs font-bold whitespace-nowrap border border-climbing-orange-500/30">
-                          {route.grade}
+                        <span className={`px-2 py-0.5 rounded text-xs font-bold whitespace-nowrap border ${getGradeFullClass(route.grade)}`}>
+                          {route.grade} · {getGradeLabel(route.grade)}
                         </span>
                       </div>
                       <div className="flex items-center gap-2 flex-wrap mb-4">

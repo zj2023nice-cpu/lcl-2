@@ -33,7 +33,7 @@ import RouteEditorPanel from '@/components/RouteEditor/RouteEditorPanel';
 import { routeApi, ascentApi, voteApi, wallApi } from '@/utils/api';
 import { useAuthStore } from '@/store/auth';
 import type { Route, Ascent, GradeVote, Wall } from '@/types';
-import { cn } from '@/lib/utils';
+import { cn, getGradeFullClass, getGradeLabel } from '@/lib/utils';
 import { canEditRoute } from '@/lib/permissions';
 
 const routeTypeLabels: Record<string, string> = {
@@ -299,8 +299,11 @@ export default function RouteDetail() {
                 {routeStatusLabels[route.status]}
               </span>
             </div>
-            <p className="text-rock-light-500 text-sm mt-1">
-              {route.grade} · {routeTypeLabels[route.type]}
+            <p className="text-rock-light-500 text-sm mt-1 flex items-center gap-2">
+              <span className={`px-2 py-0.5 rounded text-xs font-medium border ${getGradeFullClass(route.grade)}`}>
+                {route.grade} · {getGradeLabel(route.grade)}
+              </span>
+              · {routeTypeLabels[route.type]}
             </p>
           </div>
         </div>
@@ -353,8 +356,8 @@ export default function RouteDetail() {
                   <Award size={14} />
                   定级
                 </span>
-                <span className="text-climbing-orange-400 font-bold text-lg">
-                  {route.grade}
+                <span className={`px-3 py-1 rounded-full text-sm font-bold border ${getGradeFullClass(route.grade)}`}>
+                  {route.grade} · {getGradeLabel(route.grade)}
                 </span>
               </div>
               <div className="flex items-center justify-between">
