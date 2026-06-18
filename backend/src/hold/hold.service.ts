@@ -15,10 +15,8 @@ import {
   HOLD_TYPE_VALUES,
 } from './dto/batch-import-hold.dto';
 import { parseCsv, ParsedCsvRow } from '../common/utils/csv-parser.util';
-import { isPointInPolygon, parsePolygonCoords, Point } from '../common/utils/geometry.util';
+import { isPointInPolygon, parsePolygonCoords, Point, getPolygonBounds, PolygonBounds } from '../common/utils/geometry.util';
 
-const MIN_COORD = 0;
-const MAX_COORD = 1;
 const DUPLICATE_EPSILON = 0.001;
 
 @Injectable()
@@ -67,6 +65,7 @@ export class HoldService {
     }
 
     const polygon = parsePolygonCoords(wall.polygon_coords);
+    const polygonBounds = polygon ? getPolygonBounds(polygon) : null;
 
     const effectiveHeaderMap = headerMap || DEFAULT_HEADER_MAP;
 
@@ -76,7 +75,16 @@ export class HoldService {
       throw new BadRequestException('CSV 文件为空或格式无效');
     }
 
-    const { validRows, failures } = this.validateRows(parsedRows, polygon);
+    const existingHolds = await this.holdRepository.find({
+      where: { route_id: routeId },
+    });
+
+    const { validRows, failures } = this.validateRows(
+      parsedRows,
+      polygon,
+      polygonBounds,
+      existingHolds,
+    );
 
     const result: BatchImportResult = {
       success: failures.length === 0,
@@ -86,6 +94,10 @@ export class HoldService {
       successHolds: [],
       failures,
     };
+
+    if (failures.length > 0) {
+      return result;
+    }
 
     if (validRows.length === 0) {
       return result;
@@ -135,6 +147,8 @@ export class HoldService {
   private validateRows(
     rows: ParsedCsvRow[],
     polygon: Point[] | null,
+    polygonBounds: PolygonBounds | null,
+    existingHolds: Hold[],
   ): { validRows: ValidatedHoldRow[]; failures: ValidationFailure[] } {
     const validRows: ValidatedHoldRow[] = [];
     const failures: ValidationFailure[] = [];
@@ -168,12 +182,27 @@ export class HoldService {
         }
       }
 
-      if (positionX !== null && (positionX < MIN_COORD || positionX > MAX_COORD)) {
-        rowFailures.push('position_x 超出范围 [0, 1]: ' + positionX);
-      }
-
-      if (positionY !== null && (positionY < MIN_COORD || positionY > MAX_COORD)) {
-        rowFailures.push('position_y 超出范围 [0, 1]: ' + positionY);
+      if (positionX !== null && positionY !== null && polygonBounds) {
+        if (positionX < polygonBounds.minX || positionX > polygonBounds.maxX) {
+          rowFailures.push(
+            'position_x 超出岩壁范围 [' +
+              polygonBounds.minX.toFixed(4) +
+              ', ' +
+              polygonBounds.maxX.toFixed(4) +
+              ']: ' +
+              positionX
+          );
+        }
+        if (positionY < polygonBounds.minY || positionY > polygonBounds.maxY) {
+          rowFailures.push(
+            'position_y 超出岩壁范围 [' +
+              polygonBounds.minY.toFixed(4) +
+              ', ' +
+              polygonBounds.maxY.toFixed(4) +
+              ']: ' +
+              positionY
+          );
+        }
       }
 
       let holdType: HoldType | null = null;
@@ -184,7 +213,9 @@ export class HoldService {
         if (HOLD_TYPE_VALUES.includes(typeLower)) {
           holdType = typeLower as HoldType;
         } else {
-          rowFailures.push('type 无效: "' + row.type + '", 有效值: ' + HOLD_TYPE_VALUES.join(', '));
+          rowFailures.push(
+            'type 无效: "' + row.type + '", 有效值: ' + HOLD_TYPE_VALUES.join(', ')
+          );
         }
       }
 
@@ -195,15 +226,24 @@ export class HoldService {
       }
 
       if (positionX !== null && positionY !== null) {
-        const duplicate = seenPoints.find(
+        const csvDuplicate = seenPoints.find(
           (p) =>
             Math.abs(p.x - positionX) < DUPLICATE_EPSILON &&
             Math.abs(p.y - positionY) < DUPLICATE_EPSILON,
         );
-        if (duplicate) {
-          rowFailures.push('与第 ' + duplicate.line + ' 行坐标重复');
+        if (csvDuplicate) {
+          rowFailures.push('与第 ' + csvDuplicate.line + ' 行坐标重复');
         } else {
           seenPoints.push({ x: positionX, y: positionY, line: row.lineNumber });
+        }
+
+        const dbDuplicate = existingHolds.find(
+          (h) =>
+            Math.abs(h.position_x - positionX) < DUPLICATE_EPSILON &&
+            Math.abs(h.position_y - positionY) < DUPLICATE_EPSILON,
+        );
+        if (dbDuplicate) {
+          rowFailures.push('与已有岩点重复 (id: ' + dbDuplicate.id + ')');
         }
       }
 

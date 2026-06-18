@@ -3,6 +3,29 @@ export interface Point {
   y: number;
 }
 
+export interface PolygonBounds {
+  minX: number;
+  maxX: number;
+  minY: number;
+  maxY: number;
+}
+
+export function getPolygonBounds(polygon: Point[]): PolygonBounds | null {
+  if (!polygon || polygon.length < 3) {
+    return null;
+  }
+
+  const xs = polygon.map((p) => p.x);
+  const ys = polygon.map((p) => p.y);
+
+  return {
+    minX: Math.min(...xs),
+    maxX: Math.max(...xs),
+    minY: Math.min(...ys),
+    maxY: Math.max(...ys),
+  };
+}
+
 export function isPointInPolygon(point: Point, polygon: Point[]): boolean {
   if (!polygon || polygon.length < 3) {
     return false;
