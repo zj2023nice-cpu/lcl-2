@@ -26,10 +26,10 @@ function getGradeIndex(grade: string): number {
   return index === -1 ? -1 : index;
 }
 
-function compareGrades(gradeA: string, gradeB: string): number {
+function compareGrades(gradeA: string, gradeB: string): number | null {
   const indexA = getGradeIndex(gradeA);
   const indexB = getGradeIndex(gradeB);
-  if (indexA === -1 || indexB === -1) return 0;
+  if (indexA === -1 || indexB === -1) return null;
   return indexA - indexB;
 }
 
@@ -127,13 +127,15 @@ export class VoteService {
       relations: ['route'],
     });
 
+    const MAX_POSSIBLE_DEVIATION = GRADE_ORDER.length;
+
     let totalAbsDeviation = 0;
     let validCount = 0;
     for (const pastVote of pastVotes) {
       if (pastVote.route) {
-        totalAbsDeviation += Math.abs(
-          compareGrades(pastVote.suggested_grade, pastVote.route.grade),
-        );
+        const diff = compareGrades(pastVote.suggested_grade, pastVote.route.grade);
+        totalAbsDeviation +=
+          diff === null ? MAX_POSSIBLE_DEVIATION : Math.abs(diff);
         validCount += 1;
       }
     }
@@ -180,12 +182,13 @@ export class VoteService {
   }
 
   getConsensusGrade(votes: GradeVote[]): string | null {
-    if (votes.length < 10) {
+    const validVotes = votes.filter((v) => getGradeIndex(v.suggested_grade) !== -1);
+    if (validVotes.length < 10) {
       return null;
     }
 
-    const sortedGrades = [...votes]
-      .sort((a, b) => compareGrades(a.suggested_grade, b.suggested_grade))
+    const sortedGrades = [...validVotes]
+      .sort((a, b) => compareGrades(a.suggested_grade, b.suggested_grade) as number)
       .map((v) => v.suggested_grade);
 
     const mid = Math.floor(sortedGrades.length / 2);
@@ -208,7 +211,13 @@ export class VoteService {
       return false;
     }
 
-    const diff = Math.abs(compareGrades(route.grade, consensusGrade));
+    const routeGradeIndex = getGradeIndex(route.grade);
+    const consensusGradeIndex = getGradeIndex(consensusGrade);
+    if (routeGradeIndex === -1 || consensusGradeIndex === -1) {
+      return false;
+    }
+
+    const diff = Math.abs(routeGradeIndex - consensusGradeIndex);
     return diff > 1;
   }
 
@@ -232,11 +241,12 @@ export class VoteService {
 
     let totalDeviation = 0;
     let validVotes = 0;
+    const MAX_POSSIBLE_DEVIATION = GRADE_ORDER.length;
 
     for (const vote of votes) {
       if (vote.route) {
-        const deviation = compareGrades(vote.suggested_grade, vote.route.grade);
-        totalDeviation += deviation;
+        const diff = compareGrades(vote.suggested_grade, vote.route.grade);
+        totalDeviation += diff === null ? MAX_POSSIBLE_DEVIATION : diff;
         validVotes += 1;
       }
     }
