@@ -312,3 +312,80 @@ export interface PaginatedComments {
   hasMore: boolean;
   totalComments: number;
 }
+
+export type BadgeRarity = 'common' | 'rare' | 'legendary';
+export type BadgeCategory = 'climbing_frequency' | 'grade_achievement' | 'checkin_streak' | 'social_interaction' | 'special';
+export type BadgeConditionType = 'total_ascents' | 'max_grade' | 'checkin_streak' | 'flash_count' | 'onsight_count' | 'total_comments' | 'total_likes' | 'routes_set' | 'gym_visits' | 'months_active';
+
+export interface BadgeCondition {
+  type: BadgeConditionType;
+  value: number;
+  operator: '>=' | '==' | '<=';
+}
+
+export interface Badge {
+  id: number;
+  code: string;
+  name: string;
+  description: string;
+  rarity: BadgeRarity;
+  category: BadgeCategory;
+  conditions: BadgeCondition[];
+  icon?: string;
+  color: string;
+  points: number;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface UserBadge {
+  id: number;
+  userId: number;
+  badgeId: number;
+  progress: number;
+  unlocked: boolean;
+  unlockedAt?: string;
+  notified: boolean;
+  progressDetails?: Record<string, number>;
+  createdAt: string;
+  badge?: Badge;
+}
+
+export interface BadgeStats {
+  total: number;
+  unlocked: number;
+  common: { total: number; unlocked: number };
+  rare: { total: number; unlocked: number };
+  legendary: { total: number; unlocked: number };
+  totalPoints: number;
+}
+
+export interface BadgeProgressStats {
+  totalAscents: number;
+  maxGrade: number;
+  flashCount: number;
+  onsightCount: number;
+  checkinStreak: number;
+  totalComments: number;
+  totalLikes: number;
+  routesSet: number;
+  gymVisits: number;
+  monthsActive: number;
+}
+
+export interface BadgeCheckResult {
+  newlyUnlocked: UserBadge[];
+  allBadges: UserBadge[];
+}
+
+export interface BadgePosterData {
+  badge: Badge;
+  user: {
+    name: string;
+    totalPoints: number;
+    unlockedCount: number;
+  };
+  unlockedAt: string;
+  qrContent: string;
+}

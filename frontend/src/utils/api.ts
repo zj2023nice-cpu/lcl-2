@@ -1,4 +1,4 @@
-import type { ApiResponse, User, AuthResponse, EmailLoginCredentials, PhoneLoginCredentials, RegisterCredentials, Gym, Wall, Route, PaginatedResponse, Ascent, GradeVote, Hold, RouteHeat, ColdRoute, SetterWorkload, ActiveUsersStats } from '@/types';
+import type { ApiResponse, User, AuthResponse, EmailLoginCredentials, PhoneLoginCredentials, RegisterCredentials, Gym, Wall, Route, PaginatedResponse, Ascent, GradeVote, Hold, RouteHeat, ColdRoute, SetterWorkload, ActiveUsersStats, UserBadge, BadgeStats, BadgeProgressStats, BadgeCheckResult, BadgePosterData } from '@/types';
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api';
 
@@ -440,6 +440,42 @@ export const commentApi = {
     return get<{ totalComments: number; totalLikesReceived: number }>(
       `/users/${userId}/comments/stats`,
     );
+  },
+};
+
+export const badgeApi = {
+  getMyBadges: async (): Promise<{ badges: UserBadge[]; stats: BadgeStats }> => {
+    const response = await get<{ success: boolean; data: { badges: UserBadge[]; stats: BadgeStats } }>('/badges/me');
+    return response.data;
+  },
+
+  checkAndUnlockBadges: async (): Promise<BadgeCheckResult> => {
+    const response = await post<{ success: boolean; data: BadgeCheckResult }>('/badges/check');
+    return response.data;
+  },
+
+  getBadgeStats: async (): Promise<BadgeProgressStats> => {
+    const response = await get<{ success: boolean; data: BadgeProgressStats }>('/badges/stats');
+    return response.data;
+  },
+
+  getUserBadges: async (userId: number): Promise<{ badges: UserBadge[]; stats: BadgeStats }> => {
+    const response = await get<{ success: boolean; data: { badges: UserBadge[]; stats: BadgeStats } }>(`/badges/user/${userId}`);
+    return response.data;
+  },
+
+  markBadgeNotified: async (badgeId: number): Promise<void> => {
+    await post(`/badges/${badgeId}/notify`);
+  },
+
+  getBadgePosterData: async (badgeId: number): Promise<BadgePosterData> => {
+    const response = await get<{ success: boolean; data: BadgePosterData }>(`/badges/${badgeId}/poster`);
+    return response.data;
+  },
+
+  getSharedBadge: async (shareId: number): Promise<{ shareId: number }> => {
+    const response = await get<{ success: boolean; data: { shareId: number } }>(`/badges/share/${shareId}`);
+    return response.data;
   },
 };
 

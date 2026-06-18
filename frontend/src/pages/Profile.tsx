@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import {
   User,
   Mail,
@@ -17,14 +17,22 @@ import {
   TrendingUp,
   Info,
   Loader2,
+  RefreshCw,
 } from 'lucide-react';
 import Card from '@/components/UI/Card';
 import Button from '@/components/UI/Button';
 import RoleTag from '@/components/UI/RoleTag';
 import useAuthStore from '@/store/auth';
 import { useNavigate } from 'react-router-dom';
-import type { UserRole } from '@/types';
-import { profileApi, ascentApi } from '@/utils/api';
+import type { UserRole, UserBadge, BadgeStats, BadgeProgressStats } from '@/types';
+import { profileApi, ascentApi, badgeApi } from '@/utils/api';
+import {
+  BadgeGallery,
+  BadgeUnlockModal,
+  BadgeDetailModal,
+  BadgePoster,
+  BadgeCard,
+} from '@/components/Badge';
 
 const preferredStyles = [
   { label: '捏点', value: 'crimp' },
@@ -83,6 +91,50 @@ export default function Profile() {
     trend: 'tight' | 'accurate' | 'loose';
     distribution: number[];
   } | null>(null);
+
+  const [activeTab, setActiveTab] = useState<'overview' | 'badges'>('overview');
+  const [badges, setBadges] = useState<UserBadge[]>([]);
+  const [badgeStats, setBadgeStats] = useState<BadgeStats | null>(null);
+  const [badgeProgressStats, setBadgeProgressStats] = useState<BadgeProgressStats | null>(null);
+  const [badgesLoading, setBadgesLoading] = useState(false);
+  const [selectedBadge, setSelectedBadge] = useState<UserBadge | null>(null);
+  const [unlockBadge, setUnlockBadge] = useState<UserBadge | null>(null);
+  const [posterBadgeId, setPosterBadgeId] = useState<number | null>(null);
+  const [checkingBadges, setCheckingBadges] = useState(false);
+
+  const fetchBadges = useCallback(async () => {
+    if (!user) return;
+    setBadgesLoading(true);
+    try {
+      const [badgeData, progressData] = await Promise.all([
+        badgeApi.getMyBadges(),
+        badgeApi.getBadgeStats(),
+      ]);
+      setBadges(badgeData.badges);
+      setBadgeStats(badgeData.stats);
+      setBadgeProgressStats(progressData);
+    } catch (err) {
+      console.error('获取徽章数据失败:', err);
+    } finally {
+      setBadgesLoading(false);
+    }
+  }, [user]);
+
+  const checkAndUnlockBadges = useCallback(async () => {
+    if (!user) return;
+    setCheckingBadges(true);
+    try {
+      const result = await badgeApi.checkAndUnlockBadges();
+      if (result.newlyUnlocked.length > 0) {
+        setUnlockBadge(result.newlyUnlocked[0]);
+      }
+      await fetchBadges();
+    } catch (err) {
+      console.error('检查徽章失败:', err);
+    } finally {
+      setCheckingBadges(false);
+    }
+  }, [user, fetchBadges]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -147,7 +199,14 @@ export default function Profile() {
       }
     };
     fetchData();
-  }, [user]);
+    fetchBadges();
+  }, [user, fetchBadges]);
+
+  const handleGeneratePoster = (badgeId: number) => {
+    setPosterBadgeId(badgeId);
+    setSelectedBadge(null);
+    setUnlockBadge(null);
+  };
 
   const handleLogout = async () => {
     setLoggingOut(true);
@@ -191,6 +250,9 @@ export default function Profile() {
     );
   }
 
+  const unlockedBadges = badges.filter((b) => b.unlocked);
+  const recentBadges = unlockedBadges.slice(0, 4);
+
   return (
     <div className="space-y-6">
       <div>
@@ -198,8 +260,118 @@ export default function Profile() {
         <p className="text-rock-light-500 mt-1">管理你的账户信息和攀岩目标</p>
       </div>
 
-      <div className="grid lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 space-y-6">
+      {badgeStats && (
+        <Card>
+          <div className="p-4 border-b border-rock-dark-700">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="p-2 rounded-lg bg-amber-500/20">
+                  <Award size={20} className="text-amber-500" />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-white">我的成就</h3>
+                  <p className="text-xs text-rock-light-500">
+                    已解锁 {badgeStats.unlocked}/{badgeStats.total} 个徽章
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-center gap-3">
+                <div className="text-right mr-4">
+                  <p className="text-xl font-bold text-amber-500">{badgeStats.totalPoints}</p>
+                  <p className="text-xs text-rock-light-500">总积分</p>
+                </div>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={checkAndUnlockBadges}
+                  disabled={checkingBadges}
+                >
+                  {checkingBadges ? (
+                    <Loader2 size={14} className="animate-spin mr-1" />
+                  ) : (
+                    <RefreshCw size={14} className="mr-1" />
+                  )}
+                  检查成就
+                </Button>
+              </div>
+            </div>
+          </div>
+          <div className="p-4">
+            {badgesLoading ? (
+              <div className="flex items-center justify-center py-8">
+                <Loader2 className="w-6 h-6 animate-spin text-climbing-orange-500" />
+              </div>
+            ) : recentBadges.length > 0 ? (
+              <div className="flex items-center gap-6 overflow-x-auto pb-2">
+                {recentBadges.map((userBadge) => (
+                  <div
+                    key={userBadge.id}
+                    onClick={() => setSelectedBadge(userBadge)}
+                    className="flex-shrink-0 cursor-pointer"
+                  >
+                    <BadgeCard
+                      userBadge={userBadge}
+                      size="md"
+                      showProgress={false}
+                    />
+                  </div>
+                ))}
+                <button
+                  onClick={() => setActiveTab('badges')}
+                  className="flex-shrink-0 flex flex-col items-center justify-center w-24 h-24 rounded-xl border-2 border-dashed border-rock-dark-600 hover:border-climbing-orange-500 transition-colors group"
+                >
+                  <ChevronRight size={24} className="text-rock-light-500 group-hover:text-climbing-orange-500 mb-1" />
+                  <span className="text-xs text-rock-light-500 group-hover:text-climbing-orange-500">查看全部</span>
+                </button>
+              </div>
+            ) : (
+              <div className="text-center py-6">
+                <Award size={32} className="mx-auto text-rock-dark-600 mb-2" />
+                <p className="text-rock-light-500 text-sm">暂无已解锁的徽章</p>
+                <p className="text-rock-light-600 text-xs mt-1">完成攀岩成就来解锁徽章吧！</p>
+              </div>
+            )}
+          </div>
+        </Card>
+      )}
+
+      <div className="flex gap-2 border-b border-rock-dark-700">
+        <button
+          onClick={() => setActiveTab('overview')}
+          className={`px-4 py-2.5 font-medium text-sm transition-colors relative ${
+            activeTab === 'overview'
+              ? 'text-climbing-orange-500'
+              : 'text-rock-light-400 hover:text-white'
+          }`}
+        >
+          概览
+          {activeTab === 'overview' && (
+            <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-climbing-orange-500" />
+          )}
+        </button>
+        <button
+          onClick={() => setActiveTab('badges')}
+          className={`px-4 py-2.5 font-medium text-sm transition-colors relative ${
+            activeTab === 'badges'
+              ? 'text-climbing-orange-500'
+              : 'text-rock-light-400 hover:text-white'
+          }`}
+        >
+          成就徽章
+          {badgeStats && (
+            <span className="ml-1.5 px-1.5 py-0.5 text-xs rounded-full bg-climbing-orange-500/20 text-climbing-orange-500">
+              {badgeStats.unlocked}/{badgeStats.total}
+            </span>
+          )}
+          {activeTab === 'badges' && (
+            <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-climbing-orange-500" />
+          )}
+        </button>
+      </div>
+
+      {activeTab === 'overview' && (
+        <div className="grid lg:grid-cols-3 gap-6">
+          <div className="lg:col-span-2 space-y-6">
           <Card>
             <div className="p-6">
               <div className="flex items-start gap-6">
@@ -585,6 +757,49 @@ export default function Profile() {
           </Card>
         </div>
       </div>
+      )}
+
+      {activeTab === 'badges' && badgeStats && (
+        <div>
+          {badgesLoading ? (
+            <div className="flex items-center justify-center h-96">
+              <Loader2 className="w-8 h-8 animate-spin text-climbing-orange-500" />
+            </div>
+          ) : (
+            <BadgeGallery
+              badges={badges}
+              stats={badgeStats}
+              onBadgeClick={setSelectedBadge}
+            />
+          )}
+        </div>
+      )}
+
+      {selectedBadge && (
+        <BadgeDetailModal
+          isOpen={!!selectedBadge}
+          onClose={() => setSelectedBadge(null)}
+          userBadge={selectedBadge}
+          onGeneratePoster={() => handleGeneratePoster(selectedBadge.badgeId)}
+        />
+      )}
+
+      {unlockBadge && (
+        <BadgeUnlockModal
+          isOpen={!!unlockBadge}
+          onClose={() => setUnlockBadge(null)}
+          badge={unlockBadge}
+          onGeneratePoster={() => handleGeneratePoster(unlockBadge.badgeId)}
+        />
+      )}
+
+      {posterBadgeId !== null && (
+        <BadgePoster
+          isOpen={posterBadgeId !== null}
+          onClose={() => setPosterBadgeId(null)}
+          badgeId={posterBadgeId}
+        />
+      )}
     </div>
   );
 }

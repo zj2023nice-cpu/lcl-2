@@ -18,6 +18,7 @@ import { UserModule } from './user/user.module';
 import { UploadModule } from './upload/upload.module';
 import { SeedsModule } from './seeds/seeds.module';
 import { CommentModule } from './comment/comment.module';
+import { BadgeModule } from './badge/badge.module';
 import { User } from './entities/user.entity';
 import { Gym } from './entities/gym.entity';
 import { Wall } from './entities/wall.entity';
@@ -30,6 +31,8 @@ import { OperationLog } from './entities/operation-log.entity';
 import { Comment } from './entities/comment.entity';
 import { CommentLike } from './entities/comment-like.entity';
 import { CommentReport } from './entities/comment-report.entity';
+import { Badge } from './entities/badge.entity';
+import { UserBadge } from './entities/user-badge.entity';
 import { JwtStrategy } from './auth/jwt.strategy';
 import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
 import { RolesGuard } from './common/guards/roles.guard';
@@ -56,6 +59,8 @@ import { RolesGuard } from './common/guards/roles.guard';
         Comment,
         CommentLike,
         CommentReport,
+        Badge,
+        UserBadge,
       ],
       synchronize: process.env.NODE_ENV !== 'production',
     }),
@@ -85,6 +90,7 @@ import { RolesGuard } from './common/guards/roles.guard';
     UploadModule,
     SeedsModule,
     CommentModule,
+    BadgeModule,
   ],
   controllers: [AppController],
   providers: [AppService, JwtStrategy, JwtAuthGuard, RolesGuard],

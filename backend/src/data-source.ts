@@ -11,6 +11,8 @@ import { OperationLog } from './entities/operation-log.entity';
 import { Comment } from './entities/comment.entity';
 import { CommentLike } from './entities/comment-like.entity';
 import { CommentReport } from './entities/comment-report.entity';
+import { Badge } from './entities/badge.entity';
+import { UserBadge } from './entities/user-badge.entity';
 
 export default new DataSource({
   type: 'mysql',
@@ -32,6 +34,8 @@ export default new DataSource({
     Comment,
     CommentLike,
     CommentReport,
+    Badge,
+    UserBadge,
   ],
   migrations: ['src/migrations/*.ts'],
 });

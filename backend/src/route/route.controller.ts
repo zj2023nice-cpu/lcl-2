@@ -40,11 +40,11 @@ export class RouteController {
   @Get('walls/:wallId/routes')
   findAllByWall(
     @Param('wallId', ParseIntPipe) wallId: number,
+    @CurrentUser() user: { id: number; role: UserRole; gym_id?: number },
     @Query('type') type?: RouteType,
     @Query('grade') grade?: string,
     @Query('status') status?: RouteStatus,
     @Query('includeArchived') includeArchived?: boolean,
-    @CurrentUser() user: { id: number; role: UserRole; gym_id?: number },
   ) {
     const canIncludeArchived = includeArchived &&
       (user.role === UserRole.PLATFORM_ADMIN || user.role === UserRole.GYM_ADMIN);
