@@ -114,13 +114,13 @@ export default function CommentInput({
     <div
       className={cn(
         'rounded-xl border transition-all',
-        replyTarget ? 'bg-rock-dark-900/50 border-rock-dark-700' : 'bg-rock-dark-900 border-rock-dark-700',
+        replyTarget ? 'bg-theme-subtle/50 border-theme-border' : 'bg-theme-subtle border-theme-border',
         'focus-within:border-climbing-orange-500',
       )}
     >
       {replyTarget && (
-        <div className="flex items-center justify-between px-4 py-2 border-b border-rock-dark-700/60 bg-rock-dark-800/50">
-          <div className="flex items-center gap-2 text-sm text-rock-light-400">
+        <div className="flex items-center justify-between px-4 py-2 border-b border-theme-border/60 bg-theme-card/50">
+          <div className="flex items-center gap-2 text-sm text-theme-text-secondary">
             <span className="text-climbing-orange-400">回复</span>
             <span className="inline-flex items-center gap-1">
               <User size={12} />
@@ -130,7 +130,7 @@ export default function CommentInput({
           {onCancelReply && (
             <button
               onClick={onCancelReply}
-              className="p-1 rounded hover:bg-rock-dark-700 text-rock-light-500 hover:text-white transition-colors"
+              className="p-1 rounded hover:bg-theme-hover text-theme-text-muted hover:text-theme-text transition-colors"
             >
               <X size={14} />
             </button>
@@ -146,17 +146,17 @@ export default function CommentInput({
           placeholder={replyTarget ? `回复 ${replyTarget.userName}...` : placeholder}
           rows={3}
           style={{ minHeight: `${minHeight}px` }}
-          className="w-full bg-transparent text-white placeholder-rock-light-600 focus:outline-none resize-none text-sm leading-relaxed"
+          className="w-full bg-transparent text-theme-text placeholder-theme-text-muted focus:outline-none resize-none text-sm leading-relaxed"
         />
-        <div className="flex items-center justify-between mt-3 pt-3 border-t border-rock-dark-700/50">
-          <span className="text-xs text-rock-light-600">
+        <div className="flex items-center justify-between mt-3 pt-3 border-t border-theme-border/50">
+          <span className="text-xs text-theme-text-muted">
             Ctrl + Enter 快速发送
           </span>
           <div className="flex items-center gap-3">
             <span
               className={cn(
                 'text-xs',
-                localLen > maxLength * 0.9 ? 'text-orange-400' : 'text-rock-light-600',
+                localLen > maxLength * 0.9 ? 'text-orange-400' : 'text-theme-text-muted',
               )}
             >
               {localLen}/{maxLength}

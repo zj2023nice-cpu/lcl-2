@@ -67,8 +67,8 @@ export default function WallList() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-white">岩壁列表</h1>
-          <p className="text-rock-light-500 mt-1">管理岩馆的所有岩壁</p>
+          <h1 className="text-2xl font-bold text-theme-text">岩壁列表</h1>
+          <p className="text-theme-text-muted mt-1">管理岩馆的所有岩壁</p>
         </div>
         <Button>
           <Plus size={18} className="mr-2" />
@@ -78,13 +78,13 @@ export default function WallList() {
 
       <Card className="p-4">
         <div className="relative">
-          <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-rock-light-500" />
+          <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-theme-text-muted" />
           <input
             type="text"
             placeholder="搜索岩壁..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-4 py-2.5 bg-rock-dark-900 border border-rock-dark-700 rounded-lg text-white placeholder-rock-light-600 focus:outline-none focus:border-climbing-orange-500 transition-colors"
+            className="w-full pl-10 pr-4 py-2.5 bg-theme-subtle border border-theme-border rounded-lg text-theme-text placeholder-theme-text-muted focus:outline-none focus:border-climbing-orange-500 transition-colors"
           />
         </div>
       </Card>
@@ -93,11 +93,11 @@ export default function WallList() {
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
           {[1, 2, 3].map((i) => (
             <Card key={i} className="overflow-hidden animate-pulse">
-              <div className="h-40 bg-rock-dark-700" />
+              <div className="h-40 bg-theme-border" />
               <div className="p-5 space-y-3">
-                <div className="h-5 bg-rock-dark-700 rounded w-3/4" />
-                <div className="h-4 bg-rock-dark-700 rounded w-full" />
-                <div className="h-8 bg-rock-dark-700 rounded w-1/2" />
+                <div className="h-5 bg-theme-border rounded w-3/4" />
+                <div className="h-4 bg-theme-border rounded w-full" />
+                <div className="h-8 bg-theme-border rounded w-1/2" />
               </div>
             </Card>
           ))}
@@ -107,7 +107,7 @@ export default function WallList() {
           {filteredWalls.map((wall, index) => (
             <Card
               key={wall.id}
-              className="overflow-hidden hover:border-rock-dark-600 transition-all hover:shadow-lg group"
+              className="overflow-hidden hover:border-theme-border transition-all hover:shadow-lg group"
             >
               <Link to={`/walls/${wall.id}`}>
                 <div className={`h-40 bg-gradient-to-br ${wallGradients[index % wallGradients.length]} relative overflow-hidden`}>
@@ -121,9 +121,9 @@ export default function WallList() {
                 </div>
               </Link>
               <div className="p-5">
-                <p className="text-sm text-rock-light-500 line-clamp-2 mb-4">{wall.description}</p>
+                <p className="text-sm text-theme-text-muted line-clamp-2 mb-4">{wall.description}</p>
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-1.5 text-rock-light-400">
+                  <div className="flex items-center gap-1.5 text-theme-text-secondary">
                     <Route size={16} />
                     <span className="text-sm">
                       <span className="font-semibold text-climbing-orange-400">{routeCounts[wall.id] || 0}</span> 条线路
@@ -156,9 +156,9 @@ export default function WallList() {
 
       {!isLoading && filteredWalls.length === 0 && (
         <Card className="p-12 text-center">
-          <Mountain size={48} className="mx-auto text-rock-light-600 mb-4" />
-          <h3 className="text-lg font-medium text-white mb-2">暂无岩壁</h3>
-          <p className="text-rock-light-500 mb-4">点击上方按钮创建第一个岩壁</p>
+          <Mountain size={48} className="mx-auto text-theme-text-muted mb-4" />
+          <h3 className="text-lg font-medium text-theme-text mb-2">暂无岩壁</h3>
+          <p className="text-theme-text-muted mb-4">点击上方按钮创建第一个岩壁</p>
           <Button>
             <Plus size={18} className="mr-2" />
             创建岩壁

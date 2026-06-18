@@ -172,31 +172,31 @@ export default function CommentItem({
     <div
       className={cn(
         'group',
-        isReply ? 'pl-10 ml-4 border-l border-dashed border-rock-dark-700/60' : '',
+        isReply ? 'pl-10 ml-4 border-l border-dashed border-theme-border/60' : '',
       )}
     >
       <div className={cn(isReply ? 'py-3 pl-4' : 'py-4')}>
         <div className="flex gap-3">
           <div className="flex-shrink-0">
-            <div className="w-9 h-9 rounded-full bg-rock-dark-700 flex items-center justify-center ring-2 ring-rock-dark-600">
-              <User size={16} className="text-rock-light-400" />
+            <div className="w-9 h-9 rounded-full bg-theme-hover flex items-center justify-center ring-2 ring-theme-border">
+              <User size={16} className="text-theme-text-secondary" />
             </div>
           </div>
 
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 flex-wrap mb-1">
-              <span className="font-medium text-white text-sm">
+              <span className="font-medium text-theme-text text-sm">
                 {comment.user?.name || '用户' + comment.userId}
               </span>
               {comment.replyToUser && (
                 <>
-                  <span className="text-rock-light-600 text-xs">回复</span>
+                  <span className="text-theme-text-muted text-xs">回复</span>
                   <span className="text-climbing-orange-400 text-xs">
                     @{comment.replyToUser.name}
                   </span>
                 </>
               )}
-              <span className="text-xs text-rock-light-600">
+              <span className="text-xs text-theme-text-muted">
                 {formatTime(comment.createdAt)}
               </span>
               {comment.status === 'reported' && (
@@ -210,8 +210,8 @@ export default function CommentItem({
               className={cn(
                 'mt-1.5 text-sm leading-relaxed break-words',
                 isDeleted
-                  ? 'text-rock-light-600 italic'
-                  : 'text-rock-light-200',
+                  ? 'text-theme-text-muted italic'
+                  : 'text-theme-text',
               )}
             >
               {comment.content}
@@ -225,10 +225,10 @@ export default function CommentItem({
                     disabled={isLiking || !canInteract}
                     className={cn(
                       'inline-flex items-center gap-1.5 px-2 py-1 rounded-md text-xs transition-all',
-                      'hover:bg-rock-dark-700',
+                      'hover:bg-theme-hover',
                       comment.likedByCurrentUser
                         ? 'text-climbing-orange-400'
-                        : 'text-rock-light-500 hover:text-rock-light-300',
+                        : 'text-theme-text-muted hover:text-theme-text-secondary',
                       !canInteract && 'opacity-50 cursor-not-allowed',
                     )}
                   >
@@ -245,7 +245,7 @@ export default function CommentItem({
                       disabled={!canInteract}
                       className={cn(
                         'inline-flex items-center gap-1.5 px-2 py-1 rounded-md text-xs transition-all',
-                        'hover:bg-rock-dark-700 text-rock-light-500 hover:text-rock-light-300',
+                        'hover:bg-theme-hover text-theme-text-muted hover:text-theme-text-secondary',
                         !canInteract && 'opacity-50 cursor-not-allowed',
                       )}
                     >
@@ -260,20 +260,20 @@ export default function CommentItem({
                       onBlur={() => setTimeout(() => setShowMenu(false), 150)}
                       className={cn(
                         'inline-flex items-center gap-1.5 px-2 py-1 rounded-md text-xs transition-all',
-                        'hover:bg-rock-dark-700 text-rock-light-500 hover:text-rock-light-300',
+                        'hover:bg-theme-hover text-theme-text-muted hover:text-theme-text-secondary',
                       )}
                     >
                       <MoreHorizontal size={13} />
                     </button>
                     {showMenu && (
-                      <div className="absolute left-0 mt-1 bg-rock-dark-800 border border-rock-dark-700 rounded-lg shadow-xl z-10 min-w-[120px] overflow-hidden animate-in fade-in slide-in-from-top-2 duration-150">
+                      <div className="absolute left-0 mt-1 bg-theme-card border border-theme-border rounded-lg shadow-xl z-10 min-w-[120px] overflow-hidden animate-in fade-in slide-in-from-top-2 duration-150">
                         <button
                           onClick={() => {
                             setShowReport(true);
                             setShowMenu(false);
                           }}
                           disabled={isOwner || !canInteract}
-                          className="w-full text-left px-3 py-2 text-xs text-rock-light-400 hover:bg-rock-dark-700 hover:text-white flex items-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed"
+                          className="w-full text-left px-3 py-2 text-xs text-theme-text-secondary hover:bg-theme-hover hover:text-theme-text flex items-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed"
                         >
                           <Flag size={13} /> 举报
                         </button>
@@ -352,7 +352,7 @@ export default function CommentItem({
                   <button
                     onClick={handleLoadMoreReplies}
                     disabled={isLoadingReplies}
-                    className="mt-1 ml-4 inline-flex items-center gap-1 text-xs text-rock-light-500 hover:text-rock-light-300 py-1.5 disabled:opacity-50"
+                    className="mt-1 ml-4 inline-flex items-center gap-1 text-xs text-theme-text-muted hover:text-theme-text-secondary py-1.5 disabled:opacity-50"
                   >
                     {isLoadingReplies ? (
                       <>
@@ -370,7 +370,7 @@ export default function CommentItem({
                 {totalReplyCount > 3 && (
                   <button
                     onClick={() => setShowAllReplies(false)}
-                    className="mt-1 ml-4 inline-flex items-center gap-1 text-xs text-rock-light-500 hover:text-rock-light-300 py-1.5"
+                    className="mt-1 ml-4 inline-flex items-center gap-1 text-xs text-theme-text-muted hover:text-theme-text-secondary py-1.5"
                   >
                     <ChevronUp size={13} />
                     <span>收起回复</span>

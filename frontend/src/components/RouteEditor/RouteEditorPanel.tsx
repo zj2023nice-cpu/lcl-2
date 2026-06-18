@@ -111,14 +111,14 @@ export default function RouteEditorPanel({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-y-0 right-0 w-96 bg-rock-dark-800 border-l border-rock-dark-700 shadow-2xl z-50 flex flex-col">
-      <div className="flex items-center justify-between p-5 border-b border-rock-dark-700">
-        <h2 className="text-lg font-semibold text-white">
+    <div className="fixed inset-y-0 right-0 w-96 bg-theme-card border-l border-theme-border shadow-2xl z-50 flex flex-col">
+      <div className="flex items-center justify-between p-5 border-b border-theme-border">
+        <h2 className="text-lg font-semibold text-theme-text">
           {route ? '编辑线路' : '新建线路'}
         </h2>
         <button
           onClick={onClose}
-          className="p-2 text-rock-light-400 hover:text-white hover:bg-rock-dark-700 rounded-lg transition-colors"
+          className="p-2 text-theme-text-secondary hover:text-theme-text hover:bg-theme-hover rounded-lg transition-colors"
         >
           <X size={20} />
         </button>
@@ -126,18 +126,18 @@ export default function RouteEditorPanel({
 
       <div className="flex-1 overflow-y-auto p-5 space-y-6">
         <div className="space-y-2">
-          <label className="text-sm font-medium text-rock-light-300">线路名称</label>
+          <label className="text-sm font-medium text-theme-text-secondary">线路名称</label>
           <input
             type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder="输入线路名称"
-            className="w-full px-4 py-2.5 bg-rock-dark-900 border border-rock-dark-600 rounded-lg text-white placeholder-rock-light-600 focus:outline-none focus:border-climbing-orange-500 transition-colors"
+            className="w-full px-4 py-2.5 bg-theme-subtle border border-theme-border rounded-lg text-theme-text placeholder-theme-text-muted focus:outline-none focus:border-climbing-orange-500 transition-colors"
           />
         </div>
 
         <div className="space-y-2">
-          <label className="text-sm font-medium text-rock-light-300">线路类型</label>
+          <label className="text-sm font-medium text-theme-text-secondary">线路类型</label>
           <div className="grid grid-cols-4 gap-2">
             {routeTypes.map((rt) => (
               <button
@@ -147,7 +147,7 @@ export default function RouteEditorPanel({
                   'px-3 py-2 rounded-lg text-sm font-medium transition-all',
                   type === rt.value
                     ? 'bg-climbing-orange-500 text-white'
-                    : 'bg-rock-dark-700 text-rock-light-400 hover:text-white hover:bg-rock-dark-600'
+                    : 'bg-theme-hover text-theme-text-secondary hover:text-theme-text hover:bg-theme-border'
                 )}
               >
                 {rt.label}
@@ -157,11 +157,11 @@ export default function RouteEditorPanel({
         </div>
 
         <div className="space-y-2">
-          <label className="text-sm font-medium text-rock-light-300">定级</label>
+          <label className="text-sm font-medium text-theme-text-secondary">定级</label>
           <select
             value={grade}
             onChange={(e) => setGrade(e.target.value)}
-            className="w-full px-4 py-2.5 bg-rock-dark-900 border border-rock-dark-600 rounded-lg text-white focus:outline-none focus:border-climbing-orange-500 transition-colors appearance-none cursor-pointer"
+            className="w-full px-4 py-2.5 bg-theme-subtle border border-theme-border rounded-lg text-theme-text focus:outline-none focus:border-climbing-orange-500 transition-colors appearance-none cursor-pointer"
           >
             {grades.map((g) => (
               <option key={g} value={g}>{g}</option>
@@ -170,10 +170,10 @@ export default function RouteEditorPanel({
         </div>
 
         <div className="space-y-2">
-          <label className="text-sm font-medium text-rock-light-300">颜色</label>
+          <label className="text-sm font-medium text-theme-text-secondary">颜色</label>
           <div className="flex items-center gap-3">
             <div
-              className="w-10 h-10 rounded-lg border-2 border-rock-dark-600 flex-shrink-0"
+              className="w-10 h-10 rounded-lg border-2 border-theme-border flex-shrink-0"
               style={{ backgroundColor: color }}
             />
             <div className="grid grid-cols-8 gap-1.5">
@@ -183,7 +183,7 @@ export default function RouteEditorPanel({
                   onClick={() => setColor(c)}
                   className={cn(
                     'w-7 h-7 rounded-md transition-transform hover:scale-110',
-                    color === c ? 'ring-2 ring-white ring-offset-2 ring-offset-rock-dark-800' : ''
+                    color === c ? 'ring-2 ring-white ring-offset-2 ring-offset-theme-card' : ''
                   )}
                   style={{ backgroundColor: c }}
                 />
@@ -193,7 +193,7 @@ export default function RouteEditorPanel({
         </div>
 
         <div className="space-y-2">
-          <label className="text-sm font-medium text-rock-light-300">标签</label>
+          <label className="text-sm font-medium text-theme-text-secondary">标签</label>
           <div className="flex flex-wrap gap-2">
             {tagOptions.map((tag) => (
               <button
@@ -203,7 +203,7 @@ export default function RouteEditorPanel({
                   'px-3 py-1.5 rounded-full text-xs font-medium transition-all',
                   tags.includes(tag.value)
                     ? 'bg-climbing-orange-500/20 text-climbing-orange-400 border border-climbing-orange-500/50'
-                    : 'bg-rock-dark-700 text-rock-light-400 border border-rock-dark-600 hover:border-rock-dark-500'
+                    : 'bg-theme-hover text-theme-text-secondary border border-theme-border hover:border-theme-border'
                 )}
               >
                 {tag.label}
@@ -213,7 +213,7 @@ export default function RouteEditorPanel({
         </div>
 
         <div className="space-y-2">
-          <label className="text-sm font-medium text-rock-light-300">状态</label>
+          <label className="text-sm font-medium text-theme-text-secondary">状态</label>
           <div className="grid grid-cols-3 gap-2">
             {routeStatuses.map((rs) => (
               <button
@@ -223,7 +223,7 @@ export default function RouteEditorPanel({
                   'px-3 py-2 rounded-lg text-sm font-medium transition-all',
                   status === rs.value
                     ? 'bg-climbing-orange-500 text-white'
-                    : 'bg-rock-dark-700 text-rock-light-400 hover:text-white hover:bg-rock-dark-600'
+                    : 'bg-theme-hover text-theme-text-secondary hover:text-theme-text hover:bg-theme-border'
                 )}
               >
                 {rs.label}
@@ -233,28 +233,28 @@ export default function RouteEditorPanel({
         </div>
 
         <div className="space-y-2">
-          <label className="text-sm font-medium text-rock-light-300">计划拆除日期</label>
+          <label className="text-sm font-medium text-theme-text-secondary">计划拆除日期</label>
           <input
             type="date"
             value={teardownDate}
             onChange={(e) => setTeardownDate(e.target.value)}
-            className="w-full px-4 py-2.5 bg-rock-dark-900 border border-rock-dark-600 rounded-lg text-white focus:outline-none focus:border-climbing-orange-500 transition-colors"
+            className="w-full px-4 py-2.5 bg-theme-subtle border border-theme-border rounded-lg text-theme-text focus:outline-none focus:border-climbing-orange-500 transition-colors"
           />
         </div>
 
         <div className="space-y-2">
-          <label className="text-sm font-medium text-rock-light-300">描述</label>
+          <label className="text-sm font-medium text-theme-text-secondary">描述</label>
           <textarea
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             placeholder="输入线路描述..."
             rows={3}
-            className="w-full px-4 py-2.5 bg-rock-dark-900 border border-rock-dark-600 rounded-lg text-white placeholder-rock-light-600 focus:outline-none focus:border-climbing-orange-500 transition-colors resize-none"
+            className="w-full px-4 py-2.5 bg-theme-subtle border border-theme-border rounded-lg text-theme-text placeholder-theme-text-muted focus:outline-none focus:border-climbing-orange-500 transition-colors resize-none"
           />
         </div>
       </div>
 
-      <div className="p-5 border-t border-rock-dark-700 flex gap-3">
+      <div className="p-5 border-t border-theme-border flex gap-3">
         <Button variant="secondary" onClick={onClose} className="flex-1">
           取消
         </Button>

@@ -28,11 +28,11 @@ export default function MainLayout({ children }: MainLayoutProps) {
 
   return (
     <div className={isTransitioning ? 'theme-transition' : ''}>
-      <div className="min-h-screen bg-rock-dark-950">
+      <div className="min-h-screen bg-theme-bg">
         <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
         <div className="lg:ml-64 min-h-screen flex flex-col">
-          <header className="sticky top-0 z-30 bg-rock-dark-900/80 backdrop-blur-sm border-b border-rock-dark-800">
+          <header className="sticky top-0 z-30 bg-theme-subtle/80 backdrop-blur-sm border-b border-theme-border">
             <div className="flex items-center justify-between px-4 lg:px-6 h-16">
               <div className="flex items-center gap-4">
                 <Button
@@ -46,7 +46,7 @@ export default function MainLayout({ children }: MainLayoutProps) {
               </div>
               <div className="flex items-center gap-3">
                 <ThemeToggle />
-                <span className="text-sm text-rock-light-500">当前岩馆：未选择</span>
+                <span className="text-sm text-theme-text-muted">当前岩馆：未选择</span>
               </div>
             </div>
           </header>

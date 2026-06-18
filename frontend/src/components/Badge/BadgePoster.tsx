@@ -149,7 +149,7 @@ export default function BadgePoster({ isOpen, onClose, badgeId }: BadgePosterPro
         </button>
 
         <div className="p-6">
-          <h3 className="text-xl font-bold text-white mb-4 text-center">生成徽章海报</h3>
+          <h3 className="text-xl font-bold text-theme-text mb-4 text-center">生成徽章海报</h3>
 
           {loading ? (
             <div className="flex items-center justify-center h-96">
@@ -160,7 +160,7 @@ export default function BadgePoster({ isOpen, onClose, badgeId }: BadgePosterPro
               <div className="flex justify-center mb-6">
                 <div
                   ref={posterRef}
-                  className="w-[360px] bg-gradient-to-b from-rock-dark-900 to-rock-dark-800 rounded-2xl overflow-hidden shadow-2xl"
+                  className="w-[360px] bg-gradient-to-b from-theme-subtle to-theme-card rounded-2xl overflow-hidden shadow-2xl"
                   style={{ borderColor: config.borderColor }}
                 >
                   <div
@@ -171,7 +171,7 @@ export default function BadgePoster({ isOpen, onClose, badgeId }: BadgePosterPro
                     <div className="flex items-center justify-between mb-6">
                       <div className="flex items-center gap-2">
                         <Mountain size={20} style={{ color: config.textColor }} />
-                        <span className="text-sm font-medium text-rock-light-400">攀岩成就</span>
+                        <span className="text-sm font-medium text-theme-text-secondary">攀岩成就</span>
                       </div>
                       <span
                         className="px-3 py-1 text-xs font-medium rounded-full border"
@@ -199,24 +199,24 @@ export default function BadgePoster({ isOpen, onClose, badgeId }: BadgePosterPro
 
                     <div className="text-center mb-6">
                       <h2
-                        className="text-2xl font-bold text-white mb-2"
+                        className="text-2xl font-bold text-theme-text mb-2"
                         style={{ textShadow: `0 0 20px ${config.borderColor}60` }}
                       >
                         {posterData.badge.name}
                       </h2>
-                      <p className="text-rock-light-400 text-sm">
+                      <p className="text-theme-text-secondary text-sm">
                         {posterData.badge.description}
                       </p>
                     </div>
 
-                    <div className="bg-rock-dark-800/50 rounded-xl p-4 mb-6">
+                    <div className="bg-theme-card/50 rounded-xl p-4 mb-6">
                       <div className="flex items-center gap-3 mb-4">
                         <div className="w-10 h-10 rounded-full bg-gradient-to-br from-climbing-orange-400 to-climbing-orange-600 flex items-center justify-center">
                           <User size={20} className="text-white" />
                         </div>
                         <div>
-                          <p className="font-semibold text-white">{posterData.user.name}</p>
-                          <p className="text-xs text-rock-light-500">
+                          <p className="font-semibold text-theme-text">{posterData.user.name}</p>
+                          <p className="text-xs text-theme-text-muted">
                             解锁于{' '}
                             {new Date(posterData.unlockedAt).toLocaleDateString('zh-CN', {
                               year: 'numeric',
@@ -228,27 +228,27 @@ export default function BadgePoster({ isOpen, onClose, badgeId }: BadgePosterPro
                       </div>
 
                       <div className="grid grid-cols-2 gap-3">
-                        <div className="bg-rock-dark-900/50 rounded-lg p-3 text-center">
+                        <div className="bg-theme-subtle/50 rounded-lg p-3 text-center">
                           <p className="text-2xl font-bold" style={{ color: config.textColor }}>
                             {posterData.badge.points}
                           </p>
-                          <p className="text-xs text-rock-light-500">获得积分</p>
+                          <p className="text-xs text-theme-text-muted">获得积分</p>
                         </div>
-                        <div className="bg-rock-dark-900/50 rounded-lg p-3 text-center">
+                        <div className="bg-theme-subtle/50 rounded-lg p-3 text-center">
                           <p className="text-2xl font-bold text-climbing-orange-500">
                             {posterData.user.unlockedCount}
                           </p>
-                          <p className="text-xs text-rock-light-500">已解锁徽章</p>
+                          <p className="text-xs text-theme-text-muted">已解锁徽章</p>
                         </div>
                       </div>
                     </div>
 
                     <div className="flex items-center justify-between">
                       <div>
-                        <p className="text-xs text-rock-light-600 mb-1">扫码查看详情</p>
+                        <p className="text-xs text-theme-text-muted mb-1">扫码查看详情</p>
                         <div className="flex items-center gap-2">
-                          <QrCode size={14} className="text-rock-light-600" />
-                          <span className="text-xs text-rock-light-600">
+                          <QrCode size={14} className="text-theme-text-muted" />
+                          <span className="text-xs text-theme-text-muted">
                             {posterData.user.totalPoints} 总积分
                           </span>
                         </div>
@@ -266,8 +266,8 @@ export default function BadgePoster({ isOpen, onClose, badgeId }: BadgePosterPro
                   </div>
 
                   <div className="px-6 pb-6">
-                    <div className="text-center pt-4 border-t border-rock-dark-700">
-                      <p className="text-xs text-rock-light-600">
+                    <div className="text-center pt-4 border-t border-theme-border">
+                      <p className="text-xs text-theme-text-muted">
                         攀岩管理系统 · 记录每一次进步
                       </p>
                     </div>

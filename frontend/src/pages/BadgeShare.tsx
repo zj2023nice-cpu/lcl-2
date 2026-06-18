@@ -147,10 +147,10 @@ export default function BadgeShare() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-rock-dark-900 via-rock-dark-800 to-rock-dark-900 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-theme-subtle via-theme-card to-theme-subtle flex items-center justify-center">
         <div className="text-center">
           <div className="w-12 h-12 border-4 border-climbing-orange-500 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-          <p className="text-rock-light-400">加载中...</p>
+          <p className="text-theme-text-secondary">加载中...</p>
         </div>
       </div>
     );
@@ -158,19 +158,19 @@ export default function BadgeShare() {
 
   if (error || !shareData) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-rock-dark-900 via-rock-dark-800 to-rock-dark-900 flex items-center justify-center p-6">
+      <div className="min-h-screen bg-gradient-to-br from-theme-subtle via-theme-card to-theme-subtle flex items-center justify-center p-6">
         <div className="max-w-md w-full text-center">
           <div className="w-20 h-20 rounded-full bg-red-500/20 flex items-center justify-center mx-auto mb-6">
             <AlertCircle size={40} className="text-red-400" />
           </div>
-          <h2 className="text-2xl font-bold text-white mb-3">无法查看徽章</h2>
-          <p className="text-rock-light-400 mb-8">
+          <h2 className="text-2xl font-bold text-theme-text mb-3">无法查看徽章</h2>
+          <p className="text-theme-text-secondary mb-8">
             {error || '分享链接无效、徽章已被删除或尚未解锁'}
           </p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <button
               onClick={() => navigate(-1)}
-              className="px-6 py-3 bg-rock-dark-700 hover:bg-rock-dark-600 text-white rounded-lg font-medium flex items-center justify-center gap-2 transition-colors"
+              className="px-6 py-3 bg-theme-hover hover:bg-theme-border text-theme-text rounded-lg font-medium flex items-center justify-center gap-2 transition-colors"
             >
               <ArrowLeft size={18} />
               返回
@@ -191,18 +191,18 @@ export default function BadgeShare() {
   const config = rarityConfig[shareData.badge.rarity];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-rock-dark-900 via-rock-dark-800 to-rock-dark-900 py-8 px-4">
+    <div className="min-h-screen bg-gradient-to-br from-theme-subtle via-theme-card to-theme-subtle py-8 px-4">
       <div className="max-w-2xl mx-auto">
         <div className="flex items-center justify-between mb-8">
           <button
             onClick={() => navigate(-1)}
-            className="p-2 rounded-lg bg-rock-dark-700/50 hover:bg-rock-dark-700 text-rock-light-300 transition-colors"
+            className="p-2 rounded-lg bg-theme-hover/50 hover:bg-theme-hover text-theme-text-secondary transition-colors"
           >
             <ArrowLeft size={20} />
           </button>
           <Link
             to="/"
-            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-rock-dark-700/50 hover:bg-rock-dark-700 text-rock-light-300 transition-colors"
+            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-theme-hover/50 hover:bg-theme-hover text-theme-text-secondary transition-colors"
           >
             <Home size={18} />
             <span className="text-sm">首页</span>
@@ -258,7 +258,7 @@ export default function BadgeShare() {
             <div className="flex items-center justify-between mb-8">
               <div className="flex items-center gap-2">
                 <Mountain size={22} style={{ color: config.textColor }} />
-                <span className="font-medium text-rock-light-300">攀岩成就徽章</span>
+                <span className="font-medium text-theme-text-secondary">攀岩成就徽章</span>
               </div>
               <span
                 className="px-4 py-1.5 text-sm font-semibold rounded-full border-2"
@@ -293,14 +293,14 @@ export default function BadgeShare() {
               </div>
 
               <h1
-                className="text-4xl font-bold text-white mb-3 text-center"
+                className="text-4xl font-bold text-theme-text mb-3 text-center"
                 style={{
                   textShadow: `0 0 30px ${config.glowColor}`,
                 }}
               >
                 {shareData.badge.name}
               </h1>
-              <p className="text-rock-light-400 text-center text-lg max-w-md">
+              <p className="text-theme-text-secondary text-center text-lg max-w-md">
                 {shareData.badge.description}
               </p>
             </div>
@@ -312,7 +312,7 @@ export default function BadgeShare() {
                 border: `1px solid ${config.borderColor}20`,
               }}
             >
-              <h3 className="text-sm font-semibold text-rock-light-400 mb-4 uppercase tracking-wider">
+              <h3 className="text-sm font-semibold text-theme-text-secondary mb-4 uppercase tracking-wider">
                 解锁条件
               </h3>
               <div className="space-y-3">
@@ -322,7 +322,7 @@ export default function BadgeShare() {
                   return (
                     <div
                       key={index}
-                      className="flex items-center gap-4 bg-rock-dark-800/50 rounded-xl p-4"
+                      className="flex items-center gap-4 bg-theme-card/50 rounded-xl p-4"
                     >
                       <div
                         className="p-3 rounded-lg"
@@ -331,10 +331,10 @@ export default function BadgeShare() {
                         <Icon size={22} style={{ color: config.textColor }} />
                       </div>
                       <div className="flex-1">
-                        <p className="font-medium text-white">
+                        <p className="font-medium text-theme-text">
                           {conditionInfo?.label || condition.type}
                         </p>
-                        <p className="text-sm text-rock-light-500">
+                        <p className="text-sm text-theme-text-muted">
                           {condition.operator === '>=' ? '达到或超过' : condition.operator === '==' ? '等于' : '不超过'}{' '}
                           <span className="font-semibold" style={{ color: config.textColor }}>
                             {condition.value}
@@ -348,7 +348,7 @@ export default function BadgeShare() {
                         >
                           ✓
                         </div>
-                        <p className="text-xs text-rock-light-500">已完成</p>
+                        <p className="text-xs text-theme-text-muted">已完成</p>
                       </div>
                     </div>
                   );
@@ -356,7 +356,7 @@ export default function BadgeShare() {
               </div>
             </div>
 
-            <div className="bg-rock-dark-800/60 rounded-2xl p-6 mb-8 border border-rock-dark-700">
+            <div className="bg-theme-card/60 rounded-2xl p-6 mb-8 border border-theme-border">
               <div className="flex items-center gap-5 mb-6">
                 <div
                   className="w-16 h-16 rounded-full bg-gradient-to-br from-climbing-orange-400 to-climbing-orange-600 flex items-center justify-center shadow-lg"
@@ -364,8 +364,8 @@ export default function BadgeShare() {
                   <User size={32} className="text-white" />
                 </div>
                 <div className="flex-1">
-                  <p className="text-xl font-bold text-white">{shareData.user.name}</p>
-                  <p className="text-rock-light-400 flex items-center gap-2 mt-1">
+                  <p className="text-xl font-bold text-theme-text">{shareData.user.name}</p>
+                  <p className="text-theme-text-secondary flex items-center gap-2 mt-1">
                     <Calendar size={14} />
                     解锁于{' '}
                     {new Date(shareData.unlockedAt).toLocaleDateString('zh-CN', {
@@ -378,36 +378,36 @@ export default function BadgeShare() {
               </div>
 
               <div className="grid grid-cols-3 gap-4">
-                <div className="bg-rock-dark-900/50 rounded-xl p-4 text-center">
+                <div className="bg-theme-subtle/50 rounded-xl p-4 text-center">
                   <p
                     className="text-3xl font-bold mb-1"
                     style={{ color: config.textColor }}
                   >
                     {shareData.badge.points}
                   </p>
-                  <p className="text-xs text-rock-light-500">获得积分</p>
+                  <p className="text-xs text-theme-text-muted">获得积分</p>
                 </div>
-                <div className="bg-rock-dark-900/50 rounded-xl p-4 text-center">
+                <div className="bg-theme-subtle/50 rounded-xl p-4 text-center">
                   <p className="text-3xl font-bold mb-1 text-climbing-orange-500">
                     {shareData.user.unlockedCount}
                   </p>
-                  <p className="text-xs text-rock-light-500">已解锁徽章</p>
+                  <p className="text-xs text-theme-text-muted">已解锁徽章</p>
                 </div>
-                <div className="bg-rock-dark-900/50 rounded-xl p-4 text-center">
+                <div className="bg-theme-subtle/50 rounded-xl p-4 text-center">
                   <p className="text-3xl font-bold mb-1 text-purple-400">
                     {shareData.user.totalPoints}
                   </p>
-                  <p className="text-xs text-rock-light-500">累计总积分</p>
+                  <p className="text-xs text-theme-text-muted">累计总积分</p>
                 </div>
               </div>
             </div>
 
-            <div className="flex items-center justify-between p-5 bg-rock-dark-800/40 rounded-2xl border border-rock-dark-700/50">
+            <div className="flex items-center justify-between p-5 bg-theme-card/40 rounded-2xl border border-theme-border/50">
               <div>
-                <p className="text-sm font-medium text-rock-light-300 mb-2">扫码查看此徽章</p>
+                <p className="text-sm font-medium text-theme-text-secondary mb-2">扫码查看此徽章</p>
                 <div className="flex items-center gap-2">
-                  <Mountain size={14} className="text-rock-light-500" />
-                  <span className="text-xs text-rock-light-500">
+                  <Mountain size={14} className="text-theme-text-muted" />
+                  <span className="text-xs text-theme-text-muted">
                     攀岩成就系统 · 记录每一次进步
                   </span>
                 </div>
@@ -443,8 +443,8 @@ export default function BadgeShare() {
           </button>
         </div>
 
-        <div className="mt-10 pt-8 border-t border-rock-dark-700 text-center">
-          <p className="text-rock-light-600 text-sm">
+        <div className="mt-10 pt-8 border-t border-theme-border text-center">
+          <p className="text-theme-text-muted text-sm">
             攀岩管理系统 · 岩壁之上，每一次坚持都值得被记录
           </p>
         </div>

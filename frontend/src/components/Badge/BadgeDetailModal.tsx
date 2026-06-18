@@ -71,7 +71,7 @@ export default function BadgeDetailModal({
       <div className="relative">
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 z-10 p-2 rounded-full bg-rock-dark-700 hover:bg-rock-dark-600 text-white transition-colors"
+          className="absolute top-4 right-4 z-10 p-2 rounded-full bg-theme-hover hover:bg-theme-border text-theme-text transition-colors"
         >
           <X size={20} />
         </button>
@@ -81,31 +81,31 @@ export default function BadgeDetailModal({
             <BadgeCard userBadge={userBadge} size="lg" showProgress={false} />
             <div className="mt-4 text-center">
               <div className="flex items-center gap-2 justify-center mb-2">
-                <h3 className="text-2xl font-bold text-white">{badge.name}</h3>
+                <h3 className="text-2xl font-bold text-theme-text">{badge.name}</h3>
                 <span
                   className={`px-2.5 py-0.5 text-xs font-medium rounded-full border ${config.bgClass} ${config.borderClass} ${config.textClass}`}
                 >
                   {config.label}
                 </span>
               </div>
-              <p className="text-rock-light-400">{badge.description}</p>
+              <p className="text-theme-text-secondary">{badge.description}</p>
             </div>
           </div>
 
           <div className="grid grid-cols-2 gap-4 mb-6">
-            <div className="bg-rock-dark-800/50 rounded-xl p-4 border border-rock-dark-700">
+            <div className="bg-theme-card/50 rounded-xl p-4 border border-theme-border">
               <div className="flex items-center gap-2 mb-1">
                 <Trophy size={16} className="text-yellow-400" />
-                <span className="text-xs text-rock-light-500">积分</span>
+                <span className="text-xs text-theme-text-muted">积分</span>
               </div>
-              <p className="text-2xl font-bold text-white">{badge.points}</p>
+              <p className="text-2xl font-bold text-theme-text">{badge.points}</p>
             </div>
-            <div className="bg-rock-dark-800/50 rounded-xl p-4 border border-rock-dark-700">
+            <div className="bg-theme-card/50 rounded-xl p-4 border border-theme-border">
               <div className="flex items-center gap-2 mb-1">
                 <Calendar size={16} className="text-blue-400" />
-                <span className="text-xs text-rock-light-500">解锁时间</span>
+                <span className="text-xs text-theme-text-muted">解锁时间</span>
               </div>
-              <p className="text-lg font-bold text-white">
+              <p className="text-lg font-bold text-theme-text">
                 {unlocked && unlockedAt
                   ? new Date(unlockedAt).toLocaleDateString('zh-CN', {
                       year: 'numeric',
@@ -120,7 +120,7 @@ export default function BadgeDetailModal({
           <div className="mb-6">
             <div className="flex items-center gap-2 mb-3">
               <Target size={16} className="text-climbing-orange-500" />
-              <h4 className="font-medium text-white">解锁条件</h4>
+              <h4 className="font-medium text-theme-text">解锁条件</h4>
             </div>
             <div className="space-y-3">
               {badge.conditions.map((condition, index) => {
@@ -131,10 +131,10 @@ export default function BadgeDetailModal({
                 return (
                   <div key={index} className="space-y-1">
                     <div className="flex items-center justify-between text-sm">
-                      <span className="text-rock-light-400">
+                      <span className="text-theme-text-secondary">
                         {conditionLabels[condition.type]}
                       </span>
-                      <span className={isMet ? 'text-green-400' : 'text-rock-light-500'}>
+                      <span className={isMet ? 'text-green-400' : 'text-theme-text-muted'}>
                         {Math.round(
                           (currentProgress / 100) * condition.value
                         )}
@@ -142,7 +142,7 @@ export default function BadgeDetailModal({
                         {unit}
                       </span>
                     </div>
-                    <div className="h-2 bg-rock-dark-700 rounded-full overflow-hidden">
+                    <div className="h-2 bg-theme-hover rounded-full overflow-hidden">
                       <div
                         className={`h-full rounded-full transition-all ${
                           isMet
@@ -159,14 +159,14 @@ export default function BadgeDetailModal({
           </div>
 
           {!unlocked && (
-            <div className="mb-6 p-4 bg-rock-dark-800/50 rounded-xl border border-rock-dark-700">
+            <div className="mb-6 p-4 bg-theme-card/50 rounded-xl border border-theme-border">
               <div className="flex items-center justify-between mb-2">
-                <span className="text-sm text-rock-light-400">总进度</span>
-                <span className="text-sm font-medium text-white">
+                <span className="text-sm text-theme-text-secondary">总进度</span>
+                <span className="text-sm font-medium text-theme-text">
                   {Math.round(progress)}%
                 </span>
               </div>
-              <div className="h-3 bg-rock-dark-700 rounded-full overflow-hidden">
+              <div className="h-3 bg-theme-hover rounded-full overflow-hidden">
                 <div
                   className="h-full bg-gradient-to-r from-climbing-orange-500 to-climbing-orange-400 rounded-full transition-all"
                   style={{ width: `${Math.min(100, progress)}%` }}
@@ -187,7 +187,7 @@ export default function BadgeDetailModal({
             )}
             <button
               onClick={onClose}
-              className={`${unlocked ? 'flex-1' : 'w-full'} px-4 py-2.5 bg-rock-dark-700 hover:bg-rock-dark-600 text-white rounded-lg font-medium transition-all`}
+              className={`${unlocked ? 'flex-1' : 'w-full'} px-4 py-2.5 bg-theme-hover hover:bg-theme-border text-theme-text rounded-lg font-medium transition-all`}
             >
               关闭
             </button>

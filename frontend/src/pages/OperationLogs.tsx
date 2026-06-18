@@ -345,8 +345,8 @@ export default function OperationLogs() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-white">操作日志</h1>
-          <p className="text-rock-light-500 mt-1">查看系统所有操作记录和变更详情</p>
+          <h1 className="text-2xl font-bold text-theme-text">操作日志</h1>
+          <p className="text-theme-text-muted mt-1">查看系统所有操作记录和变更详情</p>
         </div>
       </div>
 
@@ -354,8 +354,8 @@ export default function OperationLogs() {
         <Card className="p-5">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-3xl font-bold text-white">{stats.total}</p>
-              <p className="text-sm text-rock-light-500 mt-1">总操作数</p>
+              <p className="text-3xl font-bold text-theme-text">{stats.total}</p>
+              <p className="text-sm text-theme-text-muted mt-1">总操作数</p>
             </div>
             <div className="p-3 rounded-xl bg-blue-500/20">
               <FileText size={24} className="text-blue-400" />
@@ -371,7 +371,7 @@ export default function OperationLogs() {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-3xl font-bold text-green-400">{stats.create}</p>
-              <p className="text-sm text-rock-light-500 mt-1">创建操作</p>
+              <p className="text-sm text-theme-text-muted mt-1">创建操作</p>
             </div>
             <div className="p-3 rounded-xl bg-green-500/20">
               <PlusCircle size={24} className="text-green-400" />
@@ -387,7 +387,7 @@ export default function OperationLogs() {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-3xl font-bold text-blue-400">{stats.update}</p>
-              <p className="text-sm text-rock-light-500 mt-1">修改操作</p>
+              <p className="text-sm text-theme-text-muted mt-1">修改操作</p>
             </div>
             <div className="p-3 rounded-xl bg-blue-500/20">
               <Edit3 size={24} className="text-blue-400" />
@@ -403,7 +403,7 @@ export default function OperationLogs() {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-3xl font-bold text-red-400">{stats.delete}</p>
-              <p className="text-sm text-rock-light-500 mt-1">删除操作</p>
+              <p className="text-sm text-theme-text-muted mt-1">删除操作</p>
             </div>
             <div className="p-3 rounded-xl bg-red-500/20">
               <Trash2 size={24} className="text-red-400" />
@@ -415,11 +415,11 @@ export default function OperationLogs() {
       <Card className="p-4">
         <div className="flex flex-col lg:flex-row gap-4">
           <div className="flex items-center gap-2">
-            <Filter size={16} className="text-rock-light-500" />
+            <Filter size={16} className="text-theme-text-muted" />
             <select
               value={operationType}
               onChange={(e) => handleTypeFilterChange(e.target.value)}
-              className="bg-rock-dark-900 border border-rock-dark-700 rounded-lg px-3 py-2.5 text-white text-sm focus:outline-none focus:border-climbing-orange-500"
+              className="bg-theme-subtle border border-theme-border rounded-lg px-3 py-2.5 text-theme-text text-sm focus:outline-none focus:border-climbing-orange-500"
             >
               {operationTypeOptions.map((opt) => (
                 <option key={opt.value} value={opt.value}>
@@ -430,11 +430,11 @@ export default function OperationLogs() {
           </div>
 
           <div className="flex items-center gap-2">
-            <ArrowLeftRight size={16} className="text-rock-light-500" />
+            <ArrowLeftRight size={16} className="text-theme-text-muted" />
             <select
               value={targetType}
               onChange={(e) => handleTargetFilterChange(e.target.value)}
-              className="bg-rock-dark-900 border border-rock-dark-700 rounded-lg px-3 py-2.5 text-white text-sm focus:outline-none focus:border-climbing-orange-500"
+              className="bg-theme-subtle border border-theme-border rounded-lg px-3 py-2.5 text-theme-text text-sm focus:outline-none focus:border-climbing-orange-500"
             >
               {targetTypeOptions.map((opt) => (
                 <option key={opt.value} value={opt.value}>
@@ -445,7 +445,7 @@ export default function OperationLogs() {
           </div>
 
           <div className="flex items-center gap-2">
-            <Calendar size={16} className="text-rock-light-500" />
+            <Calendar size={16} className="text-theme-text-muted" />
             <input
               type="date"
               value={startDate}
@@ -453,9 +453,9 @@ export default function OperationLogs() {
                 setStartDate(e.target.value);
                 handleDateChange();
               }}
-              className="bg-rock-dark-900 border border-rock-dark-700 rounded-lg px-3 py-2.5 text-white text-sm focus:outline-none focus:border-climbing-orange-500"
+              className="bg-theme-subtle border border-theme-border rounded-lg px-3 py-2.5 text-theme-text text-sm focus:outline-none focus:border-climbing-orange-500"
             />
-            <span className="text-rock-light-500">至</span>
+            <span className="text-theme-text-muted">至</span>
             <input
               type="date"
               value={endDate}
@@ -463,7 +463,7 @@ export default function OperationLogs() {
                 setEndDate(e.target.value);
                 handleDateChange();
               }}
-              className="bg-rock-dark-900 border border-rock-dark-700 rounded-lg px-3 py-2.5 text-white text-sm focus:outline-none focus:border-climbing-orange-500"
+              className="bg-theme-subtle border border-theme-border rounded-lg px-3 py-2.5 text-theme-text text-sm focus:outline-none focus:border-climbing-orange-500"
             />
           </div>
 
@@ -488,23 +488,23 @@ export default function OperationLogs() {
       <Card className="overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
-            <thead className="bg-rock-dark-800/50">
+            <thead className="bg-theme-card/50">
               <tr>
-                <th className="text-left px-5 py-3 text-sm font-medium text-rock-light-400">操作人</th>
-                <th className="text-left px-5 py-3 text-sm font-medium text-rock-light-400">操作时间</th>
-                <th className="text-left px-5 py-3 text-sm font-medium text-rock-light-400">操作类型</th>
-                <th className="text-left px-5 py-3 text-sm font-medium text-rock-light-400">修改对象</th>
-                <th className="text-left px-5 py-3 text-sm font-medium text-rock-light-400">前后差异</th>
-                <th className="text-right px-5 py-3 text-sm font-medium text-rock-light-400">操作</th>
+                <th className="text-left px-5 py-3 text-sm font-medium text-theme-text-secondary">操作人</th>
+                <th className="text-left px-5 py-3 text-sm font-medium text-theme-text-secondary">操作时间</th>
+                <th className="text-left px-5 py-3 text-sm font-medium text-theme-text-secondary">操作类型</th>
+                <th className="text-left px-5 py-3 text-sm font-medium text-theme-text-secondary">修改对象</th>
+                <th className="text-left px-5 py-3 text-sm font-medium text-theme-text-secondary">前后差异</th>
+                <th className="text-right px-5 py-3 text-sm font-medium text-theme-text-secondary">操作</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-rock-dark-700">
+            <tbody className="divide-y divide-theme-border">
               {paginatedLogs.length === 0 ? (
                 <tr>
                   <td colSpan={6} className="px-5 py-12 text-center">
-                    <FileText size={48} className="mx-auto text-rock-light-600 mb-4" />
-                    <h3 className="text-lg font-medium text-white mb-2">暂无日志</h3>
-                    <p className="text-rock-light-500">没有找到符合条件的操作记录</p>
+                    <FileText size={48} className="mx-auto text-theme-text-muted mb-4" />
+                    <h3 className="text-lg font-medium text-theme-text mb-2">暂无日志</h3>
+                    <p className="text-theme-text-muted">没有找到符合条件的操作记录</p>
                   </td>
                 </tr>
               ) : (
@@ -516,7 +516,7 @@ export default function OperationLogs() {
                   return (
                     <React.Fragment key={log.id}>
                       <tr
-                        className="hover:bg-rock-dark-800/30 transition-colors cursor-pointer"
+                        className="hover:bg-theme-card/30 transition-colors cursor-pointer"
                         onClick={() => hasChanges && toggleExpand(log.id)}
                       >
                         <td className="px-5 py-4">
@@ -525,13 +525,13 @@ export default function OperationLogs() {
                               <User size={18} className="text-white" />
                             </div>
                             <div>
-                              <p className="font-medium text-white">{log.operator}</p>
-                              <p className="text-xs text-rock-light-500 mt-0.5">{log.operatorRole}</p>
+                              <p className="font-medium text-theme-text">{log.operator}</p>
+                              <p className="text-xs text-theme-text-muted mt-0.5">{log.operatorRole}</p>
                             </div>
                           </div>
                         </td>
                         <td className="px-5 py-4">
-                          <span className="text-sm text-rock-light-400 flex items-center gap-1">
+                          <span className="text-sm text-theme-text-secondary flex items-center gap-1">
                             <Clock size={12} />
                             {log.operationTime}
                           </span>
@@ -546,8 +546,8 @@ export default function OperationLogs() {
                         </td>
                         <td className="px-5 py-4">
                           <div>
-                            <p className="text-sm font-medium text-white">{log.targetName}</p>
-                            <p className="text-xs text-rock-light-500 mt-0.5">
+                            <p className="text-sm font-medium text-theme-text">{log.targetName}</p>
+                            <p className="text-xs text-theme-text-muted mt-0.5">
                               {targetTypeOptions.find((t) => t.value === log.targetType)?.label ||
                                 log.targetType}
                             </p>
@@ -555,11 +555,11 @@ export default function OperationLogs() {
                         </td>
                         <td className="px-5 py-4">
                           {hasChanges ? (
-                            <span className="text-sm text-rock-light-400">
+                            <span className="text-sm text-theme-text-secondary">
                               {log.changes?.length} 项变更
                             </span>
                           ) : (
-                            <span className="text-sm text-rock-light-600">-</span>
+                            <span className="text-sm text-theme-text-muted">-</span>
                           )}
                         </td>
                         <td className="px-5 py-4">
@@ -581,24 +581,24 @@ export default function OperationLogs() {
                         </td>
                       </tr>
                       {isExpanded && hasChanges && (
-                        <tr key={`${log.id}-expanded`} className="bg-rock-dark-800/20">
+                        <tr key={`${log.id}-expanded`} className="bg-theme-card/20">
                           <td colSpan={6} className="px-5 py-4">
-                            <div className="bg-rock-dark-900/50 rounded-lg p-4">
-                              <h4 className="text-sm font-medium text-white mb-3 flex items-center gap-2">
+                            <div className="bg-theme-subtle/50 rounded-lg p-4">
+                              <h4 className="text-sm font-medium text-theme-text mb-3 flex items-center gap-2">
                                 <ArrowLeftRight size={14} className="text-climbing-orange-400" />
                                 变更详情
                               </h4>
                               <div className="overflow-x-auto">
                                 <table className="w-full text-sm">
                                   <thead>
-                                    <tr className="border-b border-rock-dark-700">
-                                      <th className="text-left py-2 px-3 text-rock-light-400 font-medium">
+                                    <tr className="border-b border-theme-border">
+                                      <th className="text-left py-2 px-3 text-theme-text-secondary font-medium">
                                         字段
                                       </th>
-                                      <th className="text-left py-2 px-3 text-rock-light-400 font-medium">
+                                      <th className="text-left py-2 px-3 text-theme-text-secondary font-medium">
                                         修改前
                                       </th>
-                                      <th className="text-left py-2 px-3 text-rock-light-400 font-medium">
+                                      <th className="text-left py-2 px-3 text-theme-text-secondary font-medium">
                                         修改后
                                       </th>
                                     </tr>
@@ -607,9 +607,9 @@ export default function OperationLogs() {
                                     {log.changes?.map((change) => (
                                       <tr
                                         key={change.field}
-                                        className="border-b border-rock-dark-700/50 last:border-0"
+                                        className="border-b border-theme-border/50 last:border-0"
                                       >
-                                        <td className="py-2 px-3 text-white font-medium">
+                                        <td className="py-2 px-3 text-theme-text font-medium">
                                           {change.field}
                                         </td>
                                         <td className="py-2 px-3 text-red-400">
@@ -636,8 +636,8 @@ export default function OperationLogs() {
         </div>
 
         {totalPages > 1 && (
-          <div className="flex items-center justify-between px-5 py-4 border-t border-rock-dark-700">
-            <span className="text-sm text-rock-light-500">
+          <div className="flex items-center justify-between px-5 py-4 border-t border-theme-border">
+            <span className="text-sm text-theme-text-muted">
               共 {filteredLogs.length} 条记录
             </span>
             <div className="flex items-center gap-2">

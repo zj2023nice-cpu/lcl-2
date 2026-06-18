@@ -63,7 +63,7 @@ interface RoleTagProps {
 const highlightStyles: Record<HighlightType, string> = {
   promote: 'ring-1 ring-green-400/60 shadow-[0_0_8px_rgba(74,222,128,0.25)]',
   demote: 'ring-1 ring-yellow-400/60 shadow-[0_0_8px_rgba(250,204,21,0.25)]',
-  current: 'ring-1 ring-white/30',
+  current: 'ring-1 ring-theme-text/30',
   none: '',
 };
 
@@ -77,7 +77,7 @@ const highlightIcons: Record<HighlightType, typeof ChevronUp | null> = {
 const highlightIconColors: Record<HighlightType, string> = {
   promote: 'text-green-400',
   demote: 'text-yellow-400',
-  current: 'text-white/50',
+  current: 'text-theme-text/50',
   none: '',
 };
 

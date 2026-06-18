@@ -46,18 +46,18 @@ export default function Sidebar({ isOpen = true, onClose }: SidebarProps) {
   return (
     <aside
       className={cn(
-        'fixed left-0 top-0 h-full w-64 bg-rock-dark-900 border-r border-rock-dark-800 z-40 transition-transform duration-300 flex flex-col',
+        'fixed left-0 top-0 h-full w-64 bg-theme-subtle border-r border-theme-border z-40 transition-transform duration-300 flex flex-col',
         !isOpen && '-translate-x-full lg:translate-x-0'
       )}
     >
-      <div className="p-6 border-b border-rock-dark-800">
+      <div className="p-6 border-b border-theme-border">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 bg-climbing-orange-500 rounded-lg flex items-center justify-center">
             <Mountain size={24} className="text-white" />
           </div>
           <div>
-            <h1 className="text-xl font-bold text-white">攀岩</h1>
-            <p className="text-xs text-rock-light-500">Climbing App</p>
+            <h1 className="text-xl font-bold text-theme-text">攀岩</h1>
+            <p className="text-xs text-theme-text-muted">Climbing App</p>
           </div>
         </div>
       </div>
@@ -75,7 +75,7 @@ export default function Sidebar({ isOpen = true, onClose }: SidebarProps) {
                   'flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200',
                   isActive
                     ? 'bg-climbing-orange-500/10 text-climbing-orange-500 border-l-2 border-climbing-orange-500'
-                    : 'text-rock-light-400 hover:bg-rock-dark-800 hover:text-white'
+                    : 'text-theme-text-secondary hover:bg-theme-card hover:text-theme-text'
                 )
               }
               onClick={onClose}
@@ -87,14 +87,14 @@ export default function Sidebar({ isOpen = true, onClose }: SidebarProps) {
         })}
       </nav>
 
-      <div className="p-4 border-t border-rock-dark-800">
-        <div className="flex items-center gap-3 p-3 rounded-lg bg-rock-dark-800">
-          <div className="w-10 h-10 bg-rock-dark-700 rounded-full flex items-center justify-center">
-            <User size={20} className="text-rock-light-400" />
+      <div className="p-4 border-t border-theme-border">
+        <div className="flex items-center gap-3 p-3 rounded-lg bg-theme-card">
+          <div className="w-10 h-10 bg-theme-hover rounded-full flex items-center justify-center">
+            <User size={20} className="text-theme-text-secondary" />
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium text-white truncate">用户名</p>
-            <p className="text-xs text-rock-light-500 truncate">user@example.com</p>
+            <p className="text-sm font-medium text-theme-text truncate">用户名</p>
+            <p className="text-xs text-theme-text-muted truncate">user@example.com</p>
           </div>
         </div>
       </div>

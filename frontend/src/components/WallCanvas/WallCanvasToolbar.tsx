@@ -46,7 +46,7 @@ export default function WallCanvasToolbar({
   canDelete,
 }: WallCanvasToolbarProps) {
   return (
-    <div className="flex items-center gap-1 p-2 bg-rock-dark-800/90 backdrop-blur-sm rounded-xl border border-rock-dark-700 shadow-xl">
+    <div className="flex items-center gap-1 p-2 bg-theme-card/90 backdrop-blur-sm rounded-xl border border-theme-border shadow-xl">
       {tools.map((tool) => {
         const Icon = tool.icon;
         return (
@@ -58,7 +58,7 @@ export default function WallCanvasToolbar({
               'p-2.5 rounded-lg transition-all duration-200',
               activeTool === tool.id
                 ? 'bg-climbing-orange-500 text-white shadow-lg shadow-climbing-orange-500/30'
-                : 'text-rock-light-400 hover:text-white hover:bg-rock-dark-700'
+                : 'text-theme-text-secondary hover:text-theme-text hover:bg-theme-hover'
             )}
           >
             <Icon size={18} />
@@ -66,7 +66,7 @@ export default function WallCanvasToolbar({
         );
       })}
 
-      <div className="w-px h-6 bg-rock-dark-600 mx-1" />
+      <div className="w-px h-6 bg-theme-border mx-1" />
 
       <button
         onClick={onUndo}
@@ -75,8 +75,8 @@ export default function WallCanvasToolbar({
         className={cn(
           'p-2.5 rounded-lg transition-all duration-200',
           canUndo
-            ? 'text-rock-light-400 hover:text-white hover:bg-rock-dark-700'
-            : 'text-rock-dark-600 cursor-not-allowed'
+            ? 'text-theme-text-secondary hover:text-theme-text hover:bg-theme-hover'
+            : 'text-theme-border cursor-not-allowed'
         )}
       >
         <Undo2 size={18} />
@@ -90,18 +90,18 @@ export default function WallCanvasToolbar({
           'p-2.5 rounded-lg transition-all duration-200',
           canDelete
             ? 'text-red-400 hover:text-red-300 hover:bg-red-500/10'
-            : 'text-rock-dark-600 cursor-not-allowed'
+            : 'text-theme-border cursor-not-allowed'
         )}
       >
         <Trash2 size={18} />
       </button>
 
-      <div className="w-px h-6 bg-rock-dark-600 mx-1" />
+      <div className="w-px h-6 bg-theme-border mx-1" />
 
       <button
         onClick={onZoomOut}
         title="缩小"
-        className="p-2.5 rounded-lg text-rock-light-400 hover:text-white hover:bg-rock-dark-700 transition-all duration-200"
+        className="p-2.5 rounded-lg text-theme-text-secondary hover:text-theme-text hover:bg-theme-hover transition-all duration-200"
       >
         <ZoomOut size={18} />
       </button>
@@ -109,7 +109,7 @@ export default function WallCanvasToolbar({
       <button
         onClick={onZoomReset}
         title="还原"
-        className="p-2.5 rounded-lg text-rock-light-400 hover:text-white hover:bg-rock-dark-700 transition-all duration-200"
+        className="p-2.5 rounded-lg text-theme-text-secondary hover:text-theme-text hover:bg-theme-hover transition-all duration-200"
       >
         <Maximize2 size={18} />
       </button>
@@ -117,7 +117,7 @@ export default function WallCanvasToolbar({
       <button
         onClick={onZoomIn}
         title="放大"
-        className="p-2.5 rounded-lg text-rock-light-400 hover:text-white hover:bg-rock-dark-700 transition-all duration-200"
+        className="p-2.5 rounded-lg text-theme-text-secondary hover:text-theme-text hover:bg-theme-hover transition-all duration-200"
       >
         <ZoomIn size={18} />
       </button>

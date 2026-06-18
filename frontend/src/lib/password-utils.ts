@@ -221,7 +221,7 @@ export function getStrengthLabel(strength: PasswordStrength): string {
 
 export function getStrengthColorClass(strength: PasswordStrength): string {
   const colors: Record<PasswordStrength, string> = {
-    empty: 'bg-rock-dark-700',
+    empty: 'bg-theme-hover',
     weak: 'bg-red-500',
     medium: 'bg-yellow-500',
     strong: 'bg-green-500',
@@ -231,7 +231,7 @@ export function getStrengthColorClass(strength: PasswordStrength): string {
 
 export function getStrengthTextClass(strength: PasswordStrength): string {
   const colors: Record<PasswordStrength, string> = {
-    empty: 'text-rock-light-500',
+    empty: 'text-theme-text-muted',
     weak: 'text-red-400',
     medium: 'text-yellow-400',
     strong: 'text-green-400',

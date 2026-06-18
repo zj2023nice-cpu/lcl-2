@@ -122,7 +122,7 @@ export default function BadgeUnlockModal({
           >
             <div className="flex items-center justify-center gap-2 mb-2">
               <Sparkles size={24} className="text-yellow-400 animate-pulse" />
-              <h2 className="text-3xl font-bold text-white">恭喜解锁新徽章！</h2>
+              <h2 className="text-3xl font-bold text-theme-text">恭喜解锁新徽章！</h2>
               <Sparkles size={24} className="text-yellow-400 animate-pulse" />
             </div>
             <div
@@ -153,8 +153,8 @@ export default function BadgeUnlockModal({
               showContent ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
             }`}
           >
-            <h3 className="text-2xl font-bold text-white mb-2">{badge.badge?.name}</h3>
-            <p className="text-rock-light-400 max-w-md mx-auto">{badge.badge?.description}</p>
+            <h3 className="text-2xl font-bold text-theme-text mb-2">{badge.badge?.name}</h3>
+            <p className="text-theme-text-secondary max-w-md mx-auto">{badge.badge?.description}</p>
           </div>
 
           <div
@@ -164,11 +164,11 @@ export default function BadgeUnlockModal({
           >
             <div className="flex items-center gap-2">
               <Trophy size={20} className="text-yellow-400" />
-              <span className="text-white font-medium">+{badge.badge?.points} 积分</span>
+              <span className="text-theme-text font-medium">+{badge.badge?.points} 积分</span>
             </div>
             <div className="flex items-center gap-2">
               <Star size={20} className="text-yellow-400" />
-              <span className="text-white font-medium">{config.label}品质</span>
+              <span className="text-theme-text font-medium">{config.label}品质</span>
             </div>
           </div>
 
@@ -188,7 +188,7 @@ export default function BadgeUnlockModal({
             )}
             <button
               onClick={onClose}
-              className="px-6 py-3 bg-rock-dark-700 hover:bg-rock-dark-600 text-white rounded-lg font-medium transition-all"
+              className="px-6 py-3 bg-theme-hover hover:bg-theme-border text-theme-text rounded-lg font-medium transition-all"
             >
               继续探索
             </button>

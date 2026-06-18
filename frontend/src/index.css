@@ -21,6 +21,20 @@
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
   --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.07);
   --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+
+  --tw-color-bg: 255, 255, 255;
+  --tw-color-card: 248, 248, 248;
+  --tw-color-hover: 237, 237, 237;
+  --tw-color-subtle: 245, 245, 245;
+  --tw-color-text: 26, 26, 26;
+  --tw-color-text-secondary: 77, 77, 77;
+  --tw-color-text-muted: 128, 128, 128;
+  --tw-color-border: 224, 224, 224;
+  --tw-color-primary: 255, 107, 53;
+  --tw-color-primary-hover: 229, 80, 26;
+  --tw-color-success: 22, 163, 74;
+  --tw-color-danger: 220, 38, 38;
+  --tw-color-warning: 217, 119, 6;
 }
 
 :root.dark {
@@ -40,35 +54,45 @@
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
   --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.4);
   --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.5);
+
+  --tw-color-bg: 13, 13, 13;
+  --tw-color-card: 26, 26, 26;
+  --tw-color-hover: 51, 51, 51;
+  --tw-color-subtle: 20, 20, 20;
+  --tw-color-text: 245, 245, 245;
+  --tw-color-text-secondary: 179, 179, 179;
+  --tw-color-text-muted: 128, 128, 128;
+  --tw-color-border: 51, 51, 51;
+  --tw-color-primary: 255, 107, 53;
+  --tw-color-primary-hover: 229, 80, 26;
+  --tw-color-success: 34, 197, 94;
+  --tw-color-danger: 239, 68, 68;
+  --tw-color-warning: 245, 158, 11;
 }
 
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
+@layer base {
+  html {
+    font-family: 'Outfit', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    line-height: 1.5;
+    font-weight: 400;
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
 
-html {
-  font-family: 'Outfit', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  transition: background-color 0.3s ease, color 0.3s ease;
-}
+  body {
+    min-height: 100vh;
+    background-color: var(--color-bg-dark);
+    color: var(--color-text-primary);
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
 
-body {
-  min-height: 100vh;
-  background-color: var(--color-bg-dark);
-  color: var(--color-text-primary);
-  transition: background-color 0.3s ease, color 0.3s ease;
-}
-
-#root {
-  min-height: 100vh;
-  transition: background-color 0.3s ease, color 0.3s ease;
+  #root {
+    min-height: 100vh;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
 }
 
 .theme-transition,

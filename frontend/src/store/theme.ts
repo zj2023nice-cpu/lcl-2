@@ -63,6 +63,7 @@ function applyTheme(theme: Theme): void {
   root.classList.remove('light', 'dark');
   root.classList.add(theme);
   root.style.colorScheme = theme;
+  root.setAttribute('data-theme-applied', 'true');
 }
 
 function computeResolvedTheme(preferences: ThemePreferences): Theme {
@@ -128,7 +129,13 @@ export const useThemeStore = create<ThemeState>()((set, get) => {
   const initialTheme = computeResolvedTheme(initialPrefs);
 
   if (typeof document !== 'undefined') {
-    applyTheme(initialTheme);
+    const root = document.documentElement;
+    const alreadyApplied =
+      root.classList.contains(initialTheme) ||
+      root.getAttribute('data-theme-applied') === 'true';
+    if (!alreadyApplied) {
+      applyTheme(initialTheme);
+    }
   }
 
   const debouncedSaveToUser = () => {

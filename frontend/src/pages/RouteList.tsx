@@ -154,8 +154,8 @@ export default function RouteList() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-white">线路列表</h1>
-          <p className="text-rock-light-500 mt-1">探索所有攀岩线路</p>
+          <h1 className="text-2xl font-bold text-theme-text">线路列表</h1>
+          <p className="text-theme-text-muted mt-1">探索所有攀岩线路</p>
         </div>
         <Button>
           <Plus size={18} className="mr-2" />
@@ -167,23 +167,23 @@ export default function RouteList() {
         <div className="flex flex-col lg:flex-row gap-4">
           <div className="flex-1">
             <div className="relative">
-              <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-rock-light-500" />
+              <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-theme-text-muted" />
               <input
                 type="text"
                 placeholder="搜索线路名称、定线员..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-2.5 bg-rock-dark-900 border border-rock-dark-700 rounded-lg text-white placeholder-rock-light-600 focus:outline-none focus:border-climbing-orange-500 transition-colors"
+                className="w-full pl-10 pr-4 py-2.5 bg-theme-subtle border border-theme-border rounded-lg text-theme-text placeholder-theme-text-muted focus:outline-none focus:border-climbing-orange-500 transition-colors"
               />
             </div>
           </div>
           <div className="flex flex-wrap gap-3">
             <div className="flex items-center gap-2">
-              <Filter size={16} className="text-rock-light-500" />
+              <Filter size={16} className="text-theme-text-muted" />
               <select
                 value={filterType}
                 onChange={(e) => setFilterType(e.target.value)}
-                className="bg-rock-dark-900 border border-rock-dark-700 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-climbing-orange-500"
+                className="bg-theme-subtle border border-theme-border rounded-lg px-3 py-2 text-theme-text text-sm focus:outline-none focus:border-climbing-orange-500"
               >
                 <option value="all">全部类型</option>
                 <option value="boulder">抱石</option>
@@ -193,11 +193,11 @@ export default function RouteList() {
               </select>
             </div>
             <div className="flex items-center gap-2">
-              <Route size={16} className="text-rock-light-500" />
+              <Route size={16} className="text-theme-text-muted" />
               <select
                 value={filterGrade}
                 onChange={(e) => setFilterGrade(e.target.value)}
-                className="bg-rock-dark-900 border border-rock-dark-700 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-climbing-orange-500"
+                className="bg-theme-subtle border border-theme-border rounded-lg px-3 py-2 text-theme-text text-sm focus:outline-none focus:border-climbing-orange-500"
               >
                 <option value="all">全部定级</option>
                 <option value="V0">初级 (V0-V2)</option>
@@ -210,7 +210,7 @@ export default function RouteList() {
               <select
                 value={filterStatus}
                 onChange={(e) => setFilterStatus(e.target.value)}
-                className="bg-rock-dark-900 border border-rock-dark-700 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-climbing-orange-500"
+                className="bg-theme-subtle border border-theme-border rounded-lg px-3 py-2 text-theme-text text-sm focus:outline-none focus:border-climbing-orange-500"
               >
                 <option value="all">全部状态</option>
                 <option value="open">开放中</option>
@@ -220,11 +220,11 @@ export default function RouteList() {
               </select>
             </div>
             <div className="flex items-center gap-2">
-              <Palette size={16} className="text-rock-light-500" />
+              <Palette size={16} className="text-theme-text-muted" />
               <select
                 value={filterColor}
                 onChange={(e) => setFilterColor(e.target.value)}
-                className="bg-rock-dark-900 border border-rock-dark-700 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-climbing-orange-500"
+                className="bg-theme-subtle border border-theme-border rounded-lg px-3 py-2 text-theme-text text-sm focus:outline-none focus:border-climbing-orange-500"
               >
                 {colorOptions.map((opt) => (
                   <option key={opt.value} value={opt.value}>
@@ -247,20 +247,20 @@ export default function RouteList() {
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
           {[1, 2, 3, 4, 5, 6].map((i) => (
             <Card key={i} className="overflow-hidden animate-pulse">
-              <div className="h-3 bg-rock-dark-700" />
+              <div className="h-3 bg-theme-border" />
               <div className="p-5 space-y-3">
                 <div className="flex justify-between">
-                  <div className="h-5 bg-rock-dark-700 rounded w-2/3" />
-                  <div className="h-5 bg-rock-dark-700 rounded w-12" />
+                  <div className="h-5 bg-theme-border rounded w-2/3" />
+                  <div className="h-5 bg-theme-border rounded w-12" />
                 </div>
                 <div className="flex gap-2">
-                  <div className="h-5 bg-rock-dark-700 rounded w-12" />
-                  <div className="h-5 bg-rock-dark-700 rounded w-12" />
+                  <div className="h-5 bg-theme-border rounded w-12" />
+                  <div className="h-5 bg-theme-border rounded w-12" />
                 </div>
-                <div className="h-4 bg-rock-dark-700 rounded w-1/2" />
-                <div className="flex justify-between pt-3 border-t border-rock-dark-700">
-                  <div className="h-4 bg-rock-dark-700 rounded w-16" />
-                  <div className="h-4 bg-rock-dark-700 rounded w-20" />
+                <div className="h-4 bg-theme-border rounded w-1/2" />
+                <div className="flex justify-between pt-3 border-t border-theme-border">
+                  <div className="h-4 bg-theme-border rounded w-16" />
+                  <div className="h-4 bg-theme-border rounded w-20" />
                 </div>
               </div>
             </Card>
@@ -270,9 +270,9 @@ export default function RouteList() {
         <>
           {routes.length === 0 ? (
             <Card className="p-12 text-center">
-              <Mountain size={48} className="mx-auto text-rock-light-600 mb-4" />
-              <h3 className="text-lg font-medium text-white mb-2">暂无线路</h3>
-              <p className="text-rock-light-500 mb-4">没有找到符合条件的线路</p>
+              <Mountain size={48} className="mx-auto text-theme-text-muted mb-4" />
+              <h3 className="text-lg font-medium text-theme-text mb-2">暂无线路</h3>
+              <p className="text-theme-text-muted mb-4">没有找到符合条件的线路</p>
             </Card>
           ) : (
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
@@ -282,8 +282,8 @@ export default function RouteList() {
                   to={`/routes/${route.id}`}
                   className="group block"
                 >
-                  <Card className="h-full overflow-hidden hover:border-rock-dark-600 transition-all hover:shadow-lg hover:-translate-y-1">
-                    <div className="h-2 bg-rock-dark-700 relative">
+                  <Card className="h-full overflow-hidden hover:border-theme-border transition-all hover:shadow-lg hover:-translate-y-1">
+                    <div className="h-2 bg-theme-border relative">
                       <div
                         className="absolute inset-0 group-hover:opacity-80 transition-opacity"
                         style={{ backgroundColor: route.color }}
@@ -291,7 +291,7 @@ export default function RouteList() {
                     </div>
                     <div className="p-5">
                       <div className="flex items-start justify-between gap-2 mb-3">
-                        <h3 className="font-semibold text-white line-clamp-1 group-hover:text-climbing-orange-400 transition-colors">
+                        <h3 className="font-semibold text-theme-text line-clamp-1 group-hover:text-climbing-orange-400 transition-colors">
                           {route.name}
                         </h3>
                         <span className={`px-2 py-0.5 rounded text-xs font-bold whitespace-nowrap border ${getGradeFullClass(route.grade)}`}>
@@ -312,21 +312,21 @@ export default function RouteList() {
                         )}
                       </div>
                       <div className="space-y-2 text-sm">
-                        <div className="flex items-center gap-2 text-rock-light-400">
+                        <div className="flex items-center gap-2 text-theme-text-secondary">
                           <User size={14} />
                           <span>定线员：{route.setterName || '未知'}</span>
                         </div>
-                        <div className="flex items-center gap-2 text-rock-light-400">
+                        <div className="flex items-center gap-2 text-theme-text-secondary">
                           <Mountain size={14} />
                           <span>{getWallName(route.wallId)}</span>
                         </div>
-                        <div className="flex items-center gap-2 text-rock-light-400">
+                        <div className="flex items-center gap-2 text-theme-text-secondary">
                           <Calendar size={14} />
                           <span>{formatDate(route.createdAt)}</span>
                         </div>
                       </div>
-                      <div className="flex items-center justify-between mt-4 pt-4 border-t border-rock-dark-700">
-                        <span className="text-xs text-rock-light-500">
+                      <div className="flex items-center justify-between mt-4 pt-4 border-t border-theme-border">
+                        <span className="text-xs text-theme-text-muted">
                           <Route size={12} className="inline mr-1" />
                           {route.ascentCount || 0} 次完攀
                         </span>
@@ -342,7 +342,7 @@ export default function RouteList() {
           )}
 
           <div className="pt-4 text-center">
-            <span className="text-sm text-rock-light-500">
+            <span className="text-sm text-theme-text-muted">
               共 {routes.length} 条线路
             </span>
           </div>

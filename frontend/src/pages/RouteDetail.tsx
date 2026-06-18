@@ -312,12 +312,12 @@ export default function RouteDetail() {
   if (isLoading) {
     return (
       <div className="space-y-6">
-        <div className="h-16 bg-rock-dark-800 rounded-xl animate-pulse" />
+        <div className="h-16 bg-theme-card rounded-xl animate-pulse" />
         <div className="grid lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-2 h-[600px] bg-rock-dark-800 rounded-xl animate-pulse" />
+          <div className="lg:col-span-2 h-[600px] bg-theme-card rounded-xl animate-pulse" />
           <div className="space-y-6">
-            <div className="h-64 bg-rock-dark-800 rounded-xl animate-pulse" />
-            <div className="h-80 bg-rock-dark-800 rounded-xl animate-pulse" />
+            <div className="h-64 bg-theme-card rounded-xl animate-pulse" />
+            <div className="h-80 bg-theme-card rounded-xl animate-pulse" />
           </div>
         </div>
       </div>
@@ -327,9 +327,9 @@ export default function RouteDetail() {
   if (!route) {
     return (
       <Card className="p-12 text-center">
-        <Target size={48} className="mx-auto text-rock-light-600 mb-4" />
-        <h3 className="text-lg font-medium text-white mb-2">线路不存在</h3>
-        <p className="text-rock-light-500 mb-4">请检查线路ID是否正确</p>
+        <Target size={48} className="mx-auto text-theme-text-muted mb-4" />
+        <h3 className="text-lg font-medium text-theme-text mb-2">线路不存在</h3>
+        <p className="text-theme-text-muted mb-4">请检查线路ID是否正确</p>
         <Button onClick={() => navigate('/routes')}>返回线路列表</Button>
       </Card>
     );
@@ -341,7 +341,7 @@ export default function RouteDetail() {
         <div className="flex items-center gap-4">
           <Link
             to={`/walls/${route.wallId}`}
-            className="p-2 text-rock-light-400 hover:text-white hover:bg-rock-dark-700 rounded-lg transition-colors"
+            className="p-2 text-theme-text-secondary hover:text-theme-text hover:bg-theme-hover rounded-lg transition-colors"
           >
             <ArrowLeft size={20} />
           </Link>
@@ -351,7 +351,7 @@ export default function RouteDetail() {
                 className="w-4 h-4 rounded-full"
                 style={{ backgroundColor: route.color }}
               />
-              <h1 className="text-2xl font-bold text-white">{route.name}</h1>
+              <h1 className="text-2xl font-bold text-theme-text">{route.name}</h1>
               <span
                 className={cn(
                   'px-3 py-1 rounded-full text-sm font-semibold border',
@@ -361,7 +361,7 @@ export default function RouteDetail() {
                 {routeStatusLabels[route.status]}
               </span>
             </div>
-            <p className="text-rock-light-500 text-sm mt-1 flex items-center gap-2">
+            <p className="text-theme-text-muted text-sm mt-1 flex items-center gap-2">
               <span className={`px-2 py-0.5 rounded text-xs font-medium border ${getGradeFullClass(route.grade)}`}>
                 {route.grade} · {getGradeLabel(route.grade)}
               </span>
@@ -427,21 +427,21 @@ export default function RouteDetail() {
 
         <div className="space-y-6">
           <Card>
-            <div className="p-5 border-b border-rock-dark-700">
-              <h3 className="font-semibold text-white">基本信息</h3>
+            <div className="p-5 border-b border-theme-border">
+              <h3 className="font-semibold text-theme-text">基本信息</h3>
             </div>
             <div className="p-5 space-y-4">
               <div className="flex items-center justify-between">
-                <span className="text-rock-light-500 flex items-center gap-2">
+                <span className="text-theme-text-muted flex items-center gap-2">
                   <Tag size={14} />
                   类型
                 </span>
-                <span className="text-white font-medium">
+                <span className="text-theme-text font-medium">
                   {routeTypeLabels[route.type]}
                 </span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-rock-light-500 flex items-center gap-2">
+                <span className="text-theme-text-muted flex items-center gap-2">
                   <Award size={14} />
                   定级
                 </span>
@@ -450,73 +450,73 @@ export default function RouteDetail() {
                 </span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-rock-light-500">颜色</span>
+                <span className="text-theme-text-muted">颜色</span>
                 <div className="flex items-center gap-2">
                   <div
-                    className="w-5 h-5 rounded-full border-2 border-rock-dark-600"
+                    className="w-5 h-5 rounded-full border-2 border-theme-border"
                     style={{ backgroundColor: route.color }}
                   />
                 </div>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-rock-light-500 flex items-center gap-2">
+                <span className="text-theme-text-muted flex items-center gap-2">
                   <TrendingUp size={14} />
                   长度
                 </span>
-                <span className="text-white">12 米</span>
+                <span className="text-theme-text">12 米</span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-rock-light-500 flex items-center gap-2">
+                <span className="text-theme-text-muted flex items-center gap-2">
                   <User size={14} />
                   定线员
                 </span>
-                <span className="text-white">{route.setterName || '未知'}</span>
+                <span className="text-theme-text">{route.setterName || '未知'}</span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-rock-light-500 flex items-center gap-2">
+                <span className="text-theme-text-muted flex items-center gap-2">
                   <Calendar size={14} />
                   开放日期
                 </span>
-                <span className="text-white">{formatDate(route.createdAt)}</span>
+                <span className="text-theme-text">{formatDate(route.createdAt)}</span>
               </div>
               {route.isArchived && (
                 <>
-                  <div className="pt-3 border-t border-rock-dark-700">
+                  <div className="pt-3 border-t border-theme-border">
                     <div className="flex items-center justify-between">
-                      <span className="text-rock-light-500 flex items-center gap-2">
+                      <span className="text-theme-text-muted flex items-center gap-2">
                         <Archive size={14} />
                         归档原因
                       </span>
-                      <span className="text-white text-right max-w-[60%] text-sm">
+                      <span className="text-theme-text text-right max-w-[60%] text-sm">
                         {route.archiveReason}
                       </span>
                     </div>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-rock-light-500 flex items-center gap-2">
+                    <span className="text-theme-text-muted flex items-center gap-2">
                       <User size={14} />
                       归档操作人
                     </span>
-                    <span className="text-white">
+                    <span className="text-theme-text">
                       {route.archivedByName || `用户 #${route.archivedBy}`}
                     </span>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-rock-light-500 flex items-center gap-2">
+                    <span className="text-theme-text-muted flex items-center gap-2">
                       <Clock size={14} />
                       归档时间
                     </span>
-                    <span className="text-white">
+                    <span className="text-theme-text">
                       {route.archivedAt ? formatDateTime(route.archivedAt) : '-'}
                     </span>
                   </div>
                   {route.restoredAt && (
                     <div className="flex items-center justify-between">
-                      <span className="text-rock-light-500 flex items-center gap-2">
+                      <span className="text-theme-text-muted flex items-center gap-2">
                         <RotateCcw size={14} />
                         恢复时间
                       </span>
-                      <span className="text-white">
+                      <span className="text-theme-text">
                         {formatDateTime(route.restoredAt)}
                       </span>
                     </div>
@@ -527,8 +527,8 @@ export default function RouteDetail() {
           </Card>
 
           <Card>
-            <div className="p-5 border-b border-rock-dark-700">
-              <h3 className="font-semibold text-white">标签</h3>
+            <div className="p-5 border-b border-theme-border">
+              <h3 className="font-semibold text-theme-text">标签</h3>
             </div>
             <div className="p-5">
               <div className="flex flex-wrap gap-2">
@@ -551,9 +551,9 @@ export default function RouteDetail() {
           </Card>
 
           <Card>
-            <div className="p-5 border-b border-rock-dark-700">
+            <div className="p-5 border-b border-theme-border">
               <div className="flex items-center justify-between">
-                <h3 className="font-semibold text-white">难度共识</h3>
+                <h3 className="font-semibold text-theme-text">难度共识</h3>
                 {isControversial && (
                   <span className="flex items-center gap-1 text-xs text-red-400 bg-red-500/20 px-2 py-1 rounded-full">
                     <AlertTriangle size={12} />
@@ -564,8 +564,8 @@ export default function RouteDetail() {
             </div>
             <div className="p-5 space-y-5">
               <div className="grid grid-cols-2 gap-4">
-                <div className="text-center p-3 bg-rock-dark-900 rounded-lg">
-                  <p className="text-xs text-rock-light-500 mb-1">定线定级</p>
+                <div className="text-center p-3 bg-theme-subtle rounded-lg">
+                  <p className="text-xs text-theme-text-muted mb-1">定线定级</p>
                   <p className={`text-lg font-bold ${getGradeColorConfig(route.grade).colorClass}`}>
                     {route.grade}
                   </p>
@@ -573,8 +573,8 @@ export default function RouteDetail() {
                     {getGradeLabel(route.grade)}
                   </p>
                 </div>
-                <div className="text-center p-3 bg-rock-dark-900 rounded-lg">
-                  <p className="text-xs text-rock-light-500 mb-1">社区共识</p>
+                <div className="text-center p-3 bg-theme-subtle rounded-lg">
+                  <p className="text-xs text-theme-text-muted mb-1">社区共识</p>
                   <p className={`text-lg font-bold ${consensusGrade !== 'N/A' ? getGradeColorConfig(consensusGrade).colorClass : 'text-gray-400'}`}>
                     {consensusGrade}
                   </p>
@@ -585,7 +585,7 @@ export default function RouteDetail() {
               </div>
 
               <div>
-                <p className="text-sm text-rock-light-400 mb-3">投票你的难度</p>
+                <p className="text-sm text-theme-text-secondary mb-3">投票你的难度</p>
                 <div className="flex flex-wrap gap-1.5">
                   {boulderGrades.slice(0, 10).map((grade) => (
                     <button
@@ -595,7 +595,7 @@ export default function RouteDetail() {
                         'px-2.5 py-1.5 rounded-md text-xs font-medium transition-all',
                         selectedGrade === grade
                           ? 'bg-climbing-orange-500 text-white'
-                          : 'bg-rock-dark-700 text-rock-light-400 hover:text-white hover:bg-rock-dark-600'
+                          : 'bg-theme-hover text-theme-text-secondary hover:text-theme-text hover:bg-theme-border'
                       )}
                     >
                       {grade}
@@ -611,20 +611,20 @@ export default function RouteDetail() {
                       dataKey="grade"
                       axisLine={false}
                       tickLine={false}
-                      tick={{ fill: '#999', fontSize: 10 }}
+                      tick={{ fill: 'var(--color-text-muted)', fontSize: 10 }}
                     />
                     <YAxis
                       axisLine={false}
                       tickLine={false}
-                      tick={{ fill: '#999', fontSize: 10 }}
+                      tick={{ fill: 'var(--color-text-muted)', fontSize: 10 }}
                       width={20}
                     />
                     <Tooltip
                       contentStyle={{
-                        backgroundColor: '#1a1a1a',
-                        border: '1px solid #333',
+                        backgroundColor: 'var(--color-bg-card)',
+                        border: '1px solid var(--color-border)',
                         borderRadius: '8px',
-                        color: '#fff',
+                        color: 'var(--color-text-primary)',
                         fontSize: '12px',
                       }}
                       cursor={{ fill: 'rgba(255, 107, 53, 0.1)' }}
@@ -633,7 +633,7 @@ export default function RouteDetail() {
                       {gradeDistribution.map((entry, index) => (
                         <Cell
                           key={`cell-${index}`}
-                          fill={entry.grade === consensusGrade ? '#FF6B35' : '#666'}
+                          fill={entry.grade === consensusGrade ? '#FF6B35' : 'var(--color-text-muted)'}
                         />
                       ))}
                     </Bar>
@@ -641,49 +641,49 @@ export default function RouteDetail() {
                 </ResponsiveContainer>
               </div>
 
-              <div className="text-center text-xs text-rock-light-500">
+              <div className="text-center text-xs text-theme-text-muted">
                 共 {votes.length} 人投票
               </div>
             </div>
           </Card>
 
           <Card>
-            <div className="p-5 border-b border-rock-dark-700">
+            <div className="p-5 border-b border-theme-border">
               <div className="flex items-center justify-between">
-                <h3 className="font-semibold text-white">攀爬记录</h3>
+                <h3 className="font-semibold text-theme-text">攀爬记录</h3>
                 <div className="flex items-center gap-2 text-sm">
                   <CheckCircle2 size={14} className="text-green-400" />
-                  <span className="text-rock-light-400">
+                  <span className="text-theme-text-secondary">
                     完攀率{' '}
-                    <span className="text-white font-medium">
+                    <span className="text-theme-text font-medium">
                       {completionStats.rate}%
                     </span>
                   </span>
                 </div>
               </div>
-              <p className="text-xs text-rock-light-500 mt-1">
+              <p className="text-xs text-theme-text-muted mt-1">
                 共 {completionStats.total} 条记录，{completionStats.completed} 条完成
               </p>
             </div>
-            <div className="divide-y divide-rock-dark-700">
+            <div className="divide-y divide-theme-border">
               {displayedAscents.length === 0 ? (
                 <div className="p-8 text-center">
-                  <Zap size={24} className="mx-auto text-rock-light-600 mb-2" />
-                  <p className="text-sm text-rock-light-500">暂无攀爬记录</p>
+                  <Zap size={24} className="mx-auto text-theme-text-muted mb-2" />
+                  <p className="text-sm text-theme-text-muted">暂无攀爬记录</p>
                 </div>
               ) : (
                 displayedAscents.map((ascent) => (
-                  <div key={ascent.id} className="p-4 hover:bg-rock-dark-700/30 transition-colors">
+                  <div key={ascent.id} className="p-4 hover:bg-theme-hover/30 transition-colors">
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 bg-rock-dark-700 rounded-full flex items-center justify-center">
-                          <User size={14} className="text-rock-light-400" />
+                        <div className="w-8 h-8 bg-theme-hover rounded-full flex items-center justify-center">
+                          <User size={14} className="text-theme-text-secondary" />
                         </div>
                         <div>
-                          <p className="text-sm font-medium text-white">
+                          <p className="text-sm font-medium text-theme-text">
                             {ascent.userName || '用户' + ascent.userId}
                           </p>
-                          <div className="flex items-center gap-2 text-xs text-rock-light-500">
+                          <div className="flex items-center gap-2 text-xs text-theme-text-muted">
                             <Clock size={10} />
                             {formatDateTime(ascent.createdAt)}
                           </div>
@@ -698,11 +698,11 @@ export default function RouteDetail() {
                         {ascentTypeLabels[ascent.ascentType]}
                       </span>
                     </div>
-                    <div className="flex items-center gap-4 text-xs text-rock-light-400 ml-11">
+                    <div className="flex items-center gap-4 text-xs text-theme-text-secondary ml-11">
                       <span>尝试 {ascent.attempts} 次</span>
                     </div>
                     {ascent.notes && (
-                      <p className="text-xs text-rock-light-500 mt-2 ml-11">
+                      <p className="text-xs text-theme-text-muted mt-2 ml-11">
                         "{ascent.notes}"
                       </p>
                     )}
@@ -713,7 +713,7 @@ export default function RouteDetail() {
             {ascents.length > 5 && (
               <button
                 onClick={() => setShowAllAscents(!showAllAscents)}
-                className="w-full p-3 text-sm text-rock-light-400 hover:text-white hover:bg-rock-dark-700/30 flex items-center justify-center gap-1 transition-colors border-t border-rock-dark-700"
+                className="w-full p-3 text-sm text-theme-text-secondary hover:text-theme-text hover:bg-theme-hover/30 flex items-center justify-center gap-1 transition-colors border-t border-theme-border"
               >
                 {showAllAscents ? (
                   <>
@@ -760,7 +760,7 @@ export default function RouteDetail() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-white mb-2">
+            <label className="block text-sm font-medium text-theme-text mb-2">
               归档原因 <span className="text-red-400">*</span>
             </label>
             <textarea
@@ -768,9 +768,9 @@ export default function RouteDetail() {
               onChange={(e) => setArchiveReason(e.target.value)}
               placeholder="请填写归档原因（如：线路磨损、季节性调整、临时检修等）..."
               rows={4}
-              className="w-full px-4 py-3 bg-rock-dark-900 border border-rock-dark-700 rounded-lg text-white placeholder-rock-light-600 focus:outline-none focus:border-climbing-orange-500 transition-colors resize-none"
+              className="w-full px-4 py-3 bg-theme-subtle border border-theme-border rounded-lg text-theme-text placeholder-theme-text-muted focus:outline-none focus:border-climbing-orange-500 transition-colors resize-none"
             />
-            <p className="mt-2 text-xs text-rock-light-500">
+            <p className="mt-2 text-xs text-theme-text-muted">
               {archiveReason.length} / 1000
             </p>
           </div>
@@ -815,23 +815,23 @@ export default function RouteDetail() {
             </div>
           </div>
 
-          <div className="p-4 bg-rock-dark-900 rounded-lg space-y-2">
+          <div className="p-4 bg-theme-subtle rounded-lg space-y-2">
             <div className="flex justify-between text-sm">
-              <span className="text-rock-light-500">线路名称</span>
-              <span className="text-white font-medium">{route?.name}</span>
+              <span className="text-theme-text-muted">线路名称</span>
+              <span className="text-theme-text font-medium">{route?.name}</span>
             </div>
             <div className="flex justify-between text-sm">
-              <span className="text-rock-light-500">线路定级</span>
-              <span className="text-white font-medium">{route?.grade}</span>
+              <span className="text-theme-text-muted">线路定级</span>
+              <span className="text-theme-text font-medium">{route?.grade}</span>
             </div>
             <div className="flex justify-between text-sm">
-              <span className="text-rock-light-500">归档原因</span>
-              <span className="text-white text-right max-w-[60%]">{route?.archiveReason}</span>
+              <span className="text-theme-text-muted">归档原因</span>
+              <span className="text-theme-text text-right max-w-[60%]">{route?.archiveReason}</span>
             </div>
             {route?.archivedAt && (
               <div className="flex justify-between text-sm">
-                <span className="text-rock-light-500">归档时间</span>
-                <span className="text-white">{formatDateTime(route.archivedAt)}</span>
+                <span className="text-theme-text-muted">归档时间</span>
+                <span className="text-theme-text">{formatDateTime(route.archivedAt)}</span>
               </div>
             )}
           </div>

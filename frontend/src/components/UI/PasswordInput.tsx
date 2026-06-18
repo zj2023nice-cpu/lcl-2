@@ -111,7 +111,7 @@ export default function PasswordInput({
   return (
     <div className="w-full">
       {label && (
-        <label className="block text-sm font-medium text-rock-light-300 mb-2">
+        <label className="block text-sm font-medium text-theme-text-secondary mb-2">
           {label}
         </label>
       )}
@@ -119,7 +119,7 @@ export default function PasswordInput({
       <div className="relative">
         <KeyRound
           size={18}
-          className="absolute left-3 top-1/2 -translate-y-1/2 text-rock-light-500"
+          className="absolute left-3 top-1/2 -translate-y-1/2 text-theme-text-muted"
         />
         <input
           type={showPassword ? 'text' : 'password'}
@@ -127,12 +127,12 @@ export default function PasswordInput({
           onChange={onChange}
           placeholder={placeholder}
           className={cn(
-            'w-full pl-10 pr-24 py-3 bg-rock-dark-900/60 border rounded-lg text-white placeholder-rock-light-600 focus:outline-none focus:ring-1 transition-all duration-200 font-mono',
+            'w-full pl-10 pr-24 py-3 bg-theme-subtle/60 border rounded-lg text-theme-text placeholder-theme-text-muted focus:outline-none focus:ring-1 transition-all duration-200 font-mono',
             error
               ? 'border-red-500/50 focus:border-red-500 focus:ring-red-500/30'
               : analysis.isCommonPassword
                 ? 'border-red-500/50 focus:border-red-500 focus:ring-red-500/30'
-                : 'border-rock-dark-600/50 focus:border-climbing-orange-500 focus:ring-climbing-orange-500/30',
+                : 'border-theme-border/50 focus:border-climbing-orange-500 focus:ring-climbing-orange-500/30',
             className
           )}
           {...props}
@@ -146,7 +146,7 @@ export default function PasswordInput({
                 'p-1.5 rounded-md transition-colors',
                 generatorOpen
                   ? 'bg-climbing-orange-500/20 text-climbing-orange-500'
-                  : 'text-rock-light-500 hover:text-rock-light-300 hover:bg-rock-dark-800'
+                  : 'text-theme-text-muted hover:text-theme-text-secondary hover:bg-theme-card'
               )}
               title="密码生成器"
             >
@@ -156,7 +156,7 @@ export default function PasswordInput({
           <button
             type="button"
             onClick={() => setShowPassword(!showPassword)}
-            className="p-1.5 rounded-md text-rock-light-500 hover:text-rock-light-300 hover:bg-rock-dark-800 transition-colors"
+            className="p-1.5 rounded-md text-theme-text-muted hover:text-theme-text-secondary hover:bg-theme-card transition-colors"
             title={showPassword ? '隐藏密码' : '显示密码'}
           >
             {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
@@ -168,7 +168,7 @@ export default function PasswordInput({
         <div className="mt-2">
           <div className="flex items-center justify-between mb-1.5">
             <div className="flex items-center gap-2">
-              <span className="text-xs text-rock-light-500">密码强度</span>
+              <span className="text-xs text-theme-text-muted">密码强度</span>
               <span
                 className={cn(
                   'text-xs font-medium',
@@ -185,7 +185,7 @@ export default function PasswordInput({
               </div>
             )}
           </div>
-          <div className="w-full h-1.5 bg-rock-dark-700 rounded-full overflow-hidden">
+          <div className="w-full h-1.5 bg-theme-hover rounded-full overflow-hidden">
             <div
               className={cn(
                 'h-full rounded-full transition-all duration-300',
@@ -201,7 +201,7 @@ export default function PasswordInput({
                 className={cn(
                   'flex-1 h-0.5 rounded-full transition-all duration-300',
                   analysis.strength === 'empty'
-                    ? 'bg-rock-dark-700'
+                    ? 'bg-theme-hover'
                     : (level === 'weak' &&
                           (analysis.strength === 'weak' ||
                             analysis.strength === 'medium' ||
@@ -211,7 +211,7 @@ export default function PasswordInput({
                             analysis.strength === 'strong')) ||
                         (level === 'strong' && analysis.strength === 'strong')
                       ? getStrengthColorClass(level as 'weak' | 'medium' | 'strong')
-                      : 'bg-rock-dark-700'
+                      : 'bg-theme-hover'
                 )}
               />
             ))}
@@ -224,7 +224,7 @@ export default function PasswordInput({
           {analysis.suggestions.slice(0, 3).map((suggestion, index) => (
             <div
               key={index}
-              className="flex items-start gap-2 text-xs text-rock-light-400"
+              className="flex items-start gap-2 text-xs text-theme-text-secondary"
             >
               <AlertTriangle size={12} className="mt-0.5 flex-shrink-0 text-yellow-500" />
               <span>{suggestion}</span>
@@ -246,9 +246,9 @@ export default function PasswordInput({
       {error && <p className="mt-1.5 text-sm text-red-400">{error}</p>}
 
       {generatorOpen && (
-        <div className="mt-3 p-4 bg-rock-dark-900/80 border border-rock-dark-700 rounded-xl space-y-4">
+        <div className="mt-3 p-4 bg-theme-subtle/80 border border-theme-border rounded-xl space-y-4">
           <div className="flex items-center justify-between">
-            <span className="text-sm font-medium text-white">密码生成器</span>
+            <span className="text-sm font-medium text-theme-text">密码生成器</span>
             <button
               type="button"
               onClick={handleGenerate}
@@ -260,13 +260,13 @@ export default function PasswordInput({
           </div>
 
           <div className="flex items-center gap-2">
-            <code className="flex-1 px-3 py-2 bg-rock-dark-800 rounded-lg text-sm text-green-400 font-mono break-all">
+            <code className="flex-1 px-3 py-2 bg-theme-card rounded-lg text-sm text-green-400 font-mono break-all">
               {generatedPassword || '点击重新生成'}
             </code>
             <button
               type="button"
               onClick={handleCopyGenerated}
-              className="p-2 text-rock-light-400 hover:text-white hover:bg-rock-dark-700 rounded-lg transition-colors"
+              className="p-2 text-theme-text-secondary hover:text-theme-text hover:bg-theme-hover rounded-lg transition-colors"
               title="复制"
             >
               {copied ? <Check size={16} className="text-green-400" /> : <Copy size={16} />}
@@ -276,7 +276,7 @@ export default function PasswordInput({
           <div className="space-y-3">
             <div>
               <div className="flex items-center justify-between mb-1">
-                <span className="text-xs text-rock-light-400">密码长度</span>
+                <span className="text-xs text-theme-text-secondary">密码长度</span>
                 <span className="text-xs text-climbing-orange-500 font-medium">
                   {genLength}
                 </span>
@@ -287,7 +287,7 @@ export default function PasswordInput({
                 max="32"
                 value={genLength}
                 onChange={(e) => setGenLength(parseInt(e.target.value))}
-                className="w-full h-1.5 bg-rock-dark-700 rounded-full appearance-none cursor-pointer accent-climbing-orange-500"
+                className="w-full h-1.5 bg-theme-hover rounded-full appearance-none cursor-pointer accent-climbing-orange-500"
               />
             </div>
 
@@ -318,9 +318,9 @@ export default function PasswordInput({
                     type="checkbox"
                     checked={checked}
                     onChange={(e) => onChange(e.target.checked)}
-                    className="w-4 h-4 rounded bg-rock-dark-800 border-rock-dark-600 text-climbing-orange-500 focus:ring-climbing-orange-500 focus:ring-offset-0"
+                    className="w-4 h-4 rounded bg-theme-card border-theme-border text-climbing-orange-500 focus:ring-climbing-orange-500 focus:ring-offset-0"
                   />
-                  <span className="text-xs text-rock-light-300">{label}</span>
+                  <span className="text-xs text-theme-text-secondary">{label}</span>
                 </label>
               ))}
             </div>

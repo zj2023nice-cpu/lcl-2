@@ -144,20 +144,20 @@ export default function Home() {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-white">欢迎回来 👋</h1>
-          <p className="text-rock-light-500 mt-1">今天想要爬什么线路？</p>
+          <h1 className="text-2xl font-bold text-theme-text">欢迎回来 👋</h1>
+          <p className="text-theme-text-muted mt-1">今天想要爬什么线路？</p>
         </div>
         <div className="relative">
           <button
             onClick={() => setShowGymDropdown(!showGymDropdown)}
-            className="flex items-center gap-2 px-4 py-2 bg-rock-dark-800 border border-rock-dark-700 rounded-lg hover:border-rock-dark-600 transition-colors"
+            className="flex items-center gap-2 px-4 py-2 bg-theme-card border border-theme-border rounded-lg hover:border-theme-border transition-colors"
           >
             <MapPin size={18} className="text-climbing-orange-500" />
-            <span className="text-white font-medium">{currentGym?.name || '选择岩馆'}</span>
-            <ChevronRight size={16} className={`text-rock-light-500 transition-transform ${showGymDropdown ? 'rotate-90' : ''}`} />
+            <span className="text-theme-text font-medium">{currentGym?.name || '选择岩馆'}</span>
+            <ChevronRight size={16} className={`text-theme-text-muted transition-transform ${showGymDropdown ? 'rotate-90' : ''}`} />
           </button>
           {showGymDropdown && (
-            <div className="absolute right-0 top-full mt-2 w-64 bg-rock-dark-800 border border-rock-dark-700 rounded-lg shadow-xl z-50 overflow-hidden">
+            <div className="absolute right-0 top-full mt-2 w-64 bg-theme-card border border-theme-border rounded-lg shadow-xl z-50 overflow-hidden">
               {gyms.map((gym) => (
                 <button
                   key={gym.id}
@@ -165,12 +165,12 @@ export default function Home() {
                     setCurrentGym(gym);
                     setShowGymDropdown(false);
                   }}
-                  className={`w-full px-4 py-3 text-left hover:bg-rock-dark-700 transition-colors ${
-                    currentGym?.id === gym.id ? 'bg-rock-dark-700' : ''
+                  className={`w-full px-4 py-3 text-left hover:bg-theme-hover transition-colors ${
+                    currentGym?.id === gym.id ? 'bg-theme-hover' : ''
                   }`}
                 >
-                  <p className="font-medium text-white">{gym.name}</p>
-                  <p className="text-sm text-rock-light-500 truncate">{gym.address}</p>
+                  <p className="font-medium text-theme-text">{gym.name}</p>
+                  <p className="text-sm text-theme-text-muted truncate">{gym.address}</p>
                 </button>
               ))}
             </div>
@@ -182,14 +182,14 @@ export default function Home() {
         {statsData.map((stat, index) => {
           const Icon = stat.icon;
           return (
-            <Card key={index} className="p-5 hover:border-rock-dark-600 transition-colors">
+            <Card key={index} className="p-5 hover:border-theme-border transition-colors">
               <div className="flex items-center gap-4">
                 <div className={`p-3 rounded-lg ${stat.bgColor}`}>
                   <Icon size={24} className={stat.color} />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold text-white">{stat.value}</p>
-                  <p className="text-sm text-rock-light-500">{stat.label}</p>
+                  <p className="text-2xl font-bold text-theme-text">{stat.value}</p>
+                  <p className="text-sm text-theme-text-muted">{stat.label}</p>
                 </div>
               </div>
             </Card>
@@ -198,8 +198,8 @@ export default function Home() {
       </div>
 
       <Card>
-        <div className="p-5 border-b border-rock-dark-700">
-          <h2 className="text-lg font-semibold text-white">快速入口</h2>
+        <div className="p-5 border-b border-theme-border">
+          <h2 className="text-lg font-semibold text-theme-text">快速入口</h2>
         </div>
         <div className="p-4 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
           {quickEntries.map((entry, index) => {
@@ -208,12 +208,12 @@ export default function Home() {
               <Link
                 key={index}
                 to={entry.path}
-                className="flex flex-col items-center gap-3 p-4 bg-rock-dark-900 rounded-xl hover:bg-rock-dark-800 transition-all hover:scale-105 group"
+                className="flex flex-col items-center gap-3 p-4 bg-theme-subtle rounded-xl hover:bg-theme-card transition-all hover:scale-105 group"
               >
                 <div className={`p-3 rounded-xl ${entry.bgColor} group-hover:scale-110 transition-transform`}>
                   <Icon size={24} className={entry.color} />
                 </div>
-                <span className="text-sm font-medium text-white">{entry.label}</span>
+                <span className="text-sm font-medium text-theme-text">{entry.label}</span>
               </Link>
             );
           })}
@@ -221,8 +221,8 @@ export default function Home() {
       </Card>
 
       <Card>
-        <div className="p-5 border-b border-rock-dark-700 flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-white">最近开放线路</h2>
+        <div className="p-5 border-b border-theme-border flex items-center justify-between">
+          <h2 className="text-lg font-semibold text-theme-text">最近开放线路</h2>
           {walls.length > 0 && (
             <Link to="/routes" className="text-sm text-climbing-orange-500 hover:text-climbing-orange-400 transition-colors flex items-center gap-1">
               查看全部
@@ -237,8 +237,8 @@ export default function Home() {
               to={`/routes/${route.id}`}
               className="group"
             >
-              <Card className="h-full overflow-hidden hover:border-rock-dark-600 transition-all hover:shadow-lg">
-                <div className="h-3 bg-rock-dark-700 relative">
+              <Card className="h-full overflow-hidden hover:border-theme-border transition-all hover:shadow-lg">
+                <div className="h-3 bg-theme-border relative">
                   <div
                     className="absolute inset-0 group-hover:opacity-80 transition-opacity"
                     style={{ backgroundColor: route.color }}
@@ -246,8 +246,8 @@ export default function Home() {
                 </div>
                 <div className="p-4">
                   <div className="flex items-start justify-between gap-2 mb-2">
-                    <h3 className="font-semibold text-white line-clamp-1">{route.name}</h3>
-                    <span className="px-2 py-0.5 bg-rock-dark-700 rounded text-xs font-bold text-climbing-orange-400 whitespace-nowrap">
+                    <h3 className="font-semibold text-theme-text line-clamp-1">{route.name}</h3>
+                    <span className="px-2 py-0.5 bg-theme-border rounded text-xs font-bold text-climbing-orange-400 whitespace-nowrap">
                       {route.grade}
                     </span>
                   </div>
@@ -259,7 +259,7 @@ export default function Home() {
                       {routeStatusLabels[route.status] || route.status}
                     </span>
                   </div>
-                  <div className="flex items-center gap-1 mt-3 text-xs text-rock-light-500">
+                  <div className="flex items-center gap-1 mt-3 text-xs text-theme-text-muted">
                     <Calendar size={12} />
                     <span>{formatDate(route.createdAt)}</span>
                   </div>
@@ -268,7 +268,7 @@ export default function Home() {
             </Link>
           ))}
           {recentRoutes.length === 0 && (
-            <div className="col-span-full text-center py-8 text-rock-light-500">
+            <div className="col-span-full text-center py-8 text-theme-text-muted">
               暂无线路数据
             </div>
           )}

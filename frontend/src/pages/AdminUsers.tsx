@@ -232,50 +232,50 @@ export default function AdminUsers() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-white">用户管理</h1>
-          <p className="text-rock-light-500 mt-1">管理岩馆所有用户账号</p>
+          <h1 className="text-2xl font-bold text-theme-text">用户管理</h1>
+          <p className="text-theme-text-muted mt-1">管理岩馆所有用户账号</p>
         </div>
       </div>
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card className="p-5 hover:border-rock-dark-600 transition-colors cursor-pointer" onClick={() => setActiveTab('all')}>
+        <Card className="p-5 hover:border-theme-border transition-colors cursor-pointer" onClick={() => setActiveTab('all')}>
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-3xl font-bold text-white">{stats.total}</p>
-              <p className="text-sm text-rock-light-500 mt-1">全部用户</p>
+              <p className="text-3xl font-bold text-theme-text">{stats.total}</p>
+              <p className="text-sm text-theme-text-muted mt-1">全部用户</p>
             </div>
             <div className="p-3 rounded-xl bg-blue-500/20">
               <Users size={24} className="text-blue-400" />
             </div>
           </div>
         </Card>
-        <Card className={`p-5 hover:border-rock-dark-600 transition-colors cursor-pointer ${activeTab === 'pending' ? 'border-yellow-500/50' : ''}`} onClick={() => setActiveTab('pending')}>
+        <Card className={`p-5 hover:border-theme-border transition-colors cursor-pointer ${activeTab === 'pending' ? 'border-yellow-500/50' : ''}`} onClick={() => setActiveTab('pending')}>
           <div className="flex items-center justify-between">
             <div>
               <p className="text-3xl font-bold text-yellow-400">{stats.pending}</p>
-              <p className="text-sm text-rock-light-500 mt-1">待审核</p>
+              <p className="text-sm text-theme-text-muted mt-1">待审核</p>
             </div>
             <div className="p-3 rounded-xl bg-yellow-500/20">
               <Clock size={24} className="text-yellow-400" />
             </div>
           </div>
         </Card>
-        <Card className={`p-5 hover:border-rock-dark-600 transition-colors cursor-pointer ${activeTab === 'certified' ? 'border-green-500/50' : ''}`} onClick={() => setActiveTab('certified')}>
+        <Card className={`p-5 hover:border-theme-border transition-colors cursor-pointer ${activeTab === 'certified' ? 'border-green-500/50' : ''}`} onClick={() => setActiveTab('certified')}>
           <div className="flex items-center justify-between">
             <div>
               <p className="text-3xl font-bold text-green-400">{stats.certified}</p>
-              <p className="text-sm text-rock-light-500 mt-1">认证用户</p>
+              <p className="text-sm text-theme-text-muted mt-1">认证用户</p>
             </div>
             <div className="p-3 rounded-xl bg-green-500/20">
               <Award size={24} className="text-green-400" />
             </div>
           </div>
         </Card>
-        <Card className={`p-5 hover:border-rock-dark-600 transition-colors cursor-pointer ${activeTab === 'setter' ? 'border-purple-500/50' : ''}`} onClick={() => setActiveTab('setter')}>
+        <Card className={`p-5 hover:border-theme-border transition-colors cursor-pointer ${activeTab === 'setter' ? 'border-purple-500/50' : ''}`} onClick={() => setActiveTab('setter')}>
           <div className="flex items-center justify-between">
             <div>
               <p className="text-3xl font-bold text-purple-400">{stats.setters}</p>
-              <p className="text-sm text-rock-light-500 mt-1">定线员</p>
+              <p className="text-sm text-theme-text-muted mt-1">定线员</p>
             </div>
             <div className="p-3 rounded-xl bg-purple-500/20">
               <Wrench size={24} className="text-purple-400" />
@@ -287,30 +287,30 @@ export default function AdminUsers() {
       <Card className="p-5">
         <div className="flex items-center justify-between mb-4">
           <div>
-            <h3 className="font-semibold text-white flex items-center gap-2">
+            <h3 className="font-semibold text-theme-text flex items-center gap-2">
               <Shield size={18} className="text-climbing-orange-400" />
               角色权限高亮演示
             </h3>
-            <p className="text-xs text-rock-light-500 mt-1">
+            <p className="text-xs text-theme-text-muted mt-1">
               假设某目标用户当前角色为「认证攀岩者」，以下是当前登录用户（{authUser ? roleLabels[authUser.role] : '未登录'}）对其可执行的角色变更：
             </p>
           </div>
           <div className="flex items-center gap-4 text-xs">
             <span className="flex items-center gap-1.5">
               <span className="w-2 h-2 rounded-full bg-green-400" />
-              <span className="text-rock-light-400">可提升</span>
+              <span className="text-theme-text-secondary">可提升</span>
             </span>
             <span className="flex items-center gap-1.5">
-              <span className="w-2 h-2 rounded-full bg-white/50" />
-              <span className="text-rock-light-400">当前</span>
+              <span className="w-2 h-2 rounded-full bg-theme-text/50" />
+              <span className="text-theme-text-secondary">当前</span>
             </span>
             <span className="flex items-center gap-1.5">
               <span className="w-2 h-2 rounded-full bg-yellow-400" />
-              <span className="text-rock-light-400">可降低</span>
+              <span className="text-theme-text-secondary">可降低</span>
             </span>
             <span className="flex items-center gap-1.5">
-              <span className="w-2 h-2 rounded-full bg-rock-light-600 opacity-50" />
-              <span className="text-rock-light-400">无权限</span>
+              <span className="w-2 h-2 rounded-full bg-theme-text-muted opacity-50" />
+              <span className="text-theme-text-secondary">无权限</span>
             </span>
           </div>
         </div>
@@ -323,8 +323,8 @@ export default function AdminUsers() {
                 <span className={
                   highlight === 'promote' ? 'text-[10px] text-green-400 font-medium' :
                   highlight === 'demote' ? 'text-[10px] text-yellow-400 font-medium' :
-                  highlight === 'current' ? 'text-[10px] text-white/60 font-medium' :
-                  'text-[10px] text-rock-light-600'
+                  highlight === 'current' ? 'text-[10px] text-theme-text/60 font-medium' :
+                  'text-[10px] text-theme-text-muted'
                 }>
                   {highlight === 'promote' ? '⬆ 可提升' :
                    highlight === 'demote' ? '⬇ 可降低' :
@@ -352,7 +352,7 @@ export default function AdminUsers() {
                 className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-lg transition-all ${
                   isActive
                     ? 'bg-climbing-orange-500/20 text-climbing-orange-400'
-                    : 'text-rock-light-400 hover:text-white hover:bg-rock-dark-700/50'
+                    : 'text-theme-text-secondary hover:text-theme-text hover:bg-theme-hover/50'
                 }`}
               >
                 <Icon size={18} />
@@ -369,7 +369,7 @@ export default function AdminUsers() {
             <div className="relative">
               <Search
                 size={18}
-                className="absolute left-3 top-1/2 -translate-y-1/2 text-rock-light-500"
+                className="absolute left-3 top-1/2 -translate-y-1/2 text-theme-text-muted"
               />
               <input
                 type="text"
@@ -379,19 +379,19 @@ export default function AdminUsers() {
                   setSearchQuery(e.target.value);
                   setPage(1);
                 }}
-                className="w-full pl-10 pr-4 py-2.5 bg-rock-dark-900 border border-rock-dark-700 rounded-lg text-white placeholder-rock-light-600 focus:outline-none focus:border-climbing-orange-500 transition-colors"
+                className="w-full pl-10 pr-4 py-2.5 bg-theme-subtle border border-theme-border rounded-lg text-theme-text placeholder-theme-text-muted focus:outline-none focus:border-climbing-orange-500 transition-colors"
               />
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <Filter size={16} className="text-rock-light-500" />
+            <Filter size={16} className="text-theme-text-muted" />
             <select
               value={filterRole}
               onChange={(e) => {
                 setFilterRole(e.target.value);
                 setPage(1);
               }}
-              className="bg-rock-dark-900 border border-rock-dark-700 rounded-lg px-3 py-2.5 text-white text-sm focus:outline-none focus:border-climbing-orange-500"
+              className="bg-theme-subtle border border-theme-border rounded-lg px-3 py-2.5 text-theme-text text-sm focus:outline-none focus:border-climbing-orange-500"
             >
               {roleFilterOptions.map((opt) => (
                 <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -404,29 +404,29 @@ export default function AdminUsers() {
       <Card className="overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
-            <thead className="bg-rock-dark-800/50">
+            <thead className="bg-theme-card/50">
               <tr>
-                <th className="text-left px-5 py-3 text-sm font-medium text-rock-light-400">用户</th>
-                <th className="text-left px-5 py-3 text-sm font-medium text-rock-light-400">角色</th>
-                <th className="text-left px-5 py-3 text-sm font-medium text-rock-light-400">认证状态</th>
-                <th className="text-left px-5 py-3 text-sm font-medium text-rock-light-400">攀爬次数</th>
-                <th className="text-left px-5 py-3 text-sm font-medium text-rock-light-400">加入时间</th>
-                <th className="text-right px-5 py-3 text-sm font-medium text-rock-light-400">操作</th>
+                <th className="text-left px-5 py-3 text-sm font-medium text-theme-text-secondary">用户</th>
+                <th className="text-left px-5 py-3 text-sm font-medium text-theme-text-secondary">角色</th>
+                <th className="text-left px-5 py-3 text-sm font-medium text-theme-text-secondary">认证状态</th>
+                <th className="text-left px-5 py-3 text-sm font-medium text-theme-text-secondary">攀爬次数</th>
+                <th className="text-left px-5 py-3 text-sm font-medium text-theme-text-secondary">加入时间</th>
+                <th className="text-right px-5 py-3 text-sm font-medium text-theme-text-secondary">操作</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-rock-dark-700">
+            <tbody className="divide-y divide-theme-border">
               {loading ? (
                 <tr>
-                  <td colSpan={6} className="px-5 py-12 text-center text-rock-light-500">
+                  <td colSpan={6} className="px-5 py-12 text-center text-theme-text-muted">
                     加载中...
                   </td>
                 </tr>
               ) : paginatedUsers.length === 0 ? (
                 <tr>
                   <td colSpan={6} className="px-5 py-12 text-center">
-                    <Users size={48} className="mx-auto text-rock-light-600 mb-4" />
-                    <h3 className="text-lg font-medium text-white mb-2">暂无用户</h3>
-                    <p className="text-rock-light-500">没有找到符合条件的用户</p>
+                    <Users size={48} className="mx-auto text-theme-text-muted mb-4" />
+                    <h3 className="text-lg font-medium text-theme-text mb-2">暂无用户</h3>
+                    <p className="text-theme-text-muted">没有找到符合条件的用户</p>
                   </td>
                 </tr>
               ) : (
@@ -436,15 +436,15 @@ export default function AdminUsers() {
                   const isBanned = !!(user.bannedUntil && new Date(user.bannedUntil) > new Date());
                   const canBan = authUser?.role === 'platform_admin' || authUser?.role === 'gym_admin';
                   return (
-                    <tr key={user.id} className="hover:bg-rock-dark-800/30 transition-colors">
+                    <tr key={user.id} className="hover:bg-theme-card/30 transition-colors">
                       <td className="px-5 py-4">
                         <div className="flex items-center gap-3">
                           <div className="w-10 h-10 bg-gradient-to-br from-climbing-orange-400 to-climbing-orange-600 rounded-full flex items-center justify-center">
                             <User size={18} className="text-white" />
                           </div>
                           <div>
-                            <p className="font-medium text-white">{user.name}</p>
-                            <div className="flex items-center gap-3 text-xs text-rock-light-500 mt-0.5">
+                            <p className="font-medium text-theme-text">{user.name}</p>
+                            <div className="flex items-center gap-3 text-xs text-theme-text-muted mt-0.5">
                               {user.email && (
                                 <span className="flex items-center gap-1">
                                   <Mail size={10} />
@@ -481,11 +481,11 @@ export default function AdminUsers() {
                         </div>
                       </td>
                       <td className="px-5 py-4">
-                        <span className="text-sm text-white font-medium">{user.ascentCount}</span>
-                        <span className="text-xs text-rock-light-500 ml-1">次</span>
+                        <span className="text-sm text-theme-text font-medium">{user.ascentCount}</span>
+                        <span className="text-xs text-theme-text-muted ml-1">次</span>
                       </td>
                       <td className="px-5 py-4">
-                        <span className="text-sm text-rock-light-400 flex items-center gap-1">
+                        <span className="text-sm text-theme-text-secondary flex items-center gap-1">
                           <Calendar size={12} />
                           {formatDate(user.createdAt)}
                         </span>
@@ -547,8 +547,8 @@ export default function AdminUsers() {
                               <Ban size={16} />
                             </button>
                           )}
-                          <button className="p-1.5 hover:bg-rock-dark-700 rounded-lg transition-colors">
-                            <MoreVertical size={16} className="text-rock-light-500" />
+                          <button className="p-1.5 hover:bg-theme-hover rounded-lg transition-colors">
+                            <MoreVertical size={16} className="text-theme-text-muted" />
                           </button>
                         </div>
                       </td>
@@ -561,8 +561,8 @@ export default function AdminUsers() {
         </div>
 
         {totalPages > 1 && (
-          <div className="flex items-center justify-between px-5 py-4 border-t border-rock-dark-700">
-            <span className="text-sm text-rock-light-500">
+          <div className="flex items-center justify-between px-5 py-4 border-t border-theme-border">
+            <span className="text-sm text-theme-text-muted">
               共 {filteredUsers.length} 条记录
             </span>
             <div className="flex items-center gap-2">

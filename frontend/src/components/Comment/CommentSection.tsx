@@ -251,17 +251,17 @@ export default function CommentSection({ routeId }: CommentSectionProps) {
 
   return (
     <Card>
-      <div className="p-5 border-b border-rock-dark-700">
+      <div className="p-5 border-b border-theme-border">
         <div className="flex items-center justify-between">
           <div>
             <div className="flex items-center gap-2">
               <MessageSquare size={20} className="text-climbing-orange-400" />
-              <h3 className="font-semibold text-white">评论区</h3>
-              <span className="text-xs text-rock-light-500 px-2 py-0.5 bg-rock-dark-700 rounded-full">
+              <h3 className="font-semibold text-theme-text">评论区</h3>
+              <span className="text-xs text-theme-text-muted px-2 py-0.5 bg-theme-hover rounded-full">
                 {totalComments}
               </span>
             </div>
-            <p className="text-xs text-rock-light-500 mt-1">
+            <p className="text-xs text-theme-text-muted mt-1">
               {totalParents > 0
                 ? `共 ${totalParents} 条主评论，${totalComments} 条包含回复`
                 : '暂无评论，快来抢沙发吧'}
@@ -270,7 +270,7 @@ export default function CommentSection({ routeId }: CommentSectionProps) {
           <button
             onClick={handleRefresh}
             disabled={isRefreshing}
-            className="p-2 rounded-lg hover:bg-rock-dark-700 text-rock-light-400 hover:text-white transition-all disabled:opacity-50"
+            className="p-2 rounded-lg hover:bg-theme-hover text-theme-text-secondary hover:text-theme-text transition-all disabled:opacity-50"
             title="刷新评论"
           >
             <RefreshCw
@@ -291,10 +291,10 @@ export default function CommentSection({ routeId }: CommentSectionProps) {
             />
           </div>
         ) : (
-          <div className="mb-6 p-4 bg-rock-dark-900 rounded-xl border border-rock-dark-700 flex items-center gap-3">
-            <Lock size={18} className="text-rock-light-500 flex-shrink-0" />
+          <div className="mb-6 p-4 bg-theme-subtle rounded-xl border border-theme-border flex items-center gap-3">
+            <Lock size={18} className="text-theme-text-muted flex-shrink-0" />
             <div>
-              <p className="text-sm text-rock-light-400">
+              <p className="text-sm text-theme-text-secondary">
                 {user
                   ? '请完成身份认证后发表评论'
                   : '请登录后发表评论'}
@@ -303,21 +303,21 @@ export default function CommentSection({ routeId }: CommentSectionProps) {
           </div>
         )}
 
-        <div className="space-y-0 divide-y divide-rock-dark-700/50">
+        <div className="space-y-0 divide-y divide-theme-border/50">
           {isLoading ? (
             <div className="space-y-4 py-4">
               {[1, 2, 3].map((i) => (
                 <div key={i} className="flex gap-3">
-                  <div className="w-9 h-9 rounded-full bg-rock-dark-700 animate-pulse flex-shrink-0" />
+                  <div className="w-9 h-9 rounded-full bg-theme-hover animate-pulse flex-shrink-0" />
                   <div className="flex-1 space-y-2">
                     <div className="flex gap-2 items-center">
-                      <div className="h-4 w-24 bg-rock-dark-700 rounded animate-pulse" />
-                      <div className="h-3 w-12 bg-rock-dark-700 rounded animate-pulse" />
+                      <div className="h-4 w-24 bg-theme-hover rounded animate-pulse" />
+                      <div className="h-3 w-12 bg-theme-hover rounded animate-pulse" />
                     </div>
-                    <div className="h-16 bg-rock-dark-700 rounded-lg animate-pulse" />
+                    <div className="h-16 bg-theme-hover rounded-lg animate-pulse" />
                     <div className="flex gap-3">
-                      <div className="h-4 w-12 bg-rock-dark-700 rounded animate-pulse" />
-                      <div className="h-4 w-12 bg-rock-dark-700 rounded animate-pulse" />
+                      <div className="h-4 w-12 bg-theme-hover rounded animate-pulse" />
+                      <div className="h-4 w-12 bg-theme-hover rounded animate-pulse" />
                     </div>
                   </div>
                 </div>
@@ -327,10 +327,10 @@ export default function CommentSection({ routeId }: CommentSectionProps) {
             <div className="py-16 text-center">
               <MessageSquare
                 size={48}
-                className="mx-auto text-rock-light-600 mb-4 opacity-50"
+                className="mx-auto text-theme-text-muted mb-4 opacity-50"
               />
-              <p className="text-rock-light-500">还没有评论</p>
-              <p className="text-xs text-rock-light-600 mt-1">
+              <p className="text-theme-text-muted">还没有评论</p>
+              <p className="text-xs text-theme-text-muted mt-1">
                 {canComment ? '成为第一个发表评论的人吧' : '登录后即可发表评论'}
               </p>
             </div>
@@ -351,7 +351,7 @@ export default function CommentSection({ routeId }: CommentSectionProps) {
         </div>
 
         {!isLoading && hasMore && (
-          <div className="mt-4 pt-4 border-t border-rock-dark-700">
+          <div className="mt-4 pt-4 border-t border-theme-border">
             <Button
               variant="secondary"
               fullWidth

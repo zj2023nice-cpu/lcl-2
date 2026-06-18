@@ -256,21 +256,21 @@ export default function Profile() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-white">个人中心</h1>
-        <p className="text-rock-light-500 mt-1">管理你的账户信息和攀岩目标</p>
+        <h1 className="text-2xl font-bold text-theme-text">个人中心</h1>
+        <p className="text-theme-text-muted mt-1">管理你的账户信息和攀岩目标</p>
       </div>
 
       {badgeStats && (
         <Card>
-          <div className="p-4 border-b border-rock-dark-700">
+          <div className="p-4 border-b border-theme-border">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="p-2 rounded-lg bg-amber-500/20">
                   <Award size={20} className="text-amber-500" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-white">我的成就</h3>
-                  <p className="text-xs text-rock-light-500">
+                  <h3 className="font-semibold text-theme-text">我的成就</h3>
+                  <p className="text-xs text-theme-text-muted">
                     已解锁 {badgeStats.unlocked}/{badgeStats.total} 个徽章
                   </p>
                 </div>
@@ -278,7 +278,7 @@ export default function Profile() {
               <div className="flex items-center gap-3">
                 <div className="text-right mr-4">
                   <p className="text-xl font-bold text-amber-500">{badgeStats.totalPoints}</p>
-                  <p className="text-xs text-rock-light-500">总积分</p>
+                  <p className="text-xs text-theme-text-muted">总积分</p>
                 </div>
                 <Button
                   variant="ghost"
@@ -318,30 +318,30 @@ export default function Profile() {
                 ))}
                 <button
                   onClick={() => setActiveTab('badges')}
-                  className="flex-shrink-0 flex flex-col items-center justify-center w-24 h-24 rounded-xl border-2 border-dashed border-rock-dark-600 hover:border-climbing-orange-500 transition-colors group"
+                  className="flex-shrink-0 flex flex-col items-center justify-center w-24 h-24 rounded-xl border-2 border-dashed border-theme-border hover:border-climbing-orange-500 transition-colors group"
                 >
-                  <ChevronRight size={24} className="text-rock-light-500 group-hover:text-climbing-orange-500 mb-1" />
-                  <span className="text-xs text-rock-light-500 group-hover:text-climbing-orange-500">查看全部</span>
+                  <ChevronRight size={24} className="text-theme-text-muted group-hover:text-climbing-orange-500 mb-1" />
+                  <span className="text-xs text-theme-text-muted group-hover:text-climbing-orange-500">查看全部</span>
                 </button>
               </div>
             ) : (
               <div className="text-center py-6">
-                <Award size={32} className="mx-auto text-rock-dark-600 mb-2" />
-                <p className="text-rock-light-500 text-sm">暂无已解锁的徽章</p>
-                <p className="text-rock-light-600 text-xs mt-1">完成攀岩成就来解锁徽章吧！</p>
+                <Award size={32} className="mx-auto text-theme-border mb-2" />
+                <p className="text-theme-text-muted text-sm">暂无已解锁的徽章</p>
+                <p className="text-theme-text-muted text-xs mt-1">完成攀岩成就来解锁徽章吧！</p>
               </div>
             )}
           </div>
         </Card>
       )}
 
-      <div className="flex gap-2 border-b border-rock-dark-700">
+      <div className="flex gap-2 border-b border-theme-border">
         <button
           onClick={() => setActiveTab('overview')}
           className={`px-4 py-2.5 font-medium text-sm transition-colors relative ${
             activeTab === 'overview'
               ? 'text-climbing-orange-500'
-              : 'text-rock-light-400 hover:text-white'
+              : 'text-theme-text-secondary hover:text-theme-text'
           }`}
         >
           概览
@@ -354,7 +354,7 @@ export default function Profile() {
           className={`px-4 py-2.5 font-medium text-sm transition-colors relative ${
             activeTab === 'badges'
               ? 'text-climbing-orange-500'
-              : 'text-rock-light-400 hover:text-white'
+              : 'text-theme-text-secondary hover:text-theme-text'
           }`}
         >
           成就徽章
@@ -379,13 +379,13 @@ export default function Profile() {
                   <div className="w-24 h-24 bg-gradient-to-br from-climbing-orange-400 to-climbing-orange-600 rounded-full flex items-center justify-center flex-shrink-0 shadow-lg shadow-climbing-orange-500/30">
                     <User size={40} className="text-white" />
                   </div>
-                  <button className="absolute bottom-0 right-0 w-7 h-7 bg-rock-dark-700 border-2 border-rock-dark-800 rounded-full flex items-center justify-center hover:bg-rock-dark-600 transition-colors">
-                    <Edit size={12} className="text-rock-light-400" />
+                  <button className="absolute bottom-0 right-0 w-7 h-7 bg-theme-hover border-2 border-theme-card rounded-full flex items-center justify-center hover:bg-theme-border transition-colors">
+                    <Edit size={12} className="text-theme-text-secondary" />
                   </button>
                 </div>
                 <div className="flex-1">
                   <div className="flex items-center gap-3 mb-1 flex-wrap">
-                    <h2 className="text-xl font-bold text-white">
+                    <h2 className="text-xl font-bold text-theme-text">
                       {user?.name || '攀岩爱好者'}
                     </h2>
                     <RoleTag role={userRole} highlight="current" size="sm" />
@@ -395,41 +395,41 @@ export default function Profile() {
                       </span>
                     )}
                   </div>
-                  <p className="text-rock-light-500">{user?.email || '未设置邮箱'}</p>
-                  <p className="text-sm text-rock-light-600 mt-1">ID: {user?.id ?? '-'}</p>
+                  <p className="text-theme-text-muted">{user?.email || '未设置邮箱'}</p>
+                  <p className="text-sm text-theme-text-muted mt-1">ID: {user?.id ?? '-'}</p>
                 </div>
               </div>
 
-              <div className="grid grid-cols-4 gap-4 mt-6 pt-6 border-t border-rock-dark-700">
-                <div className="text-center p-3 bg-rock-dark-900/50 rounded-lg">
+              <div className="grid grid-cols-4 gap-4 mt-6 pt-6 border-t border-theme-border">
+                <div className="text-center p-3 bg-theme-subtle/50 rounded-lg">
                   <p className="text-2xl font-bold text-climbing-orange-500">{stats.totalAscents}</p>
-                  <p className="text-xs text-rock-light-500 mt-1">完攀线路</p>
+                  <p className="text-xs text-theme-text-muted mt-1">完攀线路</p>
                 </div>
-                <div className="text-center p-3 bg-rock-dark-900/50 rounded-lg">
+                <div className="text-center p-3 bg-theme-subtle/50 rounded-lg">
                   <p className="text-2xl font-bold text-green-400">{stats.maxGrade}</p>
-                  <p className="text-xs text-rock-light-500 mt-1">最高难度</p>
+                  <p className="text-xs text-theme-text-muted mt-1">最高难度</p>
                 </div>
-                <div className="text-center p-3 bg-rock-dark-900/50 rounded-lg">
+                <div className="text-center p-3 bg-theme-subtle/50 rounded-lg">
                   <p className="text-2xl font-bold text-blue-400">{stats.climbingDays}</p>
-                  <p className="text-xs text-rock-light-500 mt-1">攀岩天数</p>
+                  <p className="text-xs text-theme-text-muted mt-1">攀岩天数</p>
                 </div>
-                <div className="text-center p-3 bg-rock-dark-900/50 rounded-lg">
+                <div className="text-center p-3 bg-theme-subtle/50 rounded-lg">
                   <p className="text-2xl font-bold text-purple-400">{stats.monthsClimbing}</p>
-                  <p className="text-xs text-rock-light-500 mt-1">岩龄(月)</p>
+                  <p className="text-xs text-theme-text-muted mt-1">岩龄(月)</p>
                 </div>
               </div>
             </div>
           </Card>
 
           <Card>
-            <div className="p-5 border-b border-rock-dark-700 flex items-center justify-between">
+            <div className="p-5 border-b border-theme-border flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="p-2 rounded-lg bg-climbing-orange-500/20">
                   <Target size={20} className="text-climbing-orange-500" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-white">目标设定</h3>
-                  <p className="text-xs text-rock-light-500">设定你的攀岩目标，追踪进步</p>
+                  <h3 className="font-semibold text-theme-text">目标设定</h3>
+                  <p className="text-xs text-theme-text-muted">设定你的攀岩目标，追踪进步</p>
                 </div>
               </div>
               <Button
@@ -445,11 +445,11 @@ export default function Profile() {
               {isEditingGoal ? (
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-sm text-rock-light-400 mb-1.5">目标难度</label>
+                    <label className="block text-sm text-theme-text-secondary mb-1.5">目标难度</label>
                     <select
                       value={targetGrade}
                       onChange={(e) => setTargetGrade(e.target.value)}
-                      className="w-full bg-rock-dark-900 border border-rock-dark-700 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-climbing-orange-500"
+                      className="w-full bg-theme-subtle border border-theme-border rounded-lg px-4 py-2.5 text-theme-text focus:outline-none focus:border-climbing-orange-500"
                     >
                       <option value="V3">V3</option>
                       <option value="V4">V4</option>
@@ -462,12 +462,12 @@ export default function Profile() {
                     </select>
                   </div>
                   <div>
-                    <label className="block text-sm text-rock-light-400 mb-1.5">目标截止日期</label>
+                    <label className="block text-sm text-theme-text-secondary mb-1.5">目标截止日期</label>
                     <input
                       type="date"
                       value={targetDate}
                       onChange={(e) => setTargetDate(e.target.value)}
-                      className="w-full bg-rock-dark-900 border border-rock-dark-700 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-climbing-orange-500"
+                      className="w-full bg-theme-subtle border border-theme-border rounded-lg px-4 py-2.5 text-theme-text focus:outline-none focus:border-climbing-orange-500"
                     />
                   </div>
                   <div className="flex gap-3 pt-2">
@@ -491,27 +491,27 @@ export default function Profile() {
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm text-rock-light-400">当前目标</p>
+                      <p className="text-sm text-theme-text-secondary">当前目标</p>
                       <p className="text-2xl font-bold text-climbing-orange-500 mt-1">{targetGrade}</p>
                     </div>
                     <div className="text-right">
-                      <p className="text-sm text-rock-light-400">截止日期</p>
-                      <p className="text-white font-medium mt-1">{targetDate || '未设定'}</p>
+                      <p className="text-sm text-theme-text-secondary">截止日期</p>
+                      <p className="text-theme-text font-medium mt-1">{targetDate || '未设定'}</p>
                     </div>
                   </div>
 
                   <div>
                     <div className="flex items-center justify-between mb-2">
-                      <span className="text-sm text-rock-light-400">完成进度</span>
-                      <span className="text-sm font-medium text-white">{progressPercent}%</span>
+                      <span className="text-sm text-theme-text-secondary">完成进度</span>
+                      <span className="text-sm font-medium text-theme-text">{progressPercent}%</span>
                     </div>
-                    <div className="h-3 bg-rock-dark-700 rounded-full overflow-hidden">
+                    <div className="h-3 bg-theme-border rounded-full overflow-hidden">
                       <div
                         className="h-full bg-gradient-to-r from-climbing-orange-500 to-climbing-orange-400 rounded-full transition-all"
                         style={{ width: `${progressPercent}%` }}
                       />
                     </div>
-                    <div className="flex justify-between mt-2 text-xs text-rock-light-500">
+                    <div className="flex justify-between mt-2 text-xs text-theme-text-muted">
                       <span>当前：{stats.maxGrade}</span>
                       <span>目标：{targetGrade}</span>
                     </div>
@@ -531,13 +531,13 @@ export default function Profile() {
           </Card>
 
           <Card>
-            <div className="p-5 border-b border-rock-dark-700 flex items-center gap-3">
+            <div className="p-5 border-b border-theme-border flex items-center gap-3">
               <div className="p-2 rounded-lg bg-purple-500/20">
                 <Gauge size={20} className="text-purple-400" />
               </div>
               <div>
-                <h3 className="font-semibold text-white">难度校准</h3>
-                <p className="text-xs text-rock-light-500">你的难度投票与官方定级的偏差分析</p>
+                <h3 className="font-semibold text-theme-text">难度校准</h3>
+                <p className="text-xs text-theme-text-muted">你的难度投票与官方定级的偏差分析</p>
               </div>
             </div>
             <div className="p-5">
@@ -550,21 +550,21 @@ export default function Profile() {
                 </div>
                 <div className="flex-1">
                   <div className="flex items-center justify-between mb-2">
-                    <span className="text-sm text-rock-light-400">平均偏差</span>
-                    <span className="text-lg font-bold text-white">
+                    <span className="text-sm text-theme-text-secondary">平均偏差</span>
+                    <span className="text-lg font-bold text-theme-text">
                       {calibration ? (calibration.avgDeviation >= 0 ? '+' : '') + calibration.avgDeviation.toFixed(1) : '-'} 级
                     </span>
                   </div>
-                  <p className="text-sm text-rock-light-500">
-                    基于你投票的 <span className="text-white font-medium">{calibration?.totalVotes ?? 0}</span> 条线路计算
+                  <p className="text-sm text-theme-text-muted">
+                    基于你投票的 <span className="text-theme-text font-medium">{calibration?.totalVotes ?? 0}</span> 条线路计算
                   </p>
                 </div>
               </div>
 
-              <div className="p-4 bg-rock-dark-900/50 rounded-lg">
+              <div className="p-4 bg-theme-subtle/50 rounded-lg">
                 <div className="flex items-start gap-3">
                   <Info size={16} className="text-blue-400 flex-shrink-0 mt-0.5" />
-                  <div className="text-sm text-rock-light-400 space-y-2">
+                  <div className="text-sm text-theme-text-secondary space-y-2">
                     <p>
                       你的定级投票平均比官方定级
                       <span className={`font-medium ${trendColor}`}>
@@ -584,7 +584,7 @@ export default function Profile() {
 
               <div className="mt-4">
                 <div className="flex items-center justify-between text-sm mb-2">
-                  <span className="text-rock-light-500">投票分布</span>
+                  <span className="text-theme-text-muted">投票分布</span>
                 </div>
                 <div className="flex items-end gap-1 h-16">
                   {(calibration?.distribution || [0, 0, 0, 0, 0]).map((value, i) => {
@@ -597,12 +597,12 @@ export default function Profile() {
                           className={`w-full rounded-t ${colors[i]} transition-all`}
                           style={{ height: `${height}%` }}
                         />
-                        <span className="text-xs text-rock-light-500">{value}</span>
+                        <span className="text-xs text-theme-text-muted">{value}</span>
                       </div>
                     );
                   })}
                 </div>
-                <div className="flex justify-between text-xs text-rock-light-600 mt-1">
+                <div className="flex justify-between text-xs text-theme-text-muted mt-1">
                   <span>偏紧</span>
                   <span>准确</span>
                   <span>偏松</span>
@@ -614,44 +614,44 @@ export default function Profile() {
 
         <div className="space-y-6">
           <Card>
-            <div className="p-5 border-b border-rock-dark-700">
-              <h3 className="font-semibold text-white">基本信息</h3>
+            <div className="p-5 border-b border-theme-border">
+              <h3 className="font-semibold text-theme-text">基本信息</h3>
             </div>
             <div className="p-5 space-y-4">
               <div className="flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-rock-dark-700">
-                  <User size={16} className="text-rock-light-400" />
+                <div className="p-2 rounded-lg bg-theme-hover">
+                  <User size={16} className="text-theme-text-secondary" />
                 </div>
                 <div>
-                  <p className="text-xs text-rock-light-500">用户名</p>
-                  <p className="text-white font-medium">{user?.name || '攀岩爱好者'}</p>
+                  <p className="text-xs text-theme-text-muted">用户名</p>
+                  <p className="text-theme-text font-medium">{user?.name || '攀岩爱好者'}</p>
                 </div>
               </div>
               <div className="flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-rock-dark-700">
-                  <Mail size={16} className="text-rock-light-400" />
+                <div className="p-2 rounded-lg bg-theme-hover">
+                  <Mail size={16} className="text-theme-text-secondary" />
                 </div>
                 <div>
-                  <p className="text-xs text-rock-light-500">邮箱</p>
-                  <p className="text-white font-medium">{user?.email || '未设置'}</p>
+                  <p className="text-xs text-theme-text-muted">邮箱</p>
+                  <p className="text-theme-text font-medium">{user?.email || '未设置'}</p>
                 </div>
               </div>
               <div className="flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-rock-dark-700">
-                  <Phone size={16} className="text-rock-light-400" />
+                <div className="p-2 rounded-lg bg-theme-hover">
+                  <Phone size={16} className="text-theme-text-secondary" />
                 </div>
                 <div>
-                  <p className="text-xs text-rock-light-500">手机号</p>
-                  <p className="text-white font-medium">{user?.phone || '未设置'}</p>
+                  <p className="text-xs text-theme-text-muted">手机号</p>
+                  <p className="text-theme-text font-medium">{user?.phone || '未设置'}</p>
                 </div>
               </div>
               <div className="flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-rock-dark-700">
-                  <Calendar size={16} className="text-rock-light-400" />
+                <div className="p-2 rounded-lg bg-theme-hover">
+                  <Calendar size={16} className="text-theme-text-secondary" />
                 </div>
                 <div>
-                  <p className="text-xs text-rock-light-500">加入时间</p>
-                  <p className="text-white font-medium">
+                  <p className="text-xs text-theme-text-muted">加入时间</p>
+                  <p className="text-theme-text font-medium">
                     {user?.createdAt ? new Date(user.createdAt).toLocaleDateString('zh-CN', { year: 'numeric', month: 'long' }) : '-'}
                   </p>
                 </div>
@@ -660,8 +660,8 @@ export default function Profile() {
           </Card>
 
           <Card>
-            <div className="p-5 border-b border-rock-dark-700">
-              <h3 className="font-semibold text-white">身体数据</h3>
+            <div className="p-5 border-b border-theme-border">
+              <h3 className="font-semibold text-theme-text">身体数据</h3>
             </div>
             <div className="p-5 space-y-4">
               <div className="flex items-center gap-3">
@@ -669,8 +669,8 @@ export default function Profile() {
                   <Ruler size={16} className="text-blue-400" />
                 </div>
                 <div className="flex-1">
-                  <p className="text-xs text-rock-light-500">身高</p>
-                  <p className="text-white font-medium">-- cm</p>
+                  <p className="text-xs text-theme-text-muted">身高</p>
+                  <p className="text-theme-text font-medium">-- cm</p>
                 </div>
               </div>
               <div className="flex items-center gap-3">
@@ -678,8 +678,8 @@ export default function Profile() {
                   <Ruler size={16} className="text-green-400" />
                 </div>
                 <div className="flex-1">
-                  <p className="text-xs text-rock-light-500">臂展</p>
-                  <p className="text-white font-medium">-- cm</p>
+                  <p className="text-xs text-theme-text-muted">臂展</p>
+                  <p className="text-theme-text font-medium">-- cm</p>
                 </div>
               </div>
               <div className="flex items-center gap-3">
@@ -687,8 +687,8 @@ export default function Profile() {
                   <Clock size={16} className="text-purple-400" />
                 </div>
                 <div className="flex-1">
-                  <p className="text-xs text-rock-light-500">岩龄</p>
-                  <p className="text-white font-medium">
+                  <p className="text-xs text-theme-text-muted">岩龄</p>
+                  <p className="text-theme-text font-medium">
                     {stats.monthsClimbing >= 12
                       ? `${Math.floor(stats.monthsClimbing / 12)}年${stats.monthsClimbing % 12}个月`
                       : `${stats.monthsClimbing}个月`}
@@ -700,7 +700,7 @@ export default function Profile() {
                   <Heart size={16} className="text-red-400" />
                 </div>
                 <div className="flex-1">
-                  <p className="text-xs text-rock-light-500">偏好风格</p>
+                  <p className="text-xs text-theme-text-muted">偏好风格</p>
                   <div className="flex flex-wrap gap-1 mt-1">
                     {preferredStyles.map((style) => (
                       <span
@@ -717,30 +717,30 @@ export default function Profile() {
           </Card>
 
           <Card>
-            <div className="p-5 border-b border-rock-dark-700">
-              <h3 className="font-semibold text-white">设置</h3>
+            <div className="p-5 border-b border-theme-border">
+              <h3 className="font-semibold text-theme-text">设置</h3>
             </div>
             <div className="p-3">
-              <button className="w-full flex items-center justify-between p-3 hover:bg-rock-dark-700 rounded-lg transition-colors">
+              <button className="w-full flex items-center justify-between p-3 hover:bg-theme-hover rounded-lg transition-colors">
                 <div className="flex items-center gap-3">
-                  <Settings size={18} className="text-rock-light-400" />
-                  <span className="text-white">账号设置</span>
+                  <Settings size={18} className="text-theme-text-secondary" />
+                  <span className="text-theme-text">账号设置</span>
                 </div>
-                <ChevronRight size={16} className="text-rock-light-500" />
+                <ChevronRight size={16} className="text-theme-text-muted" />
               </button>
-              <button className="w-full flex items-center justify-between p-3 hover:bg-rock-dark-700 rounded-lg transition-colors">
+              <button className="w-full flex items-center justify-between p-3 hover:bg-theme-hover rounded-lg transition-colors">
                 <div className="flex items-center gap-3">
-                  <Bell size={18} className="text-rock-light-400" />
-                  <span className="text-white">通知设置</span>
+                  <Bell size={18} className="text-theme-text-secondary" />
+                  <span className="text-theme-text">通知设置</span>
                 </div>
-                <ChevronRight size={16} className="text-rock-light-500" />
+                <ChevronRight size={16} className="text-theme-text-muted" />
               </button>
-              <button className="w-full flex items-center justify-between p-3 hover:bg-rock-dark-700 rounded-lg transition-colors">
+              <button className="w-full flex items-center justify-between p-3 hover:bg-theme-hover rounded-lg transition-colors">
                 <div className="flex items-center gap-3">
-                  <Shield size={18} className="text-rock-light-400" />
-                  <span className="text-white">隐私安全</span>
+                  <Shield size={18} className="text-theme-text-secondary" />
+                  <span className="text-theme-text">隐私安全</span>
                 </div>
-                <ChevronRight size={16} className="text-rock-light-500" />
+                <ChevronRight size={16} className="text-theme-text-muted" />
               </button>
               <button
                 onClick={handleLogout}

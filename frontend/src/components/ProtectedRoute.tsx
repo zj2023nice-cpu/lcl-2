@@ -22,10 +22,10 @@ export default function ProtectedRoute({ children }: ProtectedRouteProps) {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-rock-dark-950">
+      <div className="min-h-screen flex items-center justify-center bg-theme-bg">
         <div className="flex flex-col items-center gap-3">
           <div className="w-8 h-8 border-2 border-climbing-orange-500 border-t-transparent rounded-full animate-spin" />
-          <p className="text-rock-light-500 text-sm">加载中...</p>
+          <p className="text-theme-text-muted text-sm">加载中...</p>
         </div>
       </div>
     );

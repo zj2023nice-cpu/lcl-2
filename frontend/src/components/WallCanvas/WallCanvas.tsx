@@ -458,48 +458,48 @@ export default function WallCanvas({
       )}
 
       {!isEditable && (
-        <div className="absolute top-4 right-4 z-10 flex items-center gap-1 p-2 bg-rock-dark-800/90 backdrop-blur-sm rounded-xl border border-rock-dark-700 shadow-xl">
+        <div className="absolute top-4 right-4 z-10 flex items-center gap-1 p-2 bg-theme-card/90 backdrop-blur-sm rounded-xl border border-theme-border shadow-xl">
           <button
             onClick={handleZoomOut}
             title="缩小"
-            className="p-2.5 rounded-lg text-rock-light-400 hover:text-white hover:bg-rock-dark-700 transition-all duration-200"
+            className="p-2.5 rounded-lg text-theme-text-secondary hover:text-theme-text hover:bg-theme-hover transition-all duration-200"
           >
             <ZoomOut size={18} />
           </button>
           <button
             onClick={handleZoomReset}
             title="还原"
-            className="p-2.5 rounded-lg text-rock-light-400 hover:text-white hover:bg-rock-dark-700 transition-all duration-200"
+            className="p-2.5 rounded-lg text-theme-text-secondary hover:text-theme-text hover:bg-theme-hover transition-all duration-200"
           >
             <Maximize2 size={18} />
           </button>
           <button
             onClick={handleZoomIn}
             title="放大"
-            className="p-2.5 rounded-lg text-rock-light-400 hover:text-white hover:bg-rock-dark-700 transition-all duration-200"
+            className="p-2.5 rounded-lg text-theme-text-secondary hover:text-theme-text hover:bg-theme-hover transition-all duration-200"
           >
             <ZoomIn size={18} />
           </button>
         </div>
       )}
 
-      <div className="w-full h-full overflow-hidden bg-rock-dark-900 rounded-xl">
+      <div className="w-full h-full overflow-hidden bg-theme-subtle rounded-xl">
         <canvas ref={canvasRef} />
       </div>
 
-      <div className="absolute bottom-4 right-4 text-xs text-rock-light-500 bg-rock-dark-800/80 px-3 py-1.5 rounded-lg">
+      <div className="absolute bottom-4 right-4 text-xs text-theme-text-muted bg-theme-card/80 px-3 py-1.5 rounded-lg">
         {Math.round(zoom * 100)}%
       </div>
 
       {!isEditable && routes.length > 0 && (
-        <div className="absolute bottom-4 left-4 bg-rock-dark-800/90 backdrop-blur-sm rounded-lg p-3 border border-rock-dark-700">
-          <div className="flex items-center gap-2 text-xs text-rock-light-400 mb-2">
+        <div className="absolute bottom-4 left-4 bg-theme-card/90 backdrop-blur-sm rounded-lg p-3 border border-theme-border">
+          <div className="flex items-center gap-2 text-xs text-theme-text-secondary mb-2">
             <div className="w-3 h-3 rounded-full bg-green-500" />
             <span>起点</span>
             <div className="w-3 h-3 rounded-full bg-red-500 ml-2" />
             <span>终点</span>
           </div>
-          <p className="text-xs text-rock-light-500">滚轮缩放 · Shift+拖拽平移</p>
+          <p className="text-xs text-theme-text-muted">滚轮缩放 · Shift+拖拽平移</p>
         </div>
       )}
     </div>

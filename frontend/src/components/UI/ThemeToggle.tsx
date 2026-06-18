@@ -46,7 +46,7 @@ export default function ThemeToggle({ className }: ThemeToggleProps) {
         }}
         className={cn(
           'p-2.5 rounded-lg transition-all duration-200',
-          'bg-rock-dark-800 hover:bg-rock-dark-700 text-rock-light-300 hover:text-white',
+          'bg-theme-card hover:bg-theme-hover text-theme-text-secondary hover:text-theme-text',
           isTransitioning && 'theme-transition'
         )}
         title={`当前主题: ${resolvedTheme === 'dark' ? '深色' : '浅色'}`}
@@ -55,9 +55,9 @@ export default function ThemeToggle({ className }: ThemeToggleProps) {
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 top-full mt-2 w-56 bg-rock-dark-800 border border-rock-dark-700 rounded-xl shadow-2xl z-50 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
-          <div className="p-3 border-b border-rock-dark-700">
-            <p className="text-xs font-medium text-rock-light-400 uppercase tracking-wider">主题策略</p>
+        <div className="absolute right-0 top-full mt-2 w-56 bg-theme-card border border-theme-border rounded-xl shadow-2xl z-50 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
+          <div className="p-3 border-b border-theme-border">
+            <p className="text-xs font-medium text-theme-text-secondary uppercase tracking-wider">主题策略</p>
           </div>
           <div className="p-2">
             {strategies.map((strategy) => {
@@ -74,7 +74,7 @@ export default function ThemeToggle({ className }: ThemeToggleProps) {
                     'w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all duration-200',
                     isActive
                       ? 'bg-climbing-orange-500/10 text-climbing-orange-500'
-                      : 'text-rock-light-300 hover:bg-rock-dark-700 hover:text-white'
+                      : 'text-theme-text-secondary hover:bg-theme-hover hover:text-theme-text'
                   )}
                 >
                   <Icon size={18} />
@@ -88,16 +88,16 @@ export default function ThemeToggle({ className }: ThemeToggleProps) {
           </div>
 
           {preferences.strategy === 'manual' && (
-            <div className="p-3 border-t border-rock-dark-700">
-              <p className="text-xs font-medium text-rock-light-400 uppercase tracking-wider mb-2">选择主题</p>
+            <div className="p-3 border-t border-theme-border">
+              <p className="text-xs font-medium text-theme-text-secondary uppercase tracking-wider mb-2">选择主题</p>
               <div className="flex gap-2">
                 <button
                   onClick={() => setManualTheme('light')}
                   className={cn(
                     'flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-sm transition-all duration-200',
                     preferences.manualTheme === 'light'
-                      ? 'bg-white text-rock-dark-900'
-                      : 'bg-rock-dark-700 text-rock-light-300 hover:bg-rock-dark-600'
+                      ? 'bg-theme-text text-theme-bg'
+                      : 'bg-theme-hover text-theme-text-secondary hover:bg-theme-border'
                   )}
                 >
                   <Sun size={16} />
@@ -108,8 +108,8 @@ export default function ThemeToggle({ className }: ThemeToggleProps) {
                   className={cn(
                     'flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-sm transition-all duration-200',
                     preferences.manualTheme === 'dark'
-                      ? 'bg-rock-dark-900 text-white border border-rock-dark-600'
-                      : 'bg-rock-dark-700 text-rock-light-300 hover:bg-rock-dark-600'
+                      ? 'bg-theme-subtle text-theme-text border border-theme-border'
+                      : 'bg-theme-hover text-theme-text-secondary hover:bg-theme-border'
                   )}
                 >
                   <Moon size={16} />
@@ -120,11 +120,11 @@ export default function ThemeToggle({ className }: ThemeToggleProps) {
           )}
 
           {preferences.strategy === 'schedule' && (
-            <div className="p-3 border-t border-rock-dark-700">
-              <p className="text-xs font-medium text-rock-light-400 uppercase tracking-wider mb-2">定时设置</p>
+            <div className="p-3 border-t border-theme-border">
+              <p className="text-xs font-medium text-theme-text-secondary uppercase tracking-wider mb-2">定时设置</p>
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-rock-light-300">浅色开始</span>
+                  <span className="text-sm text-theme-text-secondary">浅色开始</span>
                   <input
                     type="time"
                     value={preferences.schedule.lightStart}
@@ -134,11 +134,11 @@ export default function ThemeToggle({ className }: ThemeToggleProps) {
                         lightStart: e.target.value,
                       });
                     }}
-                    className="bg-rock-dark-700 text-white text-sm rounded px-2 py-1 border border-rock-dark-600 focus:outline-none focus:border-climbing-orange-500"
+                    className="bg-theme-hover text-theme-text text-sm rounded px-2 py-1 border border-theme-border focus:outline-none focus:border-climbing-orange-500"
                   />
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-rock-light-300">深色开始</span>
+                  <span className="text-sm text-theme-text-secondary">深色开始</span>
                   <input
                     type="time"
                     value={preferences.schedule.darkStart}
@@ -148,7 +148,7 @@ export default function ThemeToggle({ className }: ThemeToggleProps) {
                         darkStart: e.target.value,
                       });
                     }}
-                    className="bg-rock-dark-700 text-white text-sm rounded px-2 py-1 border border-rock-dark-600 focus:outline-none focus:border-climbing-orange-500"
+                    className="bg-theme-hover text-theme-text text-sm rounded px-2 py-1 border border-theme-border focus:outline-none focus:border-climbing-orange-500"
                   />
                 </div>
               </div>

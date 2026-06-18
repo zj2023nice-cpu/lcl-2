@@ -176,8 +176,8 @@ export default function AdvancedSort({
         size="lg"
       >
         <div className="space-y-5">
-          <div className="text-sm text-rock-light-400">
-            当前排序：<span className="text-white">{getSummaryText()}</span>
+          <div className="text-sm text-theme-text-secondary">
+            当前排序：<span className="text-theme-text">{getSummaryText()}</span>
           </div>
 
           <div className="space-y-3">
@@ -186,7 +186,7 @@ export default function AdvancedSort({
               return (
                 <div
                   key={criterion.id}
-                  className="flex items-center gap-3 p-3 bg-rock-dark-900 rounded-lg border border-rock-dark-700"
+                  className="flex items-center gap-3 p-3 bg-theme-subtle rounded-lg border border-theme-border"
                 >
                   <div className="flex flex-col gap-0.5">
                     <button
@@ -195,8 +195,8 @@ export default function AdvancedSort({
                       className={cn(
                         'p-0.5 rounded transition-colors',
                         index === 0
-                          ? 'text-rock-light-700 cursor-not-allowed'
-                          : 'text-rock-light-400 hover:text-white hover:bg-rock-dark-700'
+                          ? 'text-theme-text-muted cursor-not-allowed'
+                          : 'text-theme-text-secondary hover:text-theme-text hover:bg-theme-hover'
                       )}
                     >
                       <ChevronUp size={14} />
@@ -207,17 +207,17 @@ export default function AdvancedSort({
                       className={cn(
                         'p-0.5 rounded transition-colors',
                         index === criteria.length - 1
-                          ? 'text-rock-light-700 cursor-not-allowed'
-                          : 'text-rock-light-400 hover:text-white hover:bg-rock-dark-700'
+                          ? 'text-theme-text-muted cursor-not-allowed'
+                          : 'text-theme-text-secondary hover:text-theme-text hover:bg-theme-hover'
                       )}
                     >
                       <ChevronDown size={14} />
                     </button>
                   </div>
 
-                  <GripVertical size={18} className="text-rock-light-600" />
+                  <GripVertical size={18} className="text-theme-text-muted" />
 
-                  <span className="text-sm text-rock-light-500 w-6">{index + 1}.</span>
+                  <span className="text-sm text-theme-text-muted w-6">{index + 1}.</span>
 
                   <select
                     value={criterion.field}
@@ -226,7 +226,7 @@ export default function AdvancedSort({
                         field: e.target.value as SortField,
                       })
                     }
-                    className="flex-1 bg-rock-dark-800 border border-rock-dark-600 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-climbing-orange-500"
+                    className="flex-1 bg-theme-card border border-theme-border rounded-lg px-3 py-2 text-theme-text text-sm focus:outline-none focus:border-climbing-orange-500"
                   >
                     {[...availableFields, SORT_FIELD_OPTIONS.find(o => o.value === criterion.field)!]
                       .filter((v, i, a) => a.findIndex(t => t.value === v.value) === i)
@@ -255,7 +255,7 @@ export default function AdvancedSort({
                     variant="ghost"
                     size="sm"
                     onClick={() => handleRemoveCriterion(criterion.id)}
-                    className="p-2 h-auto text-rock-light-400 hover:text-red-400"
+                    className="p-2 h-auto text-theme-text-secondary hover:text-red-400"
                   >
                     <Trash2 size={16} />
                   </Button>
@@ -275,9 +275,9 @@ export default function AdvancedSort({
             添加排序条件
           </Button>
 
-          <div className="pt-4 border-t border-rock-dark-700">
+          <div className="pt-4 border-t border-theme-border">
             <div className="flex items-center justify-between mb-3">
-              <h4 className="text-sm font-medium text-white flex items-center gap-2">
+              <h4 className="text-sm font-medium text-theme-text flex items-center gap-2">
                 <Bookmark size={14} />
                 我的排序方案
               </h4>
@@ -288,7 +288,7 @@ export default function AdvancedSort({
             </div>
 
             {presets.length === 0 ? (
-              <div className="text-center py-6 text-rock-light-500 text-sm">
+              <div className="text-center py-6 text-theme-text-muted text-sm">
                 暂无保存的排序方案
               </div>
             ) : (
@@ -297,13 +297,13 @@ export default function AdvancedSort({
                   <div
                     key={preset.id}
                     onClick={() => handleLoadPreset(preset.id)}
-                    className="flex items-center justify-between p-3 bg-rock-dark-900 rounded-lg border border-rock-dark-700 cursor-pointer hover:border-climbing-orange-500/50 transition-colors group"
+                    className="flex items-center justify-between p-3 bg-theme-subtle rounded-lg border border-theme-border cursor-pointer hover:border-climbing-orange-500/50 transition-colors group"
                   >
                     <div className="flex-1 min-w-0">
-                      <div className="text-sm font-medium text-white truncate">
+                      <div className="text-sm font-medium text-theme-text truncate">
                         {preset.name}
                       </div>
-                      <div className="text-xs text-rock-light-500 mt-0.5 truncate">
+                      <div className="text-xs text-theme-text-muted mt-0.5 truncate">
                         {preset.criteria
                           .map(c => {
                             const field = SORT_FIELD_OPTIONS.find(o => o.value === c.field)?.label || c.field;
@@ -316,7 +316,7 @@ export default function AdvancedSort({
                       variant="ghost"
                       size="sm"
                       onClick={(e) => handleDeletePreset(preset.id, e)}
-                      className="p-1.5 h-auto text-rock-light-500 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-opacity"
+                      className="p-1.5 h-auto text-theme-text-muted hover:text-red-400 opacity-0 group-hover:opacity-100 transition-opacity"
                     >
                       <X size={14} />
                     </Button>
@@ -326,7 +326,7 @@ export default function AdvancedSort({
             )}
           </div>
 
-          <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t border-rock-dark-700">
+          <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t border-theme-border">
             {onClearFilters && (
               <Button variant="secondary" onClick={handleClearFilters}>
                 <FilterX size={16} className="mr-2" />
@@ -352,7 +352,7 @@ export default function AdvancedSort({
       >
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-white mb-2">
+            <label className="block text-sm font-medium text-theme-text mb-2">
               方案名称
             </label>
             <input
@@ -360,7 +360,7 @@ export default function AdvancedSort({
               value={presetName}
               onChange={(e) => setPresetName(e.target.value)}
               placeholder="例如：热门线路优先"
-              className="w-full px-3 py-2 bg-rock-dark-900 border border-rock-dark-600 rounded-lg text-white placeholder-rock-light-600 focus:outline-none focus:border-climbing-orange-500"
+              className="w-full px-3 py-2 bg-theme-subtle border border-theme-border rounded-lg text-theme-text placeholder-theme-text-muted focus:outline-none focus:border-climbing-orange-500"
               autoFocus
             />
           </div>

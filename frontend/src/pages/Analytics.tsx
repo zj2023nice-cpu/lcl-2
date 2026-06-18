@@ -51,8 +51,8 @@ function parseGrade(grade: string): number {
 const CustomTooltip = ({ active, payload, label }: { active?: boolean; payload?: { name: string; value: number | string; color: string }[]; label?: string }) => {
   if (active && payload && payload.length) {
     return (
-      <div className="bg-rock-dark-800 border border-rock-dark-700 rounded-lg p-3 shadow-xl">
-        <p className="text-sm font-medium text-white mb-1">{label}</p>
+      <div className="bg-theme-card border border-theme-border rounded-lg p-3 shadow-xl">
+        <p className="text-sm font-medium text-theme-text mb-1">{label}</p>
         {payload.map((entry, index) => (
           <p key={index} className="text-sm" style={{ color: entry.color }}>
             {entry.name}: {entry.value}
@@ -245,22 +245,22 @@ export default function Analytics() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-white">个人进度分析</h1>
-        <p className="text-rock-light-500 mt-1">追踪你的攀岩进步历程</p>
+        <h1 className="text-2xl font-bold text-theme-text">个人进度分析</h1>
+        <p className="text-theme-text-muted mt-1">追踪你的攀岩进步历程</p>
       </div>
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {statsData.map((stat, index) => {
           const Icon = stat.icon;
           return (
-            <Card key={index} className="p-5 hover:border-rock-dark-600 transition-colors">
+            <Card key={index} className="p-5 hover:border-theme-border transition-colors">
               <div className="flex items-center gap-4">
                 <div className={`p-3 rounded-xl ${stat.bgColor}`}>
                   <Icon size={24} className={stat.color} />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold text-white">{stat.value}</p>
-                  <p className="text-sm text-rock-light-500">{stat.label}</p>
+                  <p className="text-2xl font-bold text-theme-text">{stat.value}</p>
+                  <p className="text-sm text-theme-text-muted">{stat.label}</p>
                 </div>
               </div>
             </Card>
@@ -280,7 +280,7 @@ export default function Analytics() {
                 className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-lg transition-all ${
                   isActive
                     ? 'bg-climbing-orange-500/20 text-climbing-orange-400'
-                    : 'text-rock-light-400 hover:text-white hover:bg-rock-dark-700/50'
+                    : 'text-theme-text-secondary hover:text-theme-text hover:bg-theme-hover/50'
                 }`}
               >
                 <Icon size={18} />
@@ -293,24 +293,24 @@ export default function Analytics() {
 
       {activeTab === 'pyramid' && (
         <Card>
-          <div className="p-5 border-b border-rock-dark-700">
+          <div className="p-5 border-b border-theme-border">
             <div className="flex items-center justify-between">
               <div>
-                <h3 className="text-lg font-semibold text-white">完攀金字塔</h3>
-                <p className="text-sm text-rock-light-500 mt-1">各难度等级完攀数量分布</p>
+                <h3 className="text-lg font-semibold text-theme-text">完攀金字塔</h3>
+                <p className="text-sm text-theme-text-muted mt-1">各难度等级完攀数量分布</p>
               </div>
               <div className="flex items-center gap-4 text-sm">
                 <div className="flex items-center gap-2">
                   <div className="w-3 h-3 rounded-full bg-green-500" />
-                  <span className="text-rock-light-400">入门</span>
+                  <span className="text-theme-text-secondary">入门</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <div className="w-3 h-3 rounded-full bg-yellow-500" />
-                  <span className="text-rock-light-400">进阶</span>
+                  <span className="text-theme-text-secondary">进阶</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <div className="w-3 h-3 rounded-full bg-red-500" />
-                  <span className="text-rock-light-400">高阶</span>
+                  <span className="text-theme-text-secondary">高阶</span>
                 </div>
               </div>
             </div>
@@ -324,13 +324,13 @@ export default function Analytics() {
                     layout="vertical"
                     margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
                   >
-                    <CartesianGrid strokeDasharray="3 3" stroke="#333" horizontal={true} vertical={false} />
-                    <XAxis type="number" stroke="#999" tick={{ fill: '#999', fontSize: 12 }} />
+                    <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" horizontal={true} vertical={false} />
+                    <XAxis type="number" stroke="var(--color-border)" tick={{ fill: 'var(--color-text-muted)', fontSize: 12 }} />
                     <YAxis
                       dataKey="grade"
                       type="category"
-                      stroke="#999"
-                      tick={{ fill: '#ccc', fontSize: 12, fontWeight: 500 }}
+                      stroke="var(--color-border)"
+                      tick={{ fill: 'var(--color-text-secondary)', fontSize: 12, fontWeight: 500 }}
                       width={40}
                     />
                     <Tooltip content={<CustomTooltip />} />
@@ -344,21 +344,21 @@ export default function Analytics() {
               </div>
             ) : (
               <div className="h-96 flex items-center justify-center">
-                <p className="text-rock-light-500">暂无完攀数据</p>
+                <p className="text-theme-text-muted">暂无完攀数据</p>
               </div>
             )}
-            <div className="grid grid-cols-3 gap-4 mt-6 pt-6 border-t border-rock-dark-700">
+            <div className="grid grid-cols-3 gap-4 mt-6 pt-6 border-t border-theme-border">
               <div className="text-center">
                 <p className="text-2xl font-bold text-green-400">V0-V2</p>
-                <p className="text-sm text-rock-light-500 mt-1">入门级 · {pyramidStats.beginner} 条</p>
+                <p className="text-sm text-theme-text-muted mt-1">入门级 · {pyramidStats.beginner} 条</p>
               </div>
               <div className="text-center">
                 <p className="text-2xl font-bold text-yellow-400">V3-V5</p>
-                <p className="text-sm text-rock-light-500 mt-1">进阶级 · {pyramidStats.intermediate} 条</p>
+                <p className="text-sm text-theme-text-muted mt-1">进阶级 · {pyramidStats.intermediate} 条</p>
               </div>
               <div className="text-center">
                 <p className="text-2xl font-bold text-red-400">V6+</p>
-                <p className="text-sm text-rock-light-500 mt-1">高阶级 · {pyramidStats.advanced} 条</p>
+                <p className="text-sm text-theme-text-muted mt-1">高阶级 · {pyramidStats.advanced} 条</p>
               </div>
             </div>
           </div>
@@ -367,24 +367,24 @@ export default function Analytics() {
 
       {activeTab === 'progress' && (
         <Card>
-          <div className="p-5 border-b border-rock-dark-700">
+          <div className="p-5 border-b border-theme-border">
             <div className="flex items-center justify-between">
               <div>
-                <h3 className="text-lg font-semibold text-white">进步曲线</h3>
-                <p className="text-sm text-rock-light-500 mt-1">最高完攀难度随时间变化</p>
+                <h3 className="text-lg font-semibold text-theme-text">进步曲线</h3>
+                <p className="text-sm text-theme-text-muted mt-1">最高完攀难度随时间变化</p>
               </div>
               <div className="flex items-center gap-2 text-sm">
                 <div className="flex items-center gap-2">
                   <div className="w-3 h-0.5 bg-climbing-orange-500" />
-                  <span className="text-rock-light-400">最高难度</span>
+                  <span className="text-theme-text-secondary">最高难度</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <div className="w-3 h-0.5 bg-blue-400" />
-                  <span className="text-rock-light-400">平均难度</span>
+                  <span className="text-theme-text-secondary">平均难度</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <div className="w-3 h-0.5 border-t-2 border-dashed border-green-500" />
-                  <span className="text-rock-light-400">目标</span>
+                  <span className="text-theme-text-secondary">目标</span>
                 </div>
               </div>
             </div>
@@ -397,17 +397,17 @@ export default function Analytics() {
                     data={progressData}
                     margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
                   >
-                    <CartesianGrid strokeDasharray="3 3" stroke="#333" />
+                    <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" />
                     <XAxis
                       dataKey="month"
-                      stroke="#999"
-                      tick={{ fill: '#999', fontSize: 12 }}
+                      stroke="var(--color-border)"
+                      tick={{ fill: 'var(--color-text-muted)', fontSize: 12 }}
                       tickFormatter={(value) => monthLabels[value] || value}
                       interval={Math.max(0, Math.floor(progressData.length / 6) - 1)}
                     />
                     <YAxis
-                      stroke="#999"
-                      tick={{ fill: '#999', fontSize: 12 }}
+                      stroke="var(--color-border)"
+                      tick={{ fill: 'var(--color-text-muted)', fontSize: 12 }}
                       domain={[0, 'auto']}
                       tickFormatter={(value) => `V${value}`}
                     />
@@ -446,25 +446,25 @@ export default function Analytics() {
               </div>
             ) : (
               <div className="h-80 flex items-center justify-center">
-                <p className="text-rock-light-500">暂无进度数据</p>
+                <p className="text-theme-text-muted">暂无进度数据</p>
               </div>
             )}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6 pt-6 border-t border-rock-dark-700">
-              <div className="text-center p-3 bg-rock-dark-900/50 rounded-lg">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6 pt-6 border-t border-theme-border">
+              <div className="text-center p-3 bg-theme-subtle/50 rounded-lg">
                 <p className="text-lg font-bold text-climbing-orange-500">{progressStats.currentMax}</p>
-                <p className="text-xs text-rock-light-500 mt-1">当前最高</p>
+                <p className="text-xs text-theme-text-muted mt-1">当前最高</p>
               </div>
-              <div className="text-center p-3 bg-rock-dark-900/50 rounded-lg">
+              <div className="text-center p-3 bg-theme-subtle/50 rounded-lg">
                 <p className="text-lg font-bold text-green-400">{progressStats.target}</p>
-                <p className="text-xs text-rock-light-500 mt-1">目标难度</p>
+                <p className="text-xs text-theme-text-muted mt-1">目标难度</p>
               </div>
-              <div className="text-center p-3 bg-rock-dark-900/50 rounded-lg">
+              <div className="text-center p-3 bg-theme-subtle/50 rounded-lg">
                 <p className="text-lg font-bold text-blue-400">{progressStats.halfYearProgress}</p>
-                <p className="text-xs text-rock-light-500 mt-1">近半年进步</p>
+                <p className="text-xs text-theme-text-muted mt-1">近半年进步</p>
               </div>
-              <div className="text-center p-3 bg-rock-dark-900/50 rounded-lg">
+              <div className="text-center p-3 bg-theme-subtle/50 rounded-lg">
                 <p className="text-lg font-bold text-purple-400">{progressStats.months} 个月</p>
-                <p className="text-xs text-rock-light-500 mt-1">追踪时长</p>
+                <p className="text-xs text-theme-text-muted mt-1">追踪时长</p>
               </div>
             </div>
           </div>
@@ -473,11 +473,11 @@ export default function Analytics() {
 
       {activeTab === 'style' && (
         <Card>
-          <div className="p-5 border-b border-rock-dark-700">
+          <div className="p-5 border-b border-theme-border">
             <div className="flex items-center justify-between">
               <div>
-                <h3 className="text-lg font-semibold text-white">风格分析</h3>
-                <p className="text-sm text-rock-light-500 mt-1">不同攀岩风格的完攀率分析</p>
+                <h3 className="text-lg font-semibold text-theme-text">风格分析</h3>
+                <p className="text-sm text-theme-text-muted mt-1">不同攀岩风格的完攀率分析</p>
               </div>
             </div>
           </div>
@@ -486,15 +486,15 @@ export default function Analytics() {
               <div className="w-full lg:w-1/2 h-80">
                 <ResponsiveContainer width="100%" height="100%">
                   <RadarChart cx="50%" cy="50%" outerRadius="70%" data={styleData}>
-                    <PolarGrid stroke="#444" />
+                    <PolarGrid stroke="var(--color-border)" />
                     <PolarAngleAxis
                       dataKey="label"
-                      tick={{ fill: '#ccc', fontSize: 12 }}
+                      tick={{ fill: 'var(--color-text-secondary)', fontSize: 12 }}
                     />
                     <PolarRadiusAxis
                       angle={90}
                       domain={[0, 100]}
-                      tick={{ fill: '#666', fontSize: 10 }}
+                      tick={{ fill: 'var(--color-text-muted)', fontSize: 10 }}
                       tickFormatter={(value) => `${value}%`}
                     />
                     <Radar
@@ -518,8 +518,8 @@ export default function Analytics() {
                     <Trophy size={18} className="text-green-400" />
                     <span className="font-medium text-green-400">擅长项</span>
                   </div>
-                  <p className="text-white font-semibold">{strongestStyle.label}</p>
-                  <p className="text-sm text-rock-light-500 mt-1">
+                  <p className="text-theme-text font-semibold">{strongestStyle.label}</p>
+                  <p className="text-sm text-theme-text-muted mt-1">
                     完攀率 {strongestStyle.value}%，是你最擅长的风格
                   </p>
                 </div>
@@ -528,16 +528,16 @@ export default function Analytics() {
                     <BarChart3 size={18} className="text-red-400" />
                     <span className="font-medium text-red-400">薄弱项</span>
                   </div>
-                  <p className="text-white font-semibold">{weakestStyle.label}</p>
-                  <p className="text-sm text-rock-light-500 mt-1">
+                  <p className="text-theme-text font-semibold">{weakestStyle.label}</p>
+                  <p className="text-sm text-theme-text-muted mt-1">
                     完攀率 {weakestStyle.value}%，需要多加练习
                   </p>
                 </div>
                 <div className="space-y-3 pt-2">
                   {styleData.map((item) => (
                     <div key={item.style} className="flex items-center gap-3">
-                      <span className="w-16 text-sm text-rock-light-400">{item.label}</span>
-                      <div className="flex-1 h-2 bg-rock-dark-700 rounded-full overflow-hidden">
+                      <span className="w-16 text-sm text-theme-text-secondary">{item.label}</span>
+                      <div className="flex-1 h-2 bg-theme-border rounded-full overflow-hidden">
                         <div
                           className="h-full rounded-full transition-all"
                           style={{
@@ -546,7 +546,7 @@ export default function Analytics() {
                           }}
                         />
                       </div>
-                      <span className="w-12 text-sm text-right text-rock-light-300">{item.value}%</span>
+                      <span className="w-12 text-sm text-right text-theme-text-secondary">{item.value}%</span>
                     </div>
                   ))}
                 </div>

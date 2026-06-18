@@ -79,7 +79,7 @@ export default function MessageItem({ message, onClose, index }: MessageItemProp
       </div>
 
       <div className="flex-1 min-w-0">
-        <p className="text-sm font-medium text-rock-light-100 truncate">
+        <p className="text-sm font-medium text-theme-text truncate">
           {message.content}
         </p>
       </div>
@@ -87,7 +87,7 @@ export default function MessageItem({ message, onClose, index }: MessageItemProp
       {message.mergedCount > 1 && (
         <span className={cn(
           'flex-shrink-0 px-2 py-0.5 rounded-full text-xs font-medium',
-          'bg-rock-dark-800 text-rock-light-200'
+          'bg-theme-card text-theme-text'
         )}>
           {message.mergedCount}
         </span>
@@ -97,7 +97,7 @@ export default function MessageItem({ message, onClose, index }: MessageItemProp
         onClick={handleClose}
         className={cn(
           'flex-shrink-0 p-1 rounded transition-colors',
-          'hover:bg-rock-dark-700 text-rock-light-400 hover:text-rock-light-100'
+          'hover:bg-theme-hover text-theme-text-secondary hover:text-theme-text'
         )}
       >
         <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

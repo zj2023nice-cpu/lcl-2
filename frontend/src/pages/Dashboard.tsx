@@ -64,8 +64,8 @@ const setterColorPalette = [
 const CustomTooltip = ({ active, payload, label }: { active?: boolean; payload?: { name: string; value: number; color: string }[]; label?: string }) => {
   if (active && payload && payload.length) {
     return (
-      <div className="bg-rock-dark-800 border border-rock-dark-700 rounded-lg p-3 shadow-xl">
-        <p className="text-sm font-medium text-white mb-1">{label}</p>
+      <div className="bg-theme-card border border-theme-border rounded-lg p-3 shadow-xl">
+        <p className="text-sm font-medium text-theme-text mb-1">{label}</p>
         {payload.map((entry, index) => (
           <p key={index} className="text-sm" style={{ color: entry.color }}>
             {entry.name}: {entry.value}
@@ -242,15 +242,15 @@ export default function Dashboard() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-white">运营数据看板</h1>
-        <p className="text-rock-light-500 mt-1">岩馆运营数据概览与分析</p>
+        <h1 className="text-2xl font-bold text-theme-text">运营数据看板</h1>
+        <p className="text-theme-text-muted mt-1">岩馆运营数据概览与分析</p>
       </div>
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {stats.map((stat, index) => {
           const Icon = stat.icon;
           return (
-            <Card key={index} className="p-5 hover:border-rock-dark-600 transition-colors">
+            <Card key={index} className="p-5 hover:border-theme-border transition-colors">
               <div className="flex items-start justify-between">
                 <div className={`p-3 rounded-xl ${stat.bgColor}`}>
                   <Icon size={24} className={stat.color} />
@@ -265,8 +265,8 @@ export default function Dashboard() {
                 )}
               </div>
               <div className="mt-4">
-                <p className="text-3xl font-bold text-white">{stat.value}</p>
-                <p className="text-sm text-rock-light-500 mt-1">{stat.label}</p>
+                <p className="text-3xl font-bold text-theme-text">{stat.value}</p>
+                <p className="text-sm text-theme-text-muted mt-1">{stat.label}</p>
               </div>
             </Card>
           );
@@ -275,13 +275,13 @@ export default function Dashboard() {
 
       <div className="grid lg:grid-cols-2 gap-6">
         <Card>
-          <div className="p-5 border-b border-rock-dark-700">
+          <div className="p-5 border-b border-theme-border">
             <div className="flex items-center justify-between">
               <div>
-                <h3 className="font-semibold text-white">线路热度排行</h3>
-                <p className="text-xs text-rock-light-500 mt-1">TOP 10 被攀爬次数最多的线路</p>
+                <h3 className="font-semibold text-theme-text">线路热度排行</h3>
+                <p className="text-xs text-theme-text-muted mt-1">TOP 10 被攀爬次数最多的线路</p>
               </div>
-              <div className="text-xs text-rock-light-400 bg-rock-dark-700 px-2 py-1 rounded">
+              <div className="text-xs text-theme-text-secondary bg-theme-hover px-2 py-1 rounded">
                 本月数据
               </div>
             </div>
@@ -295,13 +295,13 @@ export default function Dashboard() {
                     layout="vertical"
                     margin={{ top: 5, right: 20, left: 10, bottom: 5 }}
                   >
-                    <CartesianGrid strokeDasharray="3 3" stroke="#333" horizontal={true} vertical={false} />
-                    <XAxis type="number" stroke="#666" tick={{ fill: '#666', fontSize: 11 }} />
+                    <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" horizontal={true} vertical={false} />
+                    <XAxis type="number" stroke="var(--color-border)" tick={{ fill: 'var(--color-text-muted)', fontSize: 11 }} />
                     <YAxis
                       dataKey="name"
                       type="category"
-                      stroke="#999"
-                      tick={{ fill: '#ccc', fontSize: 11 }}
+                      stroke="var(--color-border)"
+                      tick={{ fill: 'var(--color-text-secondary)', fontSize: 11 }}
                       width={70}
                     />
                     <Tooltip content={<CustomTooltip />} />
@@ -313,7 +313,7 @@ export default function Dashboard() {
                   </BarChart>
                 </ResponsiveContainer>
               ) : (
-                <div className="h-full flex items-center justify-center text-rock-light-500">
+                <div className="h-full flex items-center justify-center text-theme-text-muted">
                   暂无数据
                 </div>
               )}
@@ -322,15 +322,15 @@ export default function Dashboard() {
         </Card>
 
         <Card>
-          <div className="p-5 border-b border-rock-dark-700">
+          <div className="p-5 border-b border-theme-border">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="p-2 rounded-lg bg-red-500/20">
                   <AlertTriangle size={20} className="text-red-400" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-white">冷线预警</h3>
-                  <p className="text-xs text-rock-light-500 mt-1">7天以上无人攀爬的线路</p>
+                  <h3 className="font-semibold text-theme-text">冷线预警</h3>
+                  <p className="text-xs text-theme-text-muted mt-1">7天以上无人攀爬的线路</p>
                 </div>
               </div>
               <span className="text-xs text-red-400 bg-red-500/10 px-2 py-1 rounded">
@@ -358,12 +358,12 @@ export default function Dashboard() {
                       </div>
                       <div>
                         <div className="flex items-center gap-2">
-                          <h4 className="font-medium text-white">{route.name}</h4>
+                          <h4 className="font-medium text-theme-text">{route.name}</h4>
                           <span className="px-2 py-0.5 bg-climbing-orange-500/20 text-climbing-orange-400 rounded text-xs font-bold">
                             {route.grade}
                           </span>
                         </div>
-                        <div className="flex items-center gap-3 mt-1 text-xs text-rock-light-500">
+                        <div className="flex items-center gap-3 mt-1 text-xs text-theme-text-muted">
                           <span className="text-red-400 font-medium">
                             {route.days} 天无人攀爬
                           </span>
@@ -384,7 +384,7 @@ export default function Dashboard() {
                 </div>
               ))
             ) : (
-              <div className="py-12 text-center text-rock-light-500">
+              <div className="py-12 text-center text-theme-text-muted">
                 暂无冷线数据
               </div>
             )}
@@ -394,11 +394,11 @@ export default function Dashboard() {
 
       <div className="grid lg:grid-cols-2 gap-6">
         <Card>
-          <div className="p-5 border-b border-rock-dark-700">
+          <div className="p-5 border-b border-theme-border">
             <div className="flex items-center justify-between">
               <div>
-                <h3 className="font-semibold text-white">定线员工作量</h3>
-                <p className="text-xs text-rock-light-500 mt-1">本月各定线员定线数量</p>
+                <h3 className="font-semibold text-theme-text">定线员工作量</h3>
+                <p className="text-xs text-theme-text-muted mt-1">本月各定线员定线数量</p>
               </div>
             </div>
           </div>
@@ -410,19 +410,19 @@ export default function Dashboard() {
                     data={setterWorkloadData}
                     margin={{ top: 5, right: 20, left: 0, bottom: 5 }}
                   >
-                    <CartesianGrid strokeDasharray="3 3" stroke="#333" />
+                    <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" />
                     <XAxis
                       dataKey="month"
-                      stroke="#666"
-                      tick={{ fill: '#666', fontSize: 11 }}
+                      stroke="var(--color-border)"
+                      tick={{ fill: 'var(--color-text-muted)', fontSize: 11 }}
                     />
                     <YAxis
-                      stroke="#666"
-                      tick={{ fill: '#666', fontSize: 11 }}
+                      stroke="var(--color-border)"
+                      tick={{ fill: 'var(--color-text-muted)', fontSize: 11 }}
                     />
                     <Tooltip content={<CustomTooltip />} />
                     <Legend
-                      wrapperStyle={{ fontSize: '11px', color: '#999' }}
+                      wrapperStyle={{ fontSize: '11px', color: 'var(--color-text-muted)' }}
                     />
                     {setterWorkload.map((s) => (
                       <Bar
@@ -435,17 +435,17 @@ export default function Dashboard() {
                   </BarChart>
                 </ResponsiveContainer>
               ) : (
-                <div className="h-full flex items-center justify-center text-rock-light-500">
+                <div className="h-full flex items-center justify-center text-theme-text-muted">
                   暂无数据
                 </div>
               )}
             </div>
             {setterWorkload.length > 0 && (
-              <div className="grid grid-cols-3 gap-3 mt-4 pt-4 border-t border-rock-dark-700">
+              <div className="grid grid-cols-3 gap-3 mt-4 pt-4 border-t border-theme-border">
                 {Object.entries(setterColors).map(([name, color]) => (
                   <div key={name} className="flex items-center gap-2">
                     <div className="w-3 h-3 rounded-full" style={{ backgroundColor: color }} />
-                    <span className="text-sm text-rock-light-400">{name}</span>
+                    <span className="text-sm text-theme-text-secondary">{name}</span>
                   </div>
                 ))}
               </div>
@@ -454,11 +454,11 @@ export default function Dashboard() {
         </Card>
 
         <Card>
-          <div className="p-5 border-b border-rock-dark-700">
+          <div className="p-5 border-b border-theme-border">
             <div className="flex items-center justify-between">
               <div>
-                <h3 className="font-semibold text-white">会员活跃度</h3>
-                <p className="text-xs text-rock-light-500 mt-1">近 12 周每周活跃情况</p>
+                <h3 className="font-semibold text-theme-text">会员活跃度</h3>
+                <p className="text-xs text-theme-text-muted mt-1">近 12 周每周活跃情况</p>
               </div>
             </div>
           </div>
@@ -470,27 +470,27 @@ export default function Dashboard() {
                     data={memberActivityData}
                     margin={{ top: 5, right: 20, left: 0, bottom: 5 }}
                   >
-                    <CartesianGrid strokeDasharray="3 3" stroke="#333" />
+                    <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" />
                     <XAxis
                       dataKey="week"
-                      stroke="#666"
-                      tick={{ fill: '#666', fontSize: 10 }}
+                      stroke="var(--color-border)"
+                      tick={{ fill: 'var(--color-text-muted)', fontSize: 10 }}
                       interval={1}
                     />
                     <YAxis
                       yAxisId="left"
-                      stroke="#666"
-                      tick={{ fill: '#666', fontSize: 11 }}
+                      stroke="var(--color-border)"
+                      tick={{ fill: 'var(--color-text-muted)', fontSize: 11 }}
                     />
                     <YAxis
                       yAxisId="right"
                       orientation="right"
-                      stroke="#666"
-                      tick={{ fill: '#666', fontSize: 11 }}
+                      stroke="var(--color-border)"
+                      tick={{ fill: 'var(--color-text-muted)', fontSize: 11 }}
                     />
                     <Tooltip content={<CustomTooltip />} />
                     <Legend
-                      wrapperStyle={{ fontSize: '11px', color: '#999' }}
+                      wrapperStyle={{ fontSize: '11px', color: 'var(--color-text-muted)' }}
                     />
                     <Line
                       yAxisId="left"
@@ -516,23 +516,23 @@ export default function Dashboard() {
                   </LineChart>
                 </ResponsiveContainer>
               ) : (
-                <div className="h-full flex items-center justify-center text-rock-light-500">
+                <div className="h-full flex items-center justify-center text-theme-text-muted">
                   暂无数据
                 </div>
               )}
             </div>
-            <div className="grid grid-cols-2 gap-4 mt-4 pt-4 border-t border-rock-dark-700">
-              <div className="text-center p-3 bg-rock-dark-900/50 rounded-lg">
+            <div className="grid grid-cols-2 gap-4 mt-4 pt-4 border-t border-theme-border">
+              <div className="text-center p-3 bg-theme-subtle/50 rounded-lg">
                 <p className="text-lg font-bold text-climbing-orange-500">
                   {activeUsersStats?.weeklyActiveUsers ?? 0}
                 </p>
-                <p className="text-xs text-rock-light-500 mt-1">本周活跃人数</p>
+                <p className="text-xs text-theme-text-muted mt-1">本周活跃人数</p>
               </div>
-              <div className="text-center p-3 bg-rock-dark-900/50 rounded-lg">
+              <div className="text-center p-3 bg-theme-subtle/50 rounded-lg">
                 <p className="text-lg font-bold text-green-400">
                   {activeUsersStats?.avgRoutesPerUser ?? 0}
                 </p>
-                <p className="text-xs text-rock-light-500 mt-1">人均攀爬线路</p>
+                <p className="text-xs text-theme-text-muted mt-1">人均攀爬线路</p>
               </div>
             </div>
           </div>

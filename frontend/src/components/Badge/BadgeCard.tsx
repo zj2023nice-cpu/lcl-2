@@ -104,7 +104,7 @@ export default function BadgeCard({
         className={`relative ${sizeClasses[size]} rounded-full flex items-center justify-center transition-all duration-300 border-2 ${
           unlocked
             ? `bg-gradient-to-br ${config.bgClass} ${config.borderClass} shadow-lg ${config.glowClass} ${isHovered ? 'scale-110' : ''}`
-            : 'bg-rock-dark-800 border-rock-dark-700 opacity-50'
+            : 'bg-theme-card border-theme-border opacity-50'
         }`}
       >
         {unlocked && (
@@ -114,7 +114,7 @@ export default function BadgeCard({
         )}
         <IconComponent
           size={iconSizes[size]}
-          className={`relative z-10 ${unlocked ? 'text-white' : 'text-rock-dark-600'}`}
+          className={`relative z-10 ${unlocked ? 'text-white' : 'text-theme-border'}`}
         />
         {badge?.rarity === 'legendary' && unlocked && (
           <div className="absolute inset-0 rounded-full overflow-hidden">
@@ -125,13 +125,13 @@ export default function BadgeCard({
 
       {showProgress && !unlocked && progress > 0 && (
         <div className="w-full mt-2 px-2">
-          <div className="h-1.5 bg-rock-dark-800 rounded-full overflow-hidden">
+          <div className="h-1.5 bg-theme-card rounded-full overflow-hidden">
             <div
               className="h-full bg-gradient-to-r from-climbing-orange-500 to-climbing-orange-400 rounded-full transition-all"
               style={{ width: `${Math.min(100, progress)}%` }}
             />
           </div>
-          <p className="text-xs text-rock-light-500 text-center mt-1">
+          <p className="text-xs text-theme-text-muted text-center mt-1">
             {Math.round(progress)}%
           </p>
         </div>
@@ -140,12 +140,12 @@ export default function BadgeCard({
       {badge && (
         <div className="mt-2 text-center">
           <p
-            className={`text-sm font-medium ${unlocked ? 'text-white' : 'text-rock-light-600'}`}
+            className={`text-sm font-medium ${unlocked ? 'text-theme-text' : 'text-theme-text-muted'}`}
           >
             {badge.name}
           </p>
           <p
-            className={`text-xs ${unlocked ? config.borderClass.replace('border', 'text') : 'text-rock-dark-600'}`}
+            className={`text-xs ${unlocked ? config.borderClass.replace('border', 'text') : 'text-theme-border'}`}
           >
             {config.label}
           </p>

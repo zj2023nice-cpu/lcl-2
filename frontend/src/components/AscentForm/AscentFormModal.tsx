@@ -125,13 +125,13 @@ export default function AscentFormModal({ isOpen, onClose, onSave }: AscentFormM
     <Modal isOpen={isOpen} onClose={onClose} title="记录攀爬" size="lg">
       <div className="space-y-5">
         <div>
-          <label className="block text-sm font-medium text-rock-light-300 mb-2">
+          <label className="block text-sm font-medium text-theme-text-secondary mb-2">
             选择线路
           </label>
           <div className="relative">
             <Search
               size={18}
-              className="absolute left-3 top-1/2 -translate-y-1/2 text-rock-light-500"
+              className="absolute left-3 top-1/2 -translate-y-1/2 text-theme-text-muted"
             />
             <input
               type="text"
@@ -142,28 +142,28 @@ export default function AscentFormModal({ isOpen, onClose, onSave }: AscentFormM
                 setShowDropdown(true);
               }}
               onFocus={() => setShowDropdown(true)}
-              className="w-full pl-10 pr-4 py-2.5 bg-rock-dark-900 border border-rock-dark-700 rounded-lg text-white placeholder-rock-light-600 focus:outline-none focus:border-climbing-orange-500 transition-colors"
+              className="w-full pl-10 pr-4 py-2.5 bg-theme-subtle border border-theme-border rounded-lg text-theme-text placeholder-theme-text-muted focus:outline-none focus:border-climbing-orange-500 transition-colors"
             />
             {loading && (
-              <div className="absolute z-10 w-full mt-1 bg-rock-dark-800 border border-rock-dark-700 rounded-lg shadow-xl p-4 text-center text-rock-light-500">
+              <div className="absolute z-10 w-full mt-1 bg-theme-card border border-theme-border rounded-lg shadow-xl p-4 text-center text-theme-text-muted">
                 加载中...
               </div>
             )}
             {showDropdown && !loading && filteredRoutes.length > 0 && (
-              <div className="absolute z-10 w-full mt-1 bg-rock-dark-800 border border-rock-dark-700 rounded-lg shadow-xl max-h-60 overflow-y-auto">
+              <div className="absolute z-10 w-full mt-1 bg-theme-card border border-theme-border rounded-lg shadow-xl max-h-60 overflow-y-auto">
                 {filteredRoutes.map((route) => (
                   <button
                     key={route.id}
                     onClick={() => handleRouteSelect(route)}
-                    className="w-full flex items-center gap-3 px-4 py-3 hover:bg-rock-dark-700 transition-colors text-left"
+                    className="w-full flex items-center gap-3 px-4 py-3 hover:bg-theme-hover transition-colors text-left"
                   >
                     <div
                       className="w-4 h-4 rounded-full flex-shrink-0"
                       style={{ backgroundColor: route.color || '#666' }}
                     />
                     <div className="flex-1 min-w-0">
-                      <p className="font-medium text-white truncate">{route.name}</p>
-                      <p className="text-xs text-rock-light-500">{route.grade} · {route.setterName || '未定线员'}</p>
+                      <p className="font-medium text-theme-text truncate">{route.name}</p>
+                      <p className="text-xs text-theme-text-muted">{route.grade} · {route.setterName || '未定线员'}</p>
                     </div>
                     <span className="px-2 py-0.5 bg-climbing-orange-500/20 text-climbing-orange-400 rounded text-xs font-bold">
                       {route.grade}
@@ -173,21 +173,21 @@ export default function AscentFormModal({ isOpen, onClose, onSave }: AscentFormM
               </div>
             )}
             {showDropdown && !loading && filteredRoutes.length === 0 && searchQuery && (
-              <div className="absolute z-10 w-full mt-1 bg-rock-dark-800 border border-rock-dark-700 rounded-lg shadow-xl p-4 text-center text-rock-light-500">
+              <div className="absolute z-10 w-full mt-1 bg-theme-card border border-theme-border rounded-lg shadow-xl p-4 text-center text-theme-text-muted">
                 没有找到匹配的线路
               </div>
             )}
           </div>
           {selectedRoute && (
-            <div className="mt-3 p-3 bg-rock-dark-900/50 rounded-lg border border-rock-dark-700">
+            <div className="mt-3 p-3 bg-theme-subtle/50 rounded-lg border border-theme-border">
               <div className="flex items-center gap-3">
                 <div
                   className="w-8 h-8 rounded-lg"
                   style={{ backgroundColor: selectedRoute.color || '#666' }}
                 />
                 <div>
-                  <p className="font-medium text-white">{selectedRoute.name}</p>
-                  <p className="text-xs text-rock-light-500">定级：{selectedRoute.grade}</p>
+                  <p className="font-medium text-theme-text">{selectedRoute.name}</p>
+                  <p className="text-xs text-theme-text-muted">定级：{selectedRoute.grade}</p>
                 </div>
               </div>
             </div>
@@ -195,7 +195,7 @@ export default function AscentFormModal({ isOpen, onClose, onSave }: AscentFormM
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-rock-light-300 mb-2">
+          <label className="block text-sm font-medium text-theme-text-secondary mb-2">
             攀爬结果
           </label>
           <div className="grid grid-cols-5 gap-2">
@@ -209,11 +209,11 @@ export default function AscentFormModal({ isOpen, onClose, onSave }: AscentFormM
                   className={`flex flex-col items-center gap-2 p-3 rounded-lg border transition-all ${
                     isSelected
                       ? `${type.bgColor} border-2`
-                      : 'bg-rock-dark-900 border-rock-dark-700 hover:border-rock-dark-600'
+                      : 'bg-theme-subtle border-theme-border hover:border-theme-border'
                   }`}
                 >
-                  <Icon size={20} className={isSelected ? type.color : 'text-rock-light-500'} />
-                  <span className={`text-xs font-medium ${isSelected ? type.color : 'text-rock-light-400'}`}>
+                  <Icon size={20} className={isSelected ? type.color : 'text-theme-text-muted'} />
+                  <span className={`text-xs font-medium ${isSelected ? type.color : 'text-theme-text-secondary'}`}>
                     {type.label}
                   </span>
                 </button>
@@ -223,33 +223,33 @@ export default function AscentFormModal({ isOpen, onClose, onSave }: AscentFormM
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-rock-light-300 mb-2">
+          <label className="block text-sm font-medium text-theme-text-secondary mb-2">
             尝试次数
           </label>
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-3">
               <button
                 onClick={() => setAttempts(Math.max(1, attempts - 1))}
-                className="w-10 h-10 flex items-center justify-center bg-rock-dark-900 border border-rock-dark-700 rounded-lg hover:border-climbing-orange-500 transition-colors text-rock-light-300 hover:text-white"
+                className="w-10 h-10 flex items-center justify-center bg-theme-subtle border border-theme-border rounded-lg hover:border-climbing-orange-500 transition-colors text-theme-text-secondary hover:text-theme-text"
               >
                 <Minus size={18} />
               </button>
-              <span className="w-12 text-center text-2xl font-bold text-white">
+              <span className="w-12 text-center text-2xl font-bold text-theme-text">
                 {attempts}
               </span>
               <button
                 onClick={() => setAttempts(attempts + 1)}
-                className="w-10 h-10 flex items-center justify-center bg-rock-dark-900 border border-rock-dark-700 rounded-lg hover:border-climbing-orange-500 transition-colors text-rock-light-300 hover:text-white"
+                className="w-10 h-10 flex items-center justify-center bg-theme-subtle border border-theme-border rounded-lg hover:border-climbing-orange-500 transition-colors text-theme-text-secondary hover:text-theme-text"
               >
                 <Plus size={18} />
               </button>
             </div>
-            <span className="text-sm text-rock-light-500">次</span>
+            <span className="text-sm text-theme-text-muted">次</span>
           </div>
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-rock-light-300 mb-2">
+          <label className="block text-sm font-medium text-theme-text-secondary mb-2">
             体感难度
           </label>
           <div className="grid grid-cols-3 gap-2">
@@ -263,7 +263,7 @@ export default function AscentFormModal({ isOpen, onClose, onSave }: AscentFormM
                   className={`flex items-center justify-center gap-2 py-2.5 rounded-lg border transition-all ${
                     isSelected
                       ? 'bg-climbing-orange-500/20 border-climbing-orange-500 text-climbing-orange-400'
-                      : 'bg-rock-dark-900 border-rock-dark-700 text-rock-light-400 hover:border-rock-dark-600'
+                      : 'bg-theme-subtle border-theme-border text-theme-text-secondary hover:border-theme-border'
                   }`}
                 >
                   <Icon size={16} className={isSelected ? option.color : ''} />
@@ -275,7 +275,7 @@ export default function AscentFormModal({ isOpen, onClose, onSave }: AscentFormM
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-rock-light-300 mb-2">
+          <label className="block text-sm font-medium text-theme-text-secondary mb-2">
             心得笔记
           </label>
           <textarea
@@ -283,16 +283,16 @@ export default function AscentFormModal({ isOpen, onClose, onSave }: AscentFormM
             onChange={(e) => setNotes(e.target.value)}
             placeholder="记录一下这次攀爬的心得、技巧要点..."
             rows={4}
-            className="w-full px-4 py-3 bg-rock-dark-900 border border-rock-dark-700 rounded-lg text-white placeholder-rock-light-600 focus:outline-none focus:border-climbing-orange-500 transition-colors resize-none"
+            className="w-full px-4 py-3 bg-theme-subtle border border-theme-border rounded-lg text-theme-text placeholder-theme-text-muted focus:outline-none focus:border-climbing-orange-500 transition-colors resize-none"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-rock-light-300 mb-2">
+          <label className="block text-sm font-medium text-theme-text-secondary mb-2">
             视频上传
           </label>
-          <div className="flex items-center justify-center w-full h-24 border-2 border-dashed border-rock-dark-700 rounded-lg hover:border-climbing-orange-500 transition-colors cursor-pointer bg-rock-dark-900/50">
-            <div className="flex flex-col items-center gap-2 text-rock-light-500">
+          <div className="flex items-center justify-center w-full h-24 border-2 border-dashed border-theme-border rounded-lg hover:border-climbing-orange-500 transition-colors cursor-pointer bg-theme-subtle/50">
+            <div className="flex flex-col items-center gap-2 text-theme-text-muted">
               <Video size={24} />
               <span className="text-sm">点击或拖拽上传视频（可选）</span>
             </div>

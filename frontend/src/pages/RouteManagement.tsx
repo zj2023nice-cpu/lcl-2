@@ -316,9 +316,9 @@ export default function RouteManagement() {
   if (!canManage) {
     return (
       <Card className="p-12 text-center">
-        <AlertTriangle size={48} className="mx-auto text-rock-light-600 mb-4" />
-        <h3 className="text-lg font-medium text-white mb-2">无权限访问</h3>
-        <p className="text-rock-light-500 mb-4">仅管理员或定线员可管理线路</p>
+        <AlertTriangle size={48} className="mx-auto text-theme-text-muted mb-4" />
+        <h3 className="text-lg font-medium text-theme-text mb-2">无权限访问</h3>
+        <p className="text-theme-text-muted mb-4">仅管理员或定线员可管理线路</p>
         <Button onClick={() => navigate('/routes')}>返回线路列表</Button>
       </Card>
     );
@@ -338,13 +338,13 @@ export default function RouteManagement() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-white flex items-center gap-3">
+          <h1 className="text-2xl font-bold text-theme-text flex items-center gap-3">
             <Layers size={24} className="text-climbing-orange-400" />
             线路管理
           </h1>
-          <p className="text-rock-light-500 mt-1">批量管理线路状态，支持跨页全选与按条件筛选后批量标记</p>
+          <p className="text-theme-text-muted mt-1">批量管理线路状态，支持跨页全选与按条件筛选后批量标记</p>
         </div>
-        <label className="flex items-center gap-2 text-sm text-rock-light-400 cursor-pointer select-none">
+        <label className="flex items-center gap-2 text-sm text-theme-text-secondary cursor-pointer select-none">
           <input
             type="checkbox"
             checked={includeArchived}
@@ -352,7 +352,7 @@ export default function RouteManagement() {
               setIncludeArchived(e.target.checked);
               setPage(1);
             }}
-            className="w-4 h-4 rounded border-rock-dark-600 bg-rock-dark-900 text-climbing-orange-500 focus:ring-climbing-orange-500"
+            className="w-4 h-4 rounded border-theme-border bg-theme-subtle text-climbing-orange-500 focus:ring-climbing-orange-500"
           />
           包含已归档线路
         </label>
@@ -362,7 +362,7 @@ export default function RouteManagement() {
         <div className="flex flex-col lg:flex-row gap-4">
           <div className="flex-1">
             <div className="relative">
-              <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-rock-light-500" />
+              <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-theme-text-muted" />
               <input
                 type="text"
                 placeholder="搜索线路名称、定线员..."
@@ -371,20 +371,20 @@ export default function RouteManagement() {
                   setSearchQuery(e.target.value);
                   setPage(1);
                 }}
-                className="w-full pl-10 pr-4 py-2.5 bg-rock-dark-900 border border-rock-dark-700 rounded-lg text-white placeholder-rock-light-600 focus:outline-none focus:border-climbing-orange-500 transition-colors"
+                className="w-full pl-10 pr-4 py-2.5 bg-theme-subtle border border-theme-border rounded-lg text-theme-text placeholder-theme-text-muted focus:outline-none focus:border-climbing-orange-500 transition-colors"
               />
             </div>
           </div>
           <div className="flex flex-wrap gap-3">
             <div className="flex items-center gap-2">
-              <Filter size={16} className="text-rock-light-500" />
+              <Filter size={16} className="text-theme-text-muted" />
               <select
                 value={filterWallId}
                 onChange={(e) => {
                   setFilterWallId(e.target.value ? Number(e.target.value) : '');
                   setPage(1);
                 }}
-                className="bg-rock-dark-900 border border-rock-dark-700 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-climbing-orange-500"
+                className="bg-theme-subtle border border-theme-border rounded-lg px-3 py-2 text-theme-text text-sm focus:outline-none focus:border-climbing-orange-500"
               >
                 <option value="">全部岩壁</option>
                 {walls.map((w) => (
@@ -398,7 +398,7 @@ export default function RouteManagement() {
                 setFilterType(e.target.value);
                 setPage(1);
               }}
-              className="bg-rock-dark-900 border border-rock-dark-700 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-climbing-orange-500"
+              className="bg-theme-subtle border border-theme-border rounded-lg px-3 py-2 text-theme-text text-sm focus:outline-none focus:border-climbing-orange-500"
             >
               <option value="all">全部类型</option>
               <option value="boulder">抱石</option>
@@ -412,7 +412,7 @@ export default function RouteManagement() {
                 setFilterGrade(e.target.value);
                 setPage(1);
               }}
-              className="bg-rock-dark-900 border border-rock-dark-700 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-climbing-orange-500"
+              className="bg-theme-subtle border border-theme-border rounded-lg px-3 py-2 text-theme-text text-sm focus:outline-none focus:border-climbing-orange-500"
             >
               <option value="all">全部定级</option>
               <option value="V0">初级 (V0-V2)</option>
@@ -425,7 +425,7 @@ export default function RouteManagement() {
                 setFilterStatus(e.target.value);
                 setPage(1);
               }}
-              className="bg-rock-dark-900 border border-rock-dark-700 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-climbing-orange-500"
+              className="bg-theme-subtle border border-theme-border rounded-lg px-3 py-2 text-theme-text text-sm focus:outline-none focus:border-climbing-orange-500"
             >
               <option value="all">全部状态</option>
               <option value="open">开放中</option>
@@ -434,14 +434,14 @@ export default function RouteManagement() {
               <option value="removed">已拆除</option>
             </select>
             <div className="flex items-center gap-2">
-              <Palette size={16} className="text-rock-light-500" />
+              <Palette size={16} className="text-theme-text-muted" />
               <select
                 value={filterColor}
                 onChange={(e) => {
                   setFilterColor(e.target.value);
                   setPage(1);
                 }}
-                className="bg-rock-dark-900 border border-rock-dark-700 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-climbing-orange-500"
+                className="bg-theme-subtle border border-theme-border rounded-lg px-3 py-2 text-theme-text text-sm focus:outline-none focus:border-climbing-orange-500"
               >
                 {colorOptions.map((opt) => (
                   <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -456,10 +456,10 @@ export default function RouteManagement() {
       </Card>
 
       <Card className="overflow-hidden">
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 px-5 py-3 border-b border-rock-dark-700 bg-rock-dark-800/40">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 px-5 py-3 border-b border-theme-border bg-theme-card/40">
           <div className="flex items-center gap-3 text-sm">
-            <span className="text-rock-light-400">
-              共 <span className="text-white font-medium">{filteredRoutes.length}</span> 条
+            <span className="text-theme-text-secondary">
+              共 <span className="text-theme-text font-medium">{filteredRoutes.length}</span> 条
             </span>
             {selectedIds.size > 0 && (
               <span className="flex items-center gap-1 text-climbing-orange-400">
@@ -493,13 +493,13 @@ export default function RouteManagement() {
 
         <div className="overflow-x-auto">
           <table className="w-full">
-            <thead className="bg-rock-dark-800/50">
+            <thead className="bg-theme-card/50">
               <tr>
                 <th className="px-5 py-3 w-10">
                   <button
                     type="button"
                     onClick={togglePageSelection}
-                    className="flex items-center justify-center text-rock-light-400 hover:text-white transition-colors"
+                    className="flex items-center justify-center text-theme-text-secondary hover:text-theme-text transition-colors"
                     title={pageAllSelected ? '取消本页全选' : '全选本页'}
                   >
                     {pageAllSelected ? (
@@ -511,28 +511,28 @@ export default function RouteManagement() {
                     )}
                   </button>
                 </th>
-                <th className="text-left px-3 py-3 text-sm font-medium text-rock-light-400">线路</th>
-                <th className="text-left px-3 py-3 text-sm font-medium text-rock-light-400">类型</th>
-                <th className="text-left px-3 py-3 text-sm font-medium text-rock-light-400">状态</th>
-                <th className="text-left px-3 py-3 text-sm font-medium text-rock-light-400">岩壁</th>
-                <th className="text-left px-3 py-3 text-sm font-medium text-rock-light-400">定线员</th>
-                <th className="text-left px-3 py-3 text-sm font-medium text-rock-light-400">创建时间</th>
-                <th className="text-right px-5 py-3 text-sm font-medium text-rock-light-400">操作</th>
+                <th className="text-left px-3 py-3 text-sm font-medium text-theme-text-secondary">线路</th>
+                <th className="text-left px-3 py-3 text-sm font-medium text-theme-text-secondary">类型</th>
+                <th className="text-left px-3 py-3 text-sm font-medium text-theme-text-secondary">状态</th>
+                <th className="text-left px-3 py-3 text-sm font-medium text-theme-text-secondary">岩壁</th>
+                <th className="text-left px-3 py-3 text-sm font-medium text-theme-text-secondary">定线员</th>
+                <th className="text-left px-3 py-3 text-sm font-medium text-theme-text-secondary">创建时间</th>
+                <th className="text-right px-5 py-3 text-sm font-medium text-theme-text-secondary">操作</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-rock-dark-700">
+            <tbody className="divide-y divide-theme-border">
               {loading ? (
                 <tr>
-                  <td colSpan={8} className="px-5 py-12 text-center text-rock-light-500">
+                  <td colSpan={8} className="px-5 py-12 text-center text-theme-text-muted">
                     加载中...
                   </td>
                 </tr>
               ) : paginatedRoutes.length === 0 ? (
                 <tr>
                   <td colSpan={8} className="px-5 py-12 text-center">
-                    <Mountain size={48} className="mx-auto text-rock-light-600 mb-4" />
-                    <h3 className="text-lg font-medium text-white mb-2">暂无线路</h3>
-                    <p className="text-rock-light-500">没有找到符合条件的线路</p>
+                    <Mountain size={48} className="mx-auto text-theme-text-muted mb-4" />
+                    <h3 className="text-lg font-medium text-theme-text mb-2">暂无线路</h3>
+                    <p className="text-theme-text-muted">没有找到符合条件的线路</p>
                   </td>
                 </tr>
               ) : (
@@ -541,13 +541,13 @@ export default function RouteManagement() {
                   return (
                     <tr
                       key={route.id}
-                      className={`hover:bg-rock-dark-800/30 transition-colors ${isSelected ? 'bg-climbing-orange-500/5' : ''}`}
+                      className={`hover:bg-theme-card/30 transition-colors ${isSelected ? 'bg-climbing-orange-500/5' : ''}`}
                     >
                       <td className="px-5 py-4">
                         <button
                           type="button"
                           onClick={() => toggleRoute(route.id)}
-                          className="flex items-center justify-center text-rock-light-400 hover:text-white transition-colors"
+                          className="flex items-center justify-center text-theme-text-secondary hover:text-theme-text transition-colors"
                         >
                           {isSelected ? (
                             <CheckSquare size={18} className="text-climbing-orange-400" />
@@ -563,7 +563,7 @@ export default function RouteManagement() {
                             style={{ backgroundColor: route.color || '#475569' }}
                           />
                           <div className="min-w-0">
-                            <p className="font-medium text-white truncate">{route.name}</p>
+                            <p className="font-medium text-theme-text truncate">{route.name}</p>
                             <span className={`inline-block mt-1 px-2 py-0.5 rounded text-xs font-bold border ${getGradeFullClass(route.grade)}`}>
                               {route.grade} · {getGradeLabel(route.grade)}
                             </span>
@@ -587,12 +587,12 @@ export default function RouteManagement() {
                           )}
                         </div>
                       </td>
-                      <td className="px-3 py-4 text-sm text-rock-light-300">{getWallName(route.wallId)}</td>
-                      <td className="px-3 py-4 text-sm text-rock-light-300 flex items-center gap-1">
-                        <User size={12} className="text-rock-light-500" />
+                      <td className="px-3 py-4 text-sm text-theme-text-secondary">{getWallName(route.wallId)}</td>
+                      <td className="px-3 py-4 text-sm text-theme-text-secondary flex items-center gap-1">
+                        <User size={12} className="text-theme-text-muted" />
                         {getSetterName(route.setterId)}
                       </td>
-                      <td className="px-3 py-4 text-sm text-rock-light-400">
+                      <td className="px-3 py-4 text-sm text-theme-text-secondary">
                         <span className="flex items-center gap-1">
                           <Calendar size={12} />
                           {formatDate(route.createdAt)}
@@ -615,8 +615,8 @@ export default function RouteManagement() {
         </div>
 
         {totalPages > 1 && (
-          <div className="flex items-center justify-between px-5 py-4 border-t border-rock-dark-700">
-            <span className="text-sm text-rock-light-500">
+          <div className="flex items-center justify-between px-5 py-4 border-t border-theme-border">
+            <span className="text-sm text-theme-text-muted">
               共 {filteredRoutes.length} 条记录
             </span>
             <div className="flex items-center gap-2">
@@ -663,7 +663,7 @@ export default function RouteManagement() {
         size="md"
       >
         <div className="space-y-4">
-          <p className="text-sm text-rock-light-400">
+          <p className="text-sm text-theme-text-secondary">
             当前已选择 <span className="text-climbing-orange-400 font-medium">{selectedIds.size}</span> 条线路，请选择目标状态：
           </p>
           <div className="grid grid-cols-2 gap-3">
@@ -675,7 +675,7 @@ export default function RouteManagement() {
                 className={`flex items-center justify-center gap-2 px-4 py-3 rounded-lg border text-sm font-medium transition-all ${
                   targetStatus === opt.value
                     ? 'border-climbing-orange-500 bg-climbing-orange-500/10 text-climbing-orange-400'
-                    : 'border-rock-dark-700 bg-rock-dark-900 text-rock-light-300 hover:border-rock-dark-600'
+                    : 'border-theme-border bg-theme-subtle text-theme-text-secondary hover:border-theme-border'
                 }`}
               >
                 <span className={`w-2 h-2 rounded-full border ${routeStatusColors[opt.value].split(' ').slice(0, 2).join(' ')}`} />
@@ -713,7 +713,7 @@ export default function RouteManagement() {
               <AlertCircle size={20} className="text-climbing-orange-400 flex-shrink-0 mt-0.5" />
               <div className="text-sm">
                 <p className="font-medium text-climbing-orange-400">即将批量变更线路状态</p>
-                <p className="text-rock-light-300 mt-1">
+                <p className="text-theme-text-secondary mt-1">
                   目标状态：
                   <span className={`ml-1 px-2 py-0.5 rounded text-xs border ${routeStatusColors[targetStatus]}`}>
                     {routeStatusLabels[targetStatus]}
@@ -724,21 +724,21 @@ export default function RouteManagement() {
           </div>
 
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-            <div className="p-3 bg-rock-dark-900 rounded-lg text-center">
-              <p className="text-2xl font-bold text-white">{previewResult?.total ?? 0}</p>
-              <p className="text-xs text-rock-light-500 mt-1">影响线路总数</p>
+            <div className="p-3 bg-theme-subtle rounded-lg text-center">
+              <p className="text-2xl font-bold text-theme-text">{previewResult?.total ?? 0}</p>
+              <p className="text-xs text-theme-text-muted mt-1">影响线路总数</p>
             </div>
             <div className="p-3 bg-green-500/10 rounded-lg text-center">
               <p className="text-2xl font-bold text-green-400">{previewWillChange}</p>
-              <p className="text-xs text-rock-light-500 mt-1">将变更状态</p>
+              <p className="text-xs text-theme-text-muted mt-1">将变更状态</p>
             </div>
             <div className="p-3 bg-gray-500/10 rounded-lg text-center">
               <p className="text-2xl font-bold text-gray-400">{previewAlreadyTarget}</p>
-              <p className="text-xs text-rock-light-500 mt-1">已是目标状态</p>
+              <p className="text-xs text-theme-text-muted mt-1">已是目标状态</p>
             </div>
             <div className="p-3 bg-red-500/10 rounded-lg text-center">
               <p className="text-2xl font-bold text-red-400">{previewArchived}</p>
-              <p className="text-xs text-rock-light-500 mt-1">已归档(将失败)</p>
+              <p className="text-xs text-theme-text-muted mt-1">已归档(将失败)</p>
             </div>
           </div>
 
@@ -749,32 +749,32 @@ export default function RouteManagement() {
             </div>
           )}
 
-          <div className="border border-rock-dark-700 rounded-lg overflow-hidden">
-            <div className="px-4 py-2 bg-rock-dark-800/50 text-xs text-rock-light-400 flex items-center justify-between">
+          <div className="border border-theme-border rounded-lg overflow-hidden">
+            <div className="px-4 py-2 bg-theme-card/50 text-xs text-theme-text-secondary flex items-center justify-between">
               <span>影响清单明细</span>
               <span>共 {previewResult?.routes.length ?? 0} 条</span>
             </div>
             <div className="max-h-72 overflow-y-auto">
               <table className="w-full text-sm">
-                <thead className="bg-rock-dark-900 sticky top-0">
+                <thead className="bg-theme-subtle sticky top-0">
                   <tr>
-                    <th className="text-left px-4 py-2 text-rock-light-500 font-medium">线路</th>
-                    <th className="text-left px-4 py-2 text-rock-light-500 font-medium">岩壁</th>
-                    <th className="text-left px-4 py-2 text-rock-light-500 font-medium">当前状态</th>
-                    <th className="text-left px-4 py-2 text-rock-light-500 font-medium">变更后</th>
+                    <th className="text-left px-4 py-2 text-theme-text-muted font-medium">线路</th>
+                    <th className="text-left px-4 py-2 text-theme-text-muted font-medium">岩壁</th>
+                    <th className="text-left px-4 py-2 text-theme-text-muted font-medium">当前状态</th>
+                    <th className="text-left px-4 py-2 text-theme-text-muted font-medium">变更后</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-rock-dark-700/50">
+                <tbody className="divide-y divide-theme-border/50">
                   {previewResult?.routes.map((r) => (
-                    <tr key={r.id} className="hover:bg-rock-dark-800/30">
+                    <tr key={r.id} className="hover:bg-theme-card/30">
                       <td className="px-4 py-2">
                         <div className="flex items-center gap-2">
                           <div className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: r.color || '#475569' }} />
-                          <span className="text-white">{r.name}</span>
-                          <span className="text-xs text-rock-light-500">{r.grade}</span>
+                          <span className="text-theme-text">{r.name}</span>
+                          <span className="text-xs text-theme-text-muted">{r.grade}</span>
                         </div>
                       </td>
-                      <td className="px-4 py-2 text-rock-light-400">{r.wallName}</td>
+                      <td className="px-4 py-2 text-theme-text-secondary">{r.wallName}</td>
                       <td className="px-4 py-2">
                         <span className={`px-2 py-0.5 rounded text-xs border ${routeStatusColors[r.status]}`}>
                           {routeStatusLabels[r.status]}
@@ -798,8 +798,8 @@ export default function RouteManagement() {
             </div>
           </div>
 
-          <div className="p-3 bg-rock-dark-900 rounded-lg flex items-start gap-2 text-xs text-rock-light-400">
-            <AlertCircle size={14} className="flex-shrink-0 mt-0.5 text-rock-light-500" />
+          <div className="p-3 bg-theme-subtle rounded-lg flex items-start gap-2 text-xs text-theme-text-secondary">
+            <AlertCircle size={14} className="flex-shrink-0 mt-0.5 text-theme-text-muted" />
             <span>二次确认：执行后将进入事务处理，若部分失败将回滚已处理项并返回失败明细，操作过程将记录到操作日志。</span>
           </div>
 
@@ -843,7 +843,7 @@ export default function RouteManagement() {
               <CheckCircle2 size={20} className="text-green-400 flex-shrink-0 mt-0.5" />
               <div className="text-sm">
                 <p className="font-medium text-green-400">批量状态变更成功</p>
-                <p className="text-rock-light-300 mt-1">
+                <p className="text-theme-text-secondary mt-1">
                   共处理 {resultData.total} 条，成功更新 {resultData.successCount} 条，数据已异步刷新。
                 </p>
               </div>
@@ -854,33 +854,33 @@ export default function RouteManagement() {
                 <XCircle size={20} className="text-red-400 flex-shrink-0 mt-0.5" />
                 <div className="text-sm">
                   <p className="font-medium text-red-400">批量操作部分失败，已回滚已处理项</p>
-                  <p className="text-rock-light-300 mt-1">
+                  <p className="text-theme-text-secondary mt-1">
                     共 {resultData?.total ?? 0} 条，失败 {resultData?.failureCount ?? 0} 条。为保证数据一致性，本次所有变更均已回滚，列表已异步刷新。
                   </p>
                 </div>
               </div>
 
               {resultData && resultData.failures.length > 0 && (
-                <div className="border border-rock-dark-700 rounded-lg overflow-hidden">
-                  <div className="px-4 py-2 bg-rock-dark-800/50 text-xs text-rock-light-400 flex items-center gap-2">
+                <div className="border border-theme-border rounded-lg overflow-hidden">
+                  <div className="px-4 py-2 bg-theme-card/50 text-xs text-theme-text-secondary flex items-center gap-2">
                     <AlertTriangle size={14} className="text-red-400" />
                     失败明细
                   </div>
                   <div className="max-h-60 overflow-y-auto">
                     <table className="w-full text-sm">
-                      <thead className="bg-rock-dark-900 sticky top-0">
+                      <thead className="bg-theme-subtle sticky top-0">
                         <tr>
-                          <th className="text-left px-4 py-2 text-rock-light-500 font-medium">线路</th>
-                          <th className="text-left px-4 py-2 text-rock-light-500 font-medium">失败原因</th>
+                          <th className="text-left px-4 py-2 text-theme-text-muted font-medium">线路</th>
+                          <th className="text-left px-4 py-2 text-theme-text-muted font-medium">失败原因</th>
                         </tr>
                       </thead>
-                      <tbody className="divide-y divide-rock-dark-700/50">
+                      <tbody className="divide-y divide-theme-border/50">
                         {resultData.failures.map((f, idx) => (
-                          <tr key={`${f.routeId}-${idx}`} className="hover:bg-rock-dark-800/30">
-                            <td className="px-4 py-2 text-white">
+                          <tr key={`${f.routeId}-${idx}`} className="hover:bg-theme-card/30">
+                            <td className="px-4 py-2 text-theme-text">
                               {f.routeName}
                               {f.routeId > 0 && (
-                                <span className="text-xs text-rock-light-500 ml-1">#{f.routeId}</span>
+                                <span className="text-xs text-theme-text-muted ml-1">#{f.routeId}</span>
                               )}
                             </td>
                             <td className="px-4 py-2 text-red-400">{f.reason}</td>

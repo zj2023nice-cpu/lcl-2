@@ -119,8 +119,8 @@ export default function Register() {
 
   return (
     <div className={cn('min-h-screen flex items-center justify-center px-4 py-8 relative overflow-hidden', isTransitioning && 'theme-transition')}>
-      <div className="absolute inset-0 bg-rock-dark-950">
-        <div className="absolute inset-0 bg-gradient-to-br from-rock-dark-900 via-rock-dark-950 to-rock-dark-900" />
+      <div className="absolute inset-0 bg-theme-bg">
+        <div className="absolute inset-0 bg-gradient-to-br from-theme-subtle via-theme-bg to-theme-subtle" />
         <div
           className="absolute inset-0 opacity-20"
           style={{
@@ -138,10 +138,10 @@ export default function Register() {
       <div className="relative w-full max-w-md z-10">
         <div className="flex flex-col items-center mb-6">
           <div className="w-16 h-16 bg-climbing-orange-500 rounded-2xl flex items-center justify-center mb-4 shadow-lg shadow-climbing-orange-500/30">
-            <Mountain size={36} className="text-white" />
+            <Mountain size={36} className="text-theme-text" />
           </div>
-          <h1 className="text-3xl font-bold text-white">创建账号</h1>
-          <p className="text-rock-light-500 mt-2">开始你的攀岩之旅</p>
+          <h1 className="text-3xl font-bold text-theme-text">创建账号</h1>
+          <p className="text-theme-text-muted mt-2">开始你的攀岩之旅</p>
         </div>
 
         <div className="flex items-center justify-center gap-3 mb-6">
@@ -152,7 +152,7 @@ export default function Register() {
                   'w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-all duration-300',
                   step >= s
                     ? 'bg-climbing-orange-500 text-white shadow-lg shadow-climbing-orange-500/30'
-                    : 'bg-rock-dark-800 text-rock-light-500 border border-rock-dark-700'
+                    : 'bg-theme-card text-theme-text-muted border border-theme-border'
                 )}
               >
                 {step > s ? <Check size={16} /> : s}
@@ -161,7 +161,7 @@ export default function Register() {
                 <div
                   className={cn(
                     'w-16 h-0.5 mx-2 transition-all duration-300',
-                    step > s ? 'bg-climbing-orange-500' : 'bg-rock-dark-700'
+                    step > s ? 'bg-climbing-orange-500' : 'bg-theme-border'
                   )}
                 />
               )}
@@ -169,7 +169,7 @@ export default function Register() {
           ))}
         </div>
 
-        <div className="backdrop-blur-xl bg-rock-dark-800/70 border border-rock-dark-600/50 rounded-2xl shadow-2xl overflow-hidden">
+        <div className="backdrop-blur-xl bg-theme-card/70 border border-theme-border/50 rounded-2xl shadow-2xl overflow-hidden">
           {error && (
             <div className="mx-6 mt-4 p-3 bg-red-900/30 border border-red-800/50 rounded-lg text-red-400 text-sm">
               {error}
@@ -180,21 +180,21 @@ export default function Register() {
             {step === 1 ? (
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-rock-light-300 mb-2">
+                  <label className="block text-sm font-medium text-theme-text-secondary mb-2">
                     姓名
                   </label>
                   <div className="relative">
-                    <User size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-rock-light-500" />
+                    <User size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-theme-text-muted" />
                     <input
                       type="text"
                       value={formData.name}
                       onChange={(e) => updateField('name', e.target.value)}
                       placeholder="请输入姓名"
                       className={cn(
-                        'w-full pl-10 pr-4 py-3 bg-rock-dark-900/60 border rounded-lg text-white placeholder-rock-light-600 focus:outline-none focus:ring-1 transition-all duration-200',
+                        'w-full pl-10 pr-4 py-3 bg-theme-subtle/60 border rounded-lg text-theme-text placeholder-theme-text-muted focus:outline-none focus:ring-1 transition-all duration-200',
                         formErrors.name
                           ? 'border-red-500/50 focus:border-red-500 focus:ring-red-500/30'
-                          : 'border-rock-dark-600/50 focus:border-climbing-orange-500 focus:ring-climbing-orange-500/30'
+                          : 'border-theme-border/50 focus:border-climbing-orange-500 focus:ring-climbing-orange-500/30'
                       )}
                     />
                   </div>
@@ -204,21 +204,21 @@ export default function Register() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-rock-light-300 mb-2">
-                    邮箱 <span className="text-rock-light-600 text-xs">(选填)</span>
+                  <label className="block text-sm font-medium text-theme-text-secondary mb-2">
+                    邮箱 <span className="text-theme-text-muted text-xs">(选填)</span>
                   </label>
                   <div className="relative">
-                    <Mail size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-rock-light-500" />
+                    <Mail size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-theme-text-muted" />
                     <input
                       type="email"
                       value={formData.email}
                       onChange={(e) => updateField('email', e.target.value)}
                       placeholder="请输入邮箱"
                       className={cn(
-                        'w-full pl-10 pr-4 py-3 bg-rock-dark-900/60 border rounded-lg text-white placeholder-rock-light-600 focus:outline-none focus:ring-1 transition-all duration-200',
+                        'w-full pl-10 pr-4 py-3 bg-theme-subtle/60 border rounded-lg text-theme-text placeholder-theme-text-muted focus:outline-none focus:ring-1 transition-all duration-200',
                         formErrors.email
                           ? 'border-red-500/50 focus:border-red-500 focus:ring-red-500/30'
-                          : 'border-rock-dark-600/50 focus:border-climbing-orange-500 focus:ring-climbing-orange-500/30'
+                          : 'border-theme-border/50 focus:border-climbing-orange-500 focus:ring-climbing-orange-500/30'
                       )}
                     />
                   </div>
@@ -228,21 +228,21 @@ export default function Register() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-rock-light-300 mb-2">
-                    手机号 <span className="text-rock-light-600 text-xs">(选填)</span>
+                  <label className="block text-sm font-medium text-theme-text-secondary mb-2">
+                    手机号 <span className="text-theme-text-muted text-xs">(选填)</span>
                   </label>
                   <div className="relative">
-                    <Phone size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-rock-light-500" />
+                    <Phone size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-theme-text-muted" />
                     <input
                       type="tel"
                       value={formData.phone}
                       onChange={(e) => updateField('phone', e.target.value)}
                       placeholder="请输入手机号"
                       className={cn(
-                        'w-full pl-10 pr-4 py-3 bg-rock-dark-900/60 border rounded-lg text-white placeholder-rock-light-600 focus:outline-none focus:ring-1 transition-all duration-200',
+                        'w-full pl-10 pr-4 py-3 bg-theme-subtle/60 border rounded-lg text-theme-text placeholder-theme-text-muted focus:outline-none focus:ring-1 transition-all duration-200',
                         formErrors.phone
                           ? 'border-red-500/50 focus:border-red-500 focus:ring-red-500/30'
-                          : 'border-rock-dark-600/50 focus:border-climbing-orange-500 focus:ring-climbing-orange-500/30'
+                          : 'border-theme-border/50 focus:border-climbing-orange-500 focus:ring-climbing-orange-500/30'
                       )}
                     />
                   </div>
@@ -252,27 +252,27 @@ export default function Register() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-rock-light-300 mb-2">
+                  <label className="block text-sm font-medium text-theme-text-secondary mb-2">
                     密码
                   </label>
                   <div className="relative">
-                    <Lock size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-rock-light-500" />
+                    <Lock size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-theme-text-muted" />
                     <input
                       type={showPassword ? 'text' : 'password'}
                       value={formData.password}
                       onChange={(e) => updateField('password', e.target.value)}
                       placeholder="请输入密码（至少6位）"
                       className={cn(
-                        'w-full pl-10 pr-12 py-3 bg-rock-dark-900/60 border rounded-lg text-white placeholder-rock-light-600 focus:outline-none focus:ring-1 transition-all duration-200',
+                        'w-full pl-10 pr-12 py-3 bg-theme-subtle/60 border rounded-lg text-theme-text placeholder-theme-text-muted focus:outline-none focus:ring-1 transition-all duration-200',
                         formErrors.password
                           ? 'border-red-500/50 focus:border-red-500 focus:ring-red-500/30'
-                          : 'border-rock-dark-600/50 focus:border-climbing-orange-500 focus:ring-climbing-orange-500/30'
+                          : 'border-theme-border/50 focus:border-climbing-orange-500 focus:ring-climbing-orange-500/30'
                       )}
                     />
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-rock-light-500 hover:text-rock-light-300 transition-colors"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-theme-text-muted hover:text-theme-text-secondary transition-colors"
                     >
                       {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                     </button>
@@ -283,27 +283,27 @@ export default function Register() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-rock-light-300 mb-2">
+                  <label className="block text-sm font-medium text-theme-text-secondary mb-2">
                     确认密码
                   </label>
                   <div className="relative">
-                    <Lock size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-rock-light-500" />
+                    <Lock size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-theme-text-muted" />
                     <input
                       type={showConfirmPassword ? 'text' : 'password'}
                       value={formData.confirmPassword}
                       onChange={(e) => updateField('confirmPassword', e.target.value)}
                       placeholder="请再次输入密码"
                       className={cn(
-                        'w-full pl-10 pr-12 py-3 bg-rock-dark-900/60 border rounded-lg text-white placeholder-rock-light-600 focus:outline-none focus:ring-1 transition-all duration-200',
+                        'w-full pl-10 pr-12 py-3 bg-theme-subtle/60 border rounded-lg text-theme-text placeholder-theme-text-muted focus:outline-none focus:ring-1 transition-all duration-200',
                         formErrors.confirmPassword
                           ? 'border-red-500/50 focus:border-red-500 focus:ring-red-500/30'
-                          : 'border-rock-dark-600/50 focus:border-climbing-orange-500 focus:ring-climbing-orange-500/30'
+                          : 'border-theme-border/50 focus:border-climbing-orange-500 focus:ring-climbing-orange-500/30'
                       )}
                     />
                     <button
                       type="button"
                       onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-rock-light-500 hover:text-rock-light-300 transition-colors"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-theme-text-muted hover:text-theme-text-secondary transition-colors"
                     >
                       {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                     </button>
@@ -321,28 +321,28 @@ export default function Register() {
             ) : (
               <div className="space-y-5">
                 <div className="text-center mb-2">
-                  <h3 className="text-lg font-semibold text-white">确认注册信息</h3>
-                  <p className="text-sm text-rock-light-500 mt-1">请确认以下信息无误</p>
+                  <h3 className="text-lg font-semibold text-theme-text">确认注册信息</h3>
+                  <p className="text-sm text-theme-text-muted mt-1">请确认以下信息无误</p>
                 </div>
 
-                <div className="space-y-3 p-4 bg-rock-dark-900/50 rounded-lg border border-rock-dark-700">
+                <div className="space-y-3 p-4 bg-theme-subtle/50 rounded-lg border border-theme-border">
                   <div className="flex items-center gap-3">
-                    <User size={16} className="text-rock-light-500" />
-                    <span className="text-sm text-rock-light-400">姓名：</span>
-                    <span className="text-sm text-white font-medium">{formData.name}</span>
+                    <User size={16} className="text-theme-text-muted" />
+                    <span className="text-sm text-theme-text-secondary">姓名：</span>
+                    <span className="text-sm text-theme-text font-medium">{formData.name}</span>
                   </div>
                   {formData.email && (
                     <div className="flex items-center gap-3">
-                      <Mail size={16} className="text-rock-light-500" />
-                      <span className="text-sm text-rock-light-400">邮箱：</span>
-                      <span className="text-sm text-white font-medium">{formData.email}</span>
+                      <Mail size={16} className="text-theme-text-muted" />
+                      <span className="text-sm text-theme-text-secondary">邮箱：</span>
+                      <span className="text-sm text-theme-text font-medium">{formData.email}</span>
                     </div>
                   )}
                   {formData.phone && (
                     <div className="flex items-center gap-3">
-                      <Phone size={16} className="text-rock-light-500" />
-                      <span className="text-sm text-rock-light-400">手机号：</span>
-                      <span className="text-sm text-white font-medium">{formData.phone}</span>
+                      <Phone size={16} className="text-theme-text-muted" />
+                      <span className="text-sm text-theme-text-secondary">手机号：</span>
+                      <span className="text-sm text-theme-text font-medium">{formData.phone}</span>
                     </div>
                   )}
                 </div>
@@ -365,7 +365,7 @@ export default function Register() {
           </form>
 
           <div className="px-6 pb-6">
-            <p className="text-center text-sm text-rock-light-500">
+            <p className="text-center text-sm text-theme-text-muted">
               已有账号？{' '}
               <Link to="/login" className="text-climbing-orange-500 hover:text-climbing-orange-400 font-medium transition-colors">
                 立即登录
@@ -374,7 +374,7 @@ export default function Register() {
           </div>
         </div>
 
-        <p className="text-center text-xs text-rock-light-600 mt-6">
+        <p className="text-center text-xs text-theme-text-muted mt-6">
           注册即表示同意 <a href="#" className="text-climbing-orange-500 hover:underline">用户协议</a> 和{' '}
           <a href="#" className="text-climbing-orange-500 hover:underline">隐私政策</a>
         </p>

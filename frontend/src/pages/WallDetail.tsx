@@ -91,10 +91,10 @@ export default function WallDetail() {
   if (isLoading) {
     return (
       <div className="space-y-6">
-        <div className="h-12 bg-rock-dark-800 rounded-lg animate-pulse" />
+        <div className="h-12 bg-theme-card rounded-lg animate-pulse" />
         <div className="grid lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-2 h-96 bg-rock-dark-800 rounded-xl animate-pulse" />
-          <div className="h-96 bg-rock-dark-800 rounded-xl animate-pulse" />
+          <div className="lg:col-span-2 h-96 bg-theme-card rounded-xl animate-pulse" />
+          <div className="h-96 bg-theme-card rounded-xl animate-pulse" />
         </div>
       </div>
     );
@@ -103,9 +103,9 @@ export default function WallDetail() {
   if (!wall) {
     return (
       <Card className="p-12 text-center">
-        <Mountain size={48} className="mx-auto text-rock-light-600 mb-4" />
-        <h3 className="text-lg font-medium text-white mb-2">岩壁不存在</h3>
-        <p className="text-rock-light-500 mb-4">请检查岩壁ID是否正确</p>
+        <Mountain size={48} className="mx-auto text-theme-text-muted mb-4" />
+        <h3 className="text-lg font-medium text-theme-text mb-2">岩壁不存在</h3>
+        <p className="text-theme-text-muted mb-4">请检查岩壁ID是否正确</p>
         <Button onClick={() => navigate('/walls')}>返回岩壁列表</Button>
       </Card>
     );
@@ -124,8 +124,8 @@ export default function WallDetail() {
             <ArrowLeft size={20} />
           </Button>
           <div>
-            <h1 className="text-2xl font-bold text-white">{wall.name}</h1>
-            <p className="text-rock-light-500 text-sm mt-1">{wall.description}</p>
+            <h1 className="text-2xl font-bold text-theme-text">{wall.name}</h1>
+            <p className="text-theme-text-muted text-sm mt-1">{wall.description}</p>
           </div>
         </div>
         <Button variant="outline">
@@ -137,23 +137,23 @@ export default function WallDetail() {
       <div className="grid lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2">
           <Card className="overflow-hidden h-full">
-            <div className="relative bg-gradient-to-b from-rock-dark-700 via-rock-dark-800 to-rock-dark-900 min-h-[500px]">
+            <div className="relative bg-gradient-to-b from-theme-hover via-theme-card to-theme-subtle min-h-[500px]">
               <div className="absolute inset-0 opacity-30">
                 <svg className="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
                   <path
                     d="M0,30 Q25,20 50,35 T100,30 L100,100 L0,100 Z"
                     fill="currentColor"
-                    className="text-rock-dark-600"
+                    className="text-theme-border"
                   />
                   <path
                     d="M0,50 Q30,40 60,55 T100,50 L100,100 L0,100 Z"
                     fill="currentColor"
-                    className="text-rock-dark-700"
+                    className="text-theme-hover"
                   />
                   <path
                     d="M0,70 Q20,60 40,75 T80,70 L100,75 L100,100 L0,100 Z"
                     fill="currentColor"
-                    className="text-rock-dark-800"
+                    className="text-theme-card"
                   />
                 </svg>
               </div>
@@ -170,7 +170,7 @@ export default function WallDetail() {
                     title={`线路 ${index + 1}`}
                   />
                 ))}
-                <div className="absolute bottom-4 left-4 text-xs text-rock-light-500">
+                <div className="absolute bottom-4 left-4 text-xs text-theme-text-muted">
                   <p>岩壁ID: #{wall.id}</p>
                 </div>
               </div>
@@ -180,24 +180,24 @@ export default function WallDetail() {
 
         <div className="space-y-4">
           <Card>
-            <div className="p-4 border-b border-rock-dark-700 flex items-center justify-between">
-              <h3 className="font-semibold text-white">线路列表</h3>
+            <div className="p-4 border-b border-theme-border flex items-center justify-between">
+              <h3 className="font-semibold text-theme-text">线路列表</h3>
               <Button size="sm">
                 <Plus size={16} className="mr-1" />
                 新增线路
               </Button>
             </div>
 
-            <div className="p-4 space-y-3 border-b border-rock-dark-700">
+            <div className="p-4 space-y-3 border-b border-theme-border">
               <div className="flex items-center gap-2">
-                <Filter size={14} className="text-rock-light-500" />
-                <span className="text-xs text-rock-light-500">筛选</span>
+                <Filter size={14} className="text-theme-text-muted" />
+                <span className="text-xs text-theme-text-muted">筛选</span>
               </div>
               <div className="grid grid-cols-3 gap-2">
                 <select
                   value={filterType}
                   onChange={(e) => setFilterType(e.target.value)}
-                  className="bg-rock-dark-900 border border-rock-dark-700 rounded px-2 py-1.5 text-xs text-white focus:outline-none focus:border-climbing-orange-500"
+                  className="bg-theme-subtle border border-theme-border rounded px-2 py-1.5 text-xs text-theme-text focus:outline-none focus:border-climbing-orange-500"
                 >
                   <option value="all">全部类型</option>
                   <option value="boulder">抱石</option>
@@ -208,7 +208,7 @@ export default function WallDetail() {
                 <select
                   value={filterGrade}
                   onChange={(e) => setFilterGrade(e.target.value)}
-                  className="bg-rock-dark-900 border border-rock-dark-700 rounded px-2 py-1.5 text-xs text-white focus:outline-none focus:border-climbing-orange-500"
+                  className="bg-theme-subtle border border-theme-border rounded px-2 py-1.5 text-xs text-theme-text focus:outline-none focus:border-climbing-orange-500"
                 >
                   <option value="all">全部定级</option>
                   <option value="V0">V0-V2</option>
@@ -218,7 +218,7 @@ export default function WallDetail() {
                 <select
                   value={filterStatus}
                   onChange={(e) => setFilterStatus(e.target.value)}
-                  className="bg-rock-dark-900 border border-rock-dark-700 rounded px-2 py-1.5 text-xs text-white focus:outline-none focus:border-climbing-orange-500"
+                  className="bg-theme-subtle border border-theme-border rounded px-2 py-1.5 text-xs text-theme-text focus:outline-none focus:border-climbing-orange-500"
                 >
                   <option value="all">全部状态</option>
                   <option value="open">开放中</option>
@@ -232,16 +232,16 @@ export default function WallDetail() {
             <div className="max-h-[400px] overflow-y-auto">
               {filteredRoutes.length === 0 ? (
                 <div className="p-8 text-center">
-                  <Mountain size={32} className="mx-auto text-rock-light-600 mb-3" />
-                  <p className="text-sm text-rock-light-500">暂无线路</p>
+                  <Mountain size={32} className="mx-auto text-theme-text-muted mb-3" />
+                  <p className="text-sm text-theme-text-muted">暂无线路</p>
                 </div>
               ) : (
-                <div className="divide-y divide-rock-dark-700">
+                <div className="divide-y divide-theme-border">
                   {filteredRoutes.map((route) => (
                     <Link
                       key={route.id}
                       to={`/routes/${route.id}`}
-                      className="block p-3 hover:bg-rock-dark-700/50 transition-colors"
+                      className="block p-3 hover:bg-theme-hover/50 transition-colors"
                     >
                       <div className="flex items-center gap-3">
                         <div
@@ -250,8 +250,8 @@ export default function WallDetail() {
                         />
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center justify-between gap-2">
-                            <h4 className="font-medium text-white text-sm truncate">{route.name}</h4>
-                            <span className="px-1.5 py-0.5 bg-rock-dark-700 rounded text-xs font-bold text-climbing-orange-400 flex-shrink-0">
+                            <h4 className="font-medium text-theme-text text-sm truncate">{route.name}</h4>
+                            <span className="px-1.5 py-0.5 bg-theme-hover rounded text-xs font-bold text-climbing-orange-400 flex-shrink-0">
                               {route.grade}
                             </span>
                           </div>

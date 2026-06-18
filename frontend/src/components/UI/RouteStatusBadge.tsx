@@ -35,8 +35,8 @@ const statusConfig: Record<BadgeStatus, {
   },
   retired: {
     label: '已退役',
-    className: 'bg-rock-dark-600/60 text-rock-light-400 border-rock-dark-500/50',
-    dotColor: 'bg-rock-light-500',
+    className: 'bg-theme-hover/60 text-theme-text-secondary border-theme-border/50',
+    dotColor: 'bg-theme-text-muted',
   },
 };
 
@@ -76,11 +76,11 @@ export default function RouteStatusBadge({
       </span>
 
       {isHovered && hasReason && (
-        <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 z-50 w-64 px-3 py-2 text-xs text-rock-light-200 bg-rock-dark-900 border border-rock-dark-600 rounded-lg shadow-xl animate-fade-in">
-          <span className="block font-semibold text-rock-light-100 mb-1">变更原因</span>
+        <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 z-50 w-64 px-3 py-2 text-xs text-theme-text-secondary bg-theme-subtle border border-theme-border rounded-lg shadow-xl animate-fade-in">
+          <span className="block font-semibold text-theme-text mb-1">变更原因</span>
           <span className="block leading-relaxed break-words">{changeReason}</span>
           <span className="absolute top-full left-1/2 -translate-x-1/2 -mt-px">
-            <span className="block w-2 h-2 bg-rock-dark-900 border-r border-b border-rock-dark-600 rotate-45" />
+            <span className="block w-2 h-2 bg-theme-subtle border-r border-b border-theme-border rotate-45" />
           </span>
         </span>
       )}

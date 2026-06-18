@@ -60,15 +60,15 @@ export default function Modal({
       />
       <div
         className={cn(
-          'relative w-full mx-4 bg-rock-dark-800 border border-rock-dark-700 rounded-xl shadow-2xl z-10 animate-in fade-in zoom-in-95 duration-200',
+          'relative w-full mx-4 bg-theme-card border border-theme-border rounded-xl shadow-2xl z-10 animate-in fade-in zoom-in-95 duration-200',
           sizeClasses[size],
           className
         )}
       >
         {(title || showCloseButton) && (
-          <div className="flex items-center justify-between p-5 border-b border-rock-dark-700">
+          <div className="flex items-center justify-between p-5 border-b border-theme-border">
             {title && (
-              <h2 className="text-lg font-semibold text-white">{title}</h2>
+              <h2 className="text-lg font-semibold text-theme-text">{title}</h2>
             )}
             {showCloseButton && (
               <Button

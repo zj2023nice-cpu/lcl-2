@@ -12,10 +12,10 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 
 const variantStyles: Record<ButtonVariant, string> = {
   primary: 'bg-climbing-orange-500 hover:bg-climbing-orange-600 text-white shadow-lg shadow-climbing-orange-500/20',
-  secondary: 'bg-rock-dark-700 hover:bg-rock-dark-600 text-white',
+  secondary: 'bg-theme-card hover:bg-theme-hover text-theme-text',
   danger: 'bg-red-600 hover:bg-red-700 text-white',
-  ghost: 'bg-transparent hover:bg-rock-dark-800 text-rock-light-300',
-  outline: 'bg-transparent border border-rock-dark-600 hover:border-climbing-orange-500 text-white hover:text-climbing-orange-500',
+  ghost: 'bg-transparent hover:bg-theme-card text-theme-text-secondary',
+  outline: 'bg-transparent border border-theme-border hover:border-climbing-orange-500 text-theme-text hover:text-climbing-orange-500',
 };
 
 const sizeStyles: Record<ButtonSize, string> = {
@@ -37,7 +37,7 @@ export default function Button({
   return (
     <button
       className={cn(
-        'inline-flex items-center justify-center font-medium rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-rock-dark-900 focus:ring-climbing-orange-500 disabled:opacity-50 disabled:cursor-not-allowed',
+        'inline-flex items-center justify-center font-medium rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-theme-bg focus:ring-climbing-orange-500 disabled:opacity-50 disabled:cursor-not-allowed',
         variantStyles[variant],
         sizeStyles[size],
         fullWidth && 'w-full',

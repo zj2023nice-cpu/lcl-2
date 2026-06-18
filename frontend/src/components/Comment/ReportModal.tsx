@@ -54,7 +54,7 @@ export default function ReportModal({
     >
       <div className="space-y-5">
         <div>
-          <p className="text-sm text-rock-light-400 mb-3">请选择举报原因：</p>
+          <p className="text-sm text-theme-text-secondary mb-3">请选择举报原因：</p>
           <div className="space-y-2">
             {reasonOptions.map((opt) => (
               <button
@@ -63,26 +63,26 @@ export default function ReportModal({
                 className={`w-full p-3 rounded-lg border text-left transition-all ${
                   selectedReason === opt.value
                     ? 'border-climbing-orange-500 bg-climbing-orange-500/10'
-                    : 'border-rock-dark-700 hover:border-rock-dark-600 bg-rock-dark-900'
+                    : 'border-theme-border hover:border-theme-border bg-theme-subtle'
                 }`}
               >
                 <p
                   className={`font-medium ${
                     selectedReason === opt.value
                       ? 'text-climbing-orange-400'
-                      : 'text-white'
+                      : 'text-theme-text'
                   }`}
                 >
                   {opt.label}
                 </p>
-                <p className="text-xs text-rock-light-500 mt-1">{opt.desc}</p>
+                <p className="text-xs text-theme-text-muted mt-1">{opt.desc}</p>
               </button>
             ))}
           </div>
         </div>
 
         <div>
-          <label className="block text-sm text-rock-light-400 mb-2">
+          <label className="block text-sm text-theme-text-secondary mb-2">
             补充说明（可选，最多1000字）
           </label>
           <textarea
@@ -90,9 +90,9 @@ export default function ReportModal({
             onChange={(e) => setDescription(e.target.value.slice(0, 1000))}
             placeholder="请详细描述举报内容..."
             rows={4}
-            className="w-full px-3 py-2 bg-rock-dark-900 border border-rock-dark-700 rounded-lg text-white placeholder-rock-light-600 focus:outline-none focus:border-climbing-orange-500 resize-none"
+            className="w-full px-3 py-2 bg-theme-subtle border border-theme-border rounded-lg text-theme-text placeholder-theme-text-muted focus:outline-none focus:border-climbing-orange-500 resize-none"
           />
-          <p className="text-xs text-rock-light-600 text-right mt-1">
+          <p className="text-xs text-theme-text-muted text-right mt-1">
             {description.length}/1000
           </p>
         </div>

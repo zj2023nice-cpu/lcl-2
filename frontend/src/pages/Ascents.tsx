@@ -260,27 +260,27 @@ export default function Ascents() {
     <div className="space-y-6 pb-20">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-white">攀爬记录</h1>
-          <p className="text-rock-light-500 mt-1">记录你的每一次攀爬</p>
+          <h1 className="text-2xl font-bold text-theme-text">攀爬记录</h1>
+          <p className="text-theme-text-muted mt-1">记录你的每一次攀爬</p>
         </div>
       </div>
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card className="p-5 hover:border-rock-dark-600 transition-colors">
-          <p className="text-3xl font-bold text-white">{stats.total}</p>
-          <p className="text-sm text-rock-light-500 mt-1">总攀爬次数</p>
+        <Card className="p-5 hover:border-theme-border transition-colors">
+          <p className="text-3xl font-bold text-theme-text">{stats.total}</p>
+          <p className="text-sm text-theme-text-muted mt-1">总攀爬次数</p>
         </Card>
-        <Card className="p-5 hover:border-rock-dark-600 transition-colors">
+        <Card className="p-5 hover:border-theme-border transition-colors">
           <p className="text-3xl font-bold text-yellow-400">{stats.flashCount}</p>
-          <p className="text-sm text-rock-light-500 mt-1">Flash</p>
+          <p className="text-sm text-theme-text-muted mt-1">Flash</p>
         </Card>
-        <Card className="p-5 hover:border-rock-dark-600 transition-colors">
+        <Card className="p-5 hover:border-theme-border transition-colors">
           <p className="text-3xl font-bold text-climbing-orange-500">{stats.redpointCount}</p>
-          <p className="text-sm text-rock-light-500 mt-1">完攀数</p>
+          <p className="text-sm text-theme-text-muted mt-1">完攀数</p>
         </Card>
-        <Card className="p-5 hover:border-rock-dark-600 transition-colors">
+        <Card className="p-5 hover:border-theme-border transition-colors">
           <p className="text-3xl font-bold text-purple-400">{stats.maxGrade}</p>
-          <p className="text-sm text-rock-light-500 mt-1">最高难度</p>
+          <p className="text-sm text-theme-text-muted mt-1">最高难度</p>
         </Card>
       </div>
 
@@ -291,7 +291,7 @@ export default function Ascents() {
             className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-lg transition-all ${
               viewMode === 'calendar'
                 ? 'bg-climbing-orange-500/20 text-climbing-orange-400'
-                : 'text-rock-light-400 hover:text-white hover:bg-rock-dark-700/50'
+                : 'text-theme-text-secondary hover:text-theme-text hover:bg-theme-hover/50'
             }`}
           >
             <Calendar size={18} />
@@ -302,7 +302,7 @@ export default function Ascents() {
             className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-lg transition-all ${
               viewMode === 'list'
                 ? 'bg-climbing-orange-500/20 text-climbing-orange-400'
-                : 'text-rock-light-400 hover:text-white hover:bg-rock-dark-700/50'
+                : 'text-theme-text-secondary hover:text-theme-text hover:bg-theme-hover/50'
             }`}
           >
             <ListTodo size={18} />
@@ -313,27 +313,27 @@ export default function Ascents() {
 
       {viewMode === 'calendar' ? (
         <Card>
-          <div className="flex items-center justify-between p-4 border-b border-rock-dark-700">
+          <div className="flex items-center justify-between p-4 border-b border-theme-border">
             <button
               onClick={handlePrevMonth}
-              className="p-2 hover:bg-rock-dark-700 rounded-lg transition-colors text-rock-light-400 hover:text-white"
+              className="p-2 hover:bg-theme-hover rounded-lg transition-colors text-theme-text-secondary hover:text-theme-text"
             >
               <ChevronLeft size={20} />
             </button>
-            <h2 className="text-lg font-semibold text-white">{monthName}</h2>
+            <h2 className="text-lg font-semibold text-theme-text">{monthName}</h2>
             <button
               onClick={handleNextMonth}
-              className="p-2 hover:bg-rock-dark-700 rounded-lg transition-colors text-rock-light-400 hover:text-white"
+              className="p-2 hover:bg-theme-hover rounded-lg transition-colors text-theme-text-secondary hover:text-theme-text"
             >
               <ChevronRight size={20} />
             </button>
           </div>
 
-          <div className="grid grid-cols-7 border-b border-rock-dark-700">
+          <div className="grid grid-cols-7 border-b border-theme-border">
             {weekDays.map((day) => (
               <div
                 key={day}
-                className="py-3 text-center text-sm font-medium text-rock-light-500"
+                className="py-3 text-center text-sm font-medium text-theme-text-muted"
               >
                 {day}
               </div>
@@ -346,7 +346,7 @@ export default function Ascents() {
                 return (
                   <div
                     key={`empty-${index}`}
-                    className="aspect-square border-b border-r border-rock-dark-700/50 bg-rock-dark-900/30"
+                    className="aspect-square border-b border-r border-theme-border/50 bg-theme-subtle/30"
                   />
                 );
               }
@@ -361,8 +361,8 @@ export default function Ascents() {
                 <button
                   key={day}
                   onClick={() => hasAscents && handleDateClick(day)}
-                  className={`aspect-square border-b border-r border-rock-dark-700/50 p-1 relative transition-all ${
-                    hasAscents ? 'cursor-pointer hover:bg-rock-dark-700/30' : 'cursor-default'
+                  className={`aspect-square border-b border-r border-theme-border/50 p-1 relative transition-all ${
+                    hasAscents ? 'cursor-pointer hover:bg-theme-hover/30' : 'cursor-default'
                   } ${isSelected ? 'bg-climbing-orange-500/10' : ''}`}
                 >
                   <span
@@ -371,7 +371,7 @@ export default function Ascents() {
                         ? 'bg-climbing-orange-500 text-white font-bold'
                         : hasAscents
                         ? 'text-green-400 font-medium'
-                        : 'text-rock-light-600'
+                        : 'text-theme-text-muted'
                     }`}
                   >
                     {day}
@@ -386,7 +386,7 @@ export default function Ascents() {
                         />
                       ))}
                       {dayAscents.length > 3 && (
-                        <span className="text-xs text-rock-light-500">+{dayAscents.length - 3}</span>
+                        <span className="text-xs text-theme-text-muted">+{dayAscents.length - 3}</span>
                       )}
                     </div>
                   )}
@@ -403,17 +403,17 @@ export default function Ascents() {
           </div>
 
           {selectedDate && (
-            <div className="p-4 border-t border-rock-dark-700 bg-rock-dark-900/50">
+            <div className="p-4 border-t border-theme-border bg-theme-subtle/50">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="font-semibold text-white">
+                <h3 className="font-semibold text-theme-text">
                   {formatDateDisplay(selectedDate)}
                 </h3>
-                <span className="text-sm text-rock-light-500">
+                <span className="text-sm text-theme-text-muted">
                   {selectedDayAscents.length} 条记录
                 </span>
               </div>
               {selectedDayAscents.length === 0 ? (
-                <p className="text-center text-rock-light-500 py-4">当天没有攀爬记录</p>
+                <p className="text-center text-theme-text-muted py-4">当天没有攀爬记录</p>
               ) : (
                 <div className="space-y-3">
                   {selectedDayAscents.map((ascent) => {
@@ -422,7 +422,7 @@ export default function Ascents() {
                     return (
                       <div
                         key={ascent.id}
-                        className="flex items-center gap-4 p-3 bg-rock-dark-800 rounded-lg border border-rock-dark-700"
+                        className="flex items-center gap-4 p-3 bg-theme-card rounded-lg border border-theme-border"
                       >
                         <div
                           className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0"
@@ -435,12 +435,12 @@ export default function Ascents() {
                         </div>
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2">
-                            <h4 className="font-medium text-white truncate">{ascent.routeName || `线路 #${ascent.routeId}`}</h4>
+                            <h4 className="font-medium text-theme-text truncate">{ascent.routeName || `线路 #${ascent.routeId}`}</h4>
                             <span className="px-2 py-0.5 bg-climbing-orange-500/20 text-climbing-orange-400 rounded text-xs font-bold">
                               {ascent.routeGrade}
                             </span>
                           </div>
-                          <div className="flex items-center gap-3 mt-1 text-xs text-rock-light-500">
+                          <div className="flex items-center gap-3 mt-1 text-xs text-theme-text-muted">
                             <span className="flex items-center gap-1">
                               <Clock size={12} />
                               {getTimeFromAscent(ascent)}
@@ -470,24 +470,24 @@ export default function Ascents() {
                 <div className="relative">
                   <Search
                     size={18}
-                    className="absolute left-3 top-1/2 -translate-y-1/2 text-rock-light-500"
+                    className="absolute left-3 top-1/2 -translate-y-1/2 text-theme-text-muted"
                   />
                   <input
                     type="text"
                     placeholder="搜索线路名称..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full pl-10 pr-4 py-2.5 bg-rock-dark-900 border border-rock-dark-700 rounded-lg text-white placeholder-rock-light-600 focus:outline-none focus:border-climbing-orange-500 transition-colors"
+                    className="w-full pl-10 pr-4 py-2.5 bg-theme-subtle border border-theme-border rounded-lg text-theme-text placeholder-theme-text-muted focus:outline-none focus:border-climbing-orange-500 transition-colors"
                   />
                 </div>
               </div>
               <div className="flex flex-wrap gap-3">
                 <div className="flex items-center gap-2">
-                  <Filter size={16} className="text-rock-light-500" />
+                  <Filter size={16} className="text-theme-text-muted" />
                   <select
                     value={filterType}
                     onChange={(e) => setFilterType(e.target.value)}
-                    className="bg-rock-dark-900 border border-rock-dark-700 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-climbing-orange-500"
+                    className="bg-theme-subtle border border-theme-border rounded-lg px-3 py-2 text-theme-text text-sm focus:outline-none focus:border-climbing-orange-500"
                   >
                     <option value="all">全部类型</option>
                     <option value="flash">Flash</option>
@@ -502,14 +502,14 @@ export default function Ascents() {
                   value={dateRange.start}
                   onChange={(e) => setDateRange({ ...dateRange, start: e.target.value })}
                   placeholder="开始日期"
-                  className="bg-rock-dark-900 border border-rock-dark-700 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-climbing-orange-500"
+                  className="bg-theme-subtle border border-theme-border rounded-lg px-3 py-2 text-theme-text text-sm focus:outline-none focus:border-climbing-orange-500"
                 />
                 <input
                   type="date"
                   value={dateRange.end}
                   onChange={(e) => setDateRange({ ...dateRange, end: e.target.value })}
                   placeholder="结束日期"
-                  className="bg-rock-dark-900 border border-rock-dark-700 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-climbing-orange-500"
+                  className="bg-theme-subtle border border-theme-border rounded-lg px-3 py-2 text-theme-text text-sm focus:outline-none focus:border-climbing-orange-500"
                 />
               </div>
             </div>
@@ -519,21 +519,21 @@ export default function Ascents() {
             {Object.entries(groupedAscents).map(([date, dayAscents]) => (
               <div key={date}>
                 <div className="flex items-center gap-3 mb-3">
-                  <h3 className="text-lg font-semibold text-white">
+                  <h3 className="text-lg font-semibold text-theme-text">
                     {formatDateDisplay(date)}
                   </h3>
-                  <span className="text-sm text-rock-light-500">
+                  <span className="text-sm text-theme-text-muted">
                     {dayAscents.length} 条记录
                   </span>
                 </div>
-                <Card className="divide-y divide-rock-dark-700">
+                <Card className="divide-y divide-theme-border">
                   {dayAscents.map((ascent) => {
                     const TypeIcon = ascentTypeIcons[ascent.ascentType];
                     const routeColor = getGradeColor(ascent.routeGrade || '');
                     return (
                       <div
                         key={ascent.id}
-                        className="p-4 flex items-center gap-4 hover:bg-rock-dark-800/50 transition-colors"
+                        className="p-4 flex items-center gap-4 hover:bg-theme-card/50 transition-colors"
                       >
                         <div className="w-1 h-12 rounded-full flex-shrink-0" style={{ backgroundColor: routeColor }} />
                         <div
@@ -547,12 +547,12 @@ export default function Ascents() {
                         </div>
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2">
-                            <h4 className="font-medium text-white">{ascent.routeName || `线路 #${ascent.routeId}`}</h4>
+                            <h4 className="font-medium text-theme-text">{ascent.routeName || `线路 #${ascent.routeId}`}</h4>
                             <span className="px-2 py-0.5 bg-climbing-orange-500/20 text-climbing-orange-400 rounded text-xs font-bold">
                               {ascent.routeGrade}
                             </span>
                           </div>
-                          <div className="flex items-center gap-4 mt-1 text-sm text-rock-light-500">
+                          <div className="flex items-center gap-4 mt-1 text-sm text-theme-text-muted">
                             <span className="flex items-center gap-1">
                               <Clock size={14} />
                               {getTimeFromAscent(ascent)}
@@ -560,7 +560,7 @@ export default function Ascents() {
                             <span>尝试 {ascent.attempts} 次</span>
                           </div>
                           {ascent.notes && (
-                            <p className="text-sm text-rock-light-500 mt-2 line-clamp-1">
+                            <p className="text-sm text-theme-text-muted mt-2 line-clamp-1">
                               {ascent.notes}
                             </p>
                           )}
@@ -580,9 +580,9 @@ export default function Ascents() {
 
             {filteredAscents.length === 0 && (
               <Card className="p-12 text-center">
-                <ListTodo size={48} className="mx-auto text-rock-light-600 mb-4" />
-                <h3 className="text-lg font-medium text-white mb-2">暂无记录</h3>
-                <p className="text-rock-light-500">没有找到符合条件的攀爬记录</p>
+                <ListTodo size={48} className="mx-auto text-theme-text-muted mb-4" />
+                <h3 className="text-lg font-medium text-theme-text mb-2">暂无记录</h3>
+                <p className="text-theme-text-muted">没有找到符合条件的攀爬记录</p>
               </Card>
             )}
           </div>

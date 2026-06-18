@@ -1,5 +1,12 @@
 /** @type {import('tailwindcss').Config} */
 
+function cssVar(name) {
+  return ({ opacityValue }) =>
+    opacityValue !== undefined
+      ? `rgba(var(${name}), ${opacityValue})`
+      : `rgb(var(${name}))`;
+}
+
 export default {
   darkMode: "class",
   content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
@@ -9,6 +16,19 @@ export default {
     },
     extend: {
       colors: {
+        "theme-bg": cssVar("--tw-color-bg"),
+        "theme-card": cssVar("--tw-color-card"),
+        "theme-hover": cssVar("--tw-color-hover"),
+        "theme-subtle": cssVar("--tw-color-subtle"),
+        "theme-text": cssVar("--tw-color-text"),
+        "theme-text-secondary": cssVar("--tw-color-text-secondary"),
+        "theme-text-muted": cssVar("--tw-color-text-muted"),
+        "theme-border": cssVar("--tw-color-border"),
+        "theme-primary": cssVar("--tw-color-primary"),
+        "theme-primary-hover": cssVar("--tw-color-primary-hover"),
+        "theme-success": cssVar("--tw-color-success"),
+        "theme-danger": cssVar("--tw-color-danger"),
+        "theme-warning": cssVar("--tw-color-warning"),
         "climbing-orange": {
           50: "#FFF2EC",
           100: "#FFE0D3",

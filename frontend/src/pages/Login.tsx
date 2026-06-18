@@ -95,8 +95,8 @@ export default function Login() {
 
   return (
     <div className={cn('min-h-screen flex items-center justify-center px-4 py-8 relative overflow-hidden', isTransitioning && 'theme-transition')}>
-      <div className="absolute inset-0 bg-rock-dark-950">
-        <div className="absolute inset-0 bg-gradient-to-br from-rock-dark-900 via-rock-dark-950 to-rock-dark-900" />
+      <div className="absolute inset-0 bg-theme-bg">
+        <div className="absolute inset-0 bg-gradient-to-br from-theme-subtle via-theme-bg to-theme-subtle" />
         <div
           className="absolute inset-0 opacity-20"
           style={{
@@ -114,21 +114,21 @@ export default function Login() {
       <div className="relative w-full max-w-md z-10">
         <div className="flex flex-col items-center mb-8">
           <div className="w-16 h-16 bg-climbing-orange-500 rounded-2xl flex items-center justify-center mb-4 shadow-lg shadow-climbing-orange-500/30">
-            <Mountain size={36} className="text-white" />
+            <Mountain size={36} className="text-theme-text" />
           </div>
-          <h1 className="text-3xl font-bold text-white">欢迎回来</h1>
-          <p className="text-rock-light-500 mt-2">登录你的攀岩账号</p>
+          <h1 className="text-3xl font-bold text-theme-text">欢迎回来</h1>
+          <p className="text-theme-text-muted mt-2">登录你的攀岩账号</p>
         </div>
 
-        <div className="backdrop-blur-xl bg-rock-dark-800/70 border border-rock-dark-600/50 rounded-2xl shadow-2xl overflow-hidden">
-          <div className="flex border-b border-rock-dark-700/50">
+        <div className="backdrop-blur-xl bg-theme-card/70 border border-theme-border/50 rounded-2xl shadow-2xl overflow-hidden">
+          <div className="flex border-b border-theme-border/50">
             <button
               onClick={() => setActiveTab('email')}
               className={cn(
                 'flex-1 py-4 text-sm font-medium transition-all duration-300 relative',
                 activeTab === 'email'
                   ? 'text-climbing-orange-500'
-                  : 'text-rock-light-500 hover:text-rock-light-300'
+                  : 'text-theme-text-muted hover:text-theme-text-secondary'
               )}
             >
               <div className="flex items-center justify-center gap-2">
@@ -145,7 +145,7 @@ export default function Login() {
                 'flex-1 py-4 text-sm font-medium transition-all duration-300 relative',
                 activeTab === 'phone'
                   ? 'text-climbing-orange-500'
-                  : 'text-rock-light-500 hover:text-rock-light-300'
+                  : 'text-theme-text-muted hover:text-theme-text-secondary'
               )}
             >
               <div className="flex items-center justify-center gap-2">
@@ -167,11 +167,11 @@ export default function Login() {
           {activeTab === 'email' ? (
             <form onSubmit={handleEmailLogin} className="p-6 space-y-5">
               <div>
-                <label className="block text-sm font-medium text-rock-light-300 mb-2">
+                <label className="block text-sm font-medium text-theme-text-secondary mb-2">
                   邮箱
                 </label>
                 <div className="relative">
-                  <Mail size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-rock-light-500" />
+                  <Mail size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-theme-text-muted" />
                   <input
                     type="email"
                     value={email}
@@ -181,10 +181,10 @@ export default function Login() {
                     }}
                     placeholder="请输入邮箱"
                     className={cn(
-                      'w-full pl-10 pr-4 py-3 bg-rock-dark-900/60 border rounded-lg text-white placeholder-rock-light-600 focus:outline-none focus:ring-1 transition-all duration-200',
+                      'w-full pl-10 pr-4 py-3 bg-theme-subtle/60 border rounded-lg text-theme-text placeholder-theme-text-muted focus:outline-none focus:ring-1 transition-all duration-200',
                       formErrors.email
                         ? 'border-red-500/50 focus:border-red-500 focus:ring-red-500/30'
-                        : 'border-rock-dark-600/50 focus:border-climbing-orange-500 focus:ring-climbing-orange-500/30'
+                        : 'border-theme-border/50 focus:border-climbing-orange-500 focus:ring-climbing-orange-500/30'
                     )}
                   />
                 </div>
@@ -194,11 +194,11 @@ export default function Login() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-rock-light-300 mb-2">
+                <label className="block text-sm font-medium text-theme-text-secondary mb-2">
                   密码
                 </label>
                 <div className="relative">
-                  <Lock size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-rock-light-500" />
+                  <Lock size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-theme-text-muted" />
                   <input
                     type={showPassword ? 'text' : 'password'}
                     value={emailPassword}
@@ -208,16 +208,16 @@ export default function Login() {
                     }}
                     placeholder="请输入密码"
                     className={cn(
-                      'w-full pl-10 pr-12 py-3 bg-rock-dark-900/60 border rounded-lg text-white placeholder-rock-light-600 focus:outline-none focus:ring-1 transition-all duration-200',
+                      'w-full pl-10 pr-12 py-3 bg-theme-subtle/60 border rounded-lg text-theme-text placeholder-theme-text-muted focus:outline-none focus:ring-1 transition-all duration-200',
                       formErrors.password
                         ? 'border-red-500/50 focus:border-red-500 focus:ring-red-500/30'
-                        : 'border-rock-dark-600/50 focus:border-climbing-orange-500 focus:ring-climbing-orange-500/30'
+                        : 'border-theme-border/50 focus:border-climbing-orange-500 focus:ring-climbing-orange-500/30'
                     )}
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-rock-light-500 hover:text-rock-light-300 transition-colors"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-theme-text-muted hover:text-theme-text-secondary transition-colors"
                   >
                     {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                   </button>
@@ -234,11 +234,11 @@ export default function Login() {
           ) : (
             <form onSubmit={handlePhoneLogin} className="p-6 space-y-5">
               <div>
-                <label className="block text-sm font-medium text-rock-light-300 mb-2">
+                <label className="block text-sm font-medium text-theme-text-secondary mb-2">
                   手机号
                 </label>
                 <div className="relative">
-                  <Phone size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-rock-light-500" />
+                  <Phone size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-theme-text-muted" />
                   <input
                     type="tel"
                     value={phone}
@@ -248,10 +248,10 @@ export default function Login() {
                     }}
                     placeholder="请输入手机号"
                     className={cn(
-                      'w-full pl-10 pr-4 py-3 bg-rock-dark-900/60 border rounded-lg text-white placeholder-rock-light-600 focus:outline-none focus:ring-1 transition-all duration-200',
+                      'w-full pl-10 pr-4 py-3 bg-theme-subtle/60 border rounded-lg text-theme-text placeholder-theme-text-muted focus:outline-none focus:ring-1 transition-all duration-200',
                       formErrors.phone
                         ? 'border-red-500/50 focus:border-red-500 focus:ring-red-500/30'
-                        : 'border-rock-dark-600/50 focus:border-climbing-orange-500 focus:ring-climbing-orange-500/30'
+                        : 'border-theme-border/50 focus:border-climbing-orange-500 focus:ring-climbing-orange-500/30'
                     )}
                   />
                 </div>
@@ -261,11 +261,11 @@ export default function Login() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-rock-light-300 mb-2">
+                <label className="block text-sm font-medium text-theme-text-secondary mb-2">
                   密码
                 </label>
                 <div className="relative">
-                  <Lock size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-rock-light-500" />
+                  <Lock size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-theme-text-muted" />
                   <input
                     type={showPassword ? 'text' : 'password'}
                     value={password}
@@ -275,16 +275,16 @@ export default function Login() {
                     }}
                     placeholder="请输入密码"
                     className={cn(
-                      'w-full pl-10 pr-12 py-3 bg-rock-dark-900/60 border rounded-lg text-white placeholder-rock-light-600 focus:outline-none focus:ring-1 transition-all duration-200',
+                      'w-full pl-10 pr-12 py-3 bg-theme-subtle/60 border rounded-lg text-theme-text placeholder-theme-text-muted focus:outline-none focus:ring-1 transition-all duration-200',
                       formErrors.password
                         ? 'border-red-500/50 focus:border-red-500 focus:ring-red-500/30'
-                        : 'border-rock-dark-600/50 focus:border-climbing-orange-500 focus:ring-climbing-orange-500/30'
+                        : 'border-theme-border/50 focus:border-climbing-orange-500 focus:ring-climbing-orange-500/30'
                     )}
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-rock-light-500 hover:text-rock-light-300 transition-colors"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-theme-text-muted hover:text-theme-text-secondary transition-colors"
                   >
                     {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                   </button>
@@ -301,7 +301,7 @@ export default function Login() {
           )}
 
           <div className="px-6 pb-6">
-            <p className="text-center text-sm text-rock-light-500">
+            <p className="text-center text-sm text-theme-text-muted">
               还没有账号？{' '}
               <Link to="/register" className="text-climbing-orange-500 hover:text-climbing-orange-400 font-medium transition-colors">
                 立即注册
@@ -310,7 +310,7 @@ export default function Login() {
           </div>
         </div>
 
-        <p className="text-center text-xs text-rock-light-600 mt-6">
+        <p className="text-center text-xs text-theme-text-muted mt-6">
           登录即表示同意 <a href="#" className="text-climbing-orange-500 hover:underline">用户协议</a> 和{' '}
           <a href="#" className="text-climbing-orange-500 hover:underline">隐私政策</a>
         </p>
