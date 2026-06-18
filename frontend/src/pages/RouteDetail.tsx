@@ -33,7 +33,7 @@ import RouteEditorPanel from '@/components/RouteEditor/RouteEditorPanel';
 import { routeApi, ascentApi, voteApi, wallApi } from '@/utils/api';
 import { useAuthStore } from '@/store/auth';
 import type { Route, Ascent, GradeVote, Wall } from '@/types';
-import { cn, getGradeFullClass, getGradeLabel } from '@/lib/utils';
+import { cn, getGradeColorConfig, getGradeFullClass, getGradeLabel } from '@/lib/utils';
 import { canEditRoute } from '@/lib/permissions';
 
 const routeTypeLabels: Record<string, string> = {
@@ -433,14 +433,20 @@ export default function RouteDetail() {
               <div className="grid grid-cols-2 gap-4">
                 <div className="text-center p-3 bg-rock-dark-900 rounded-lg">
                   <p className="text-xs text-rock-light-500 mb-1">定线定级</p>
-                  <p className="text-2xl font-bold text-climbing-orange-400">
+                  <p className={`text-lg font-bold ${getGradeColorConfig(route.grade).colorClass}`}>
                     {route.grade}
+                  </p>
+                  <p className={`text-xs mt-1 ${getGradeColorConfig(route.grade).colorClass} opacity-70`}>
+                    {getGradeLabel(route.grade)}
                   </p>
                 </div>
                 <div className="text-center p-3 bg-rock-dark-900 rounded-lg">
                   <p className="text-xs text-rock-light-500 mb-1">社区共识</p>
-                  <p className="text-2xl font-bold text-green-400">
+                  <p className={`text-lg font-bold ${consensusGrade !== 'N/A' ? getGradeColorConfig(consensusGrade).colorClass : 'text-gray-400'}`}>
                     {consensusGrade}
+                  </p>
+                  <p className={`text-xs mt-1 ${consensusGrade !== 'N/A' ? getGradeColorConfig(consensusGrade).colorClass : 'text-gray-400'} opacity-70`}>
+                    {consensusGrade !== 'N/A' ? getGradeLabel(consensusGrade) : '暂无'}
                   </p>
                 </div>
               </div>

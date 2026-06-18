@@ -15,26 +15,38 @@ export interface GradeColorConfig {
   fullClass: string;
 }
 
-const gradeColorMap: Record<string, GradeColorConfig> = {
-  'V0': { label: '入门', colorClass: 'text-green-400', bgClass: 'bg-green-500/20', borderClass: 'border-green-500/30', fullClass: 'bg-green-500/20 text-green-400 border-green-500/30' },
-  'V1': { label: '入门', colorClass: 'text-green-400', bgClass: 'bg-green-500/20', borderClass: 'border-green-500/30', fullClass: 'bg-green-500/20 text-green-400 border-green-500/30' },
-  'V2': { label: '入门', colorClass: 'text-green-400', bgClass: 'bg-green-500/20', borderClass: 'border-green-500/30', fullClass: 'bg-green-500/20 text-green-400 border-green-500/30' },
-  'V3': { label: '初级', colorClass: 'text-blue-400', bgClass: 'bg-blue-500/20', borderClass: 'border-blue-500/30', fullClass: 'bg-blue-500/20 text-blue-400 border-blue-500/30' },
-  'V4': { label: '初级', colorClass: 'text-blue-400', bgClass: 'bg-blue-500/20', borderClass: 'border-blue-500/30', fullClass: 'bg-blue-500/20 text-blue-400 border-blue-500/30' },
-  'V5': { label: '初级', colorClass: 'text-blue-400', bgClass: 'bg-blue-500/20', borderClass: 'border-blue-500/30', fullClass: 'bg-blue-500/20 text-blue-400 border-blue-500/30' },
-  'V6': { label: '中级', colorClass: 'text-yellow-400', bgClass: 'bg-yellow-500/20', borderClass: 'border-yellow-500/30', fullClass: 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30' },
-  'V7': { label: '中级', colorClass: 'text-yellow-400', bgClass: 'bg-yellow-500/20', borderClass: 'border-yellow-500/30', fullClass: 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30' },
-  'V8': { label: '中级', colorClass: 'text-yellow-400', bgClass: 'bg-yellow-500/20', borderClass: 'border-yellow-500/30', fullClass: 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30' },
-  'V9': { label: '高级', colorClass: 'text-orange-400', bgClass: 'bg-orange-500/20', borderClass: 'border-orange-500/30', fullClass: 'bg-orange-500/20 text-orange-400 border-orange-500/30' },
-  'V10': { label: '高级', colorClass: 'text-orange-400', bgClass: 'bg-orange-500/20', borderClass: 'border-orange-500/30', fullClass: 'bg-orange-500/20 text-orange-400 border-orange-500/30' },
-  'V11': { label: '高级', colorClass: 'text-orange-400', bgClass: 'bg-orange-500/20', borderClass: 'border-orange-500/30', fullClass: 'bg-orange-500/20 text-orange-400 border-orange-500/30' },
-  'V12': { label: '精英', colorClass: 'text-red-400', bgClass: 'bg-red-500/20', borderClass: 'border-red-500/30', fullClass: 'bg-red-500/20 text-red-400 border-red-500/30' },
-  'V13': { label: '精英', colorClass: 'text-red-400', bgClass: 'bg-red-500/20', borderClass: 'border-red-500/30', fullClass: 'bg-red-500/20 text-red-400 border-red-500/30' },
-  'V14': { label: '精英', colorClass: 'text-red-400', bgClass: 'bg-red-500/20', borderClass: 'border-red-500/30', fullClass: 'bg-red-500/20 text-red-400 border-red-500/30' },
-  'V15': { label: '大师', colorClass: 'text-purple-400', bgClass: 'bg-purple-500/20', borderClass: 'border-purple-500/30', fullClass: 'bg-purple-500/20 text-purple-400 border-purple-500/30' },
-  'V16': { label: '大师', colorClass: 'text-purple-400', bgClass: 'bg-purple-500/20', borderClass: 'border-purple-500/30', fullClass: 'bg-purple-500/20 text-purple-400 border-purple-500/30' },
-  'V17': { label: '大师', colorClass: 'text-purple-400', bgClass: 'bg-purple-500/20', borderClass: 'border-purple-500/30', fullClass: 'bg-purple-500/20 text-purple-400 border-purple-500/30' },
-};
+interface GradeRangeConfig {
+  min: number;
+  max: number;
+  config: GradeColorConfig;
+}
+
+const gradeRanges: GradeRangeConfig[] = [
+  {
+    min: 0, max: 2,
+    config: { label: '入门', colorClass: 'text-green-400', bgClass: 'bg-green-500/20', borderClass: 'border-green-500/30', fullClass: 'bg-green-500/20 text-green-400 border-green-500/30' }
+  },
+  {
+    min: 3, max: 5,
+    config: { label: '初级', colorClass: 'text-blue-400', bgClass: 'bg-blue-500/20', borderClass: 'border-blue-500/30', fullClass: 'bg-blue-500/20 text-blue-400 border-blue-500/30' }
+  },
+  {
+    min: 6, max: 8,
+    config: { label: '中级', colorClass: 'text-yellow-400', bgClass: 'bg-yellow-500/20', borderClass: 'border-yellow-500/30', fullClass: 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30' }
+  },
+  {
+    min: 9, max: 11,
+    config: { label: '高级', colorClass: 'text-orange-400', bgClass: 'bg-orange-500/20', borderClass: 'border-orange-500/30', fullClass: 'bg-orange-500/20 text-orange-400 border-orange-500/30' }
+  },
+  {
+    min: 12, max: 14,
+    config: { label: '精英', colorClass: 'text-red-400', bgClass: 'bg-red-500/20', borderClass: 'border-red-500/30', fullClass: 'bg-red-500/20 text-red-400 border-red-500/30' }
+  },
+  {
+    min: 15, max: 17,
+    config: { label: '大师', colorClass: 'text-purple-400', bgClass: 'bg-purple-500/20', borderClass: 'border-purple-500/30', fullClass: 'bg-purple-500/20 text-purple-400 border-purple-500/30' }
+  },
+];
 
 const defaultGradeConfig: GradeColorConfig = {
   label: '未知',
@@ -44,9 +56,25 @@ const defaultGradeConfig: GradeColorConfig = {
   fullClass: 'bg-gray-500/20 text-gray-400 border-gray-500/30',
 };
 
+const validGradeNumbers = new Set([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17]);
+
+function normalizeGrade(grade: string): string {
+  return grade?.toUpperCase().trim() || '';
+}
+
+function parseGradeNumber(grade: string): number | null {
+  const normalized = normalizeGrade(grade);
+  const match = normalized.match(/^V(\d+)$/);
+  if (!match) return null;
+  const num = parseInt(match[1], 10);
+  return validGradeNumbers.has(num) ? num : null;
+}
+
 export function getGradeColorConfig(grade: string): GradeColorConfig {
-  const normalizedGrade = grade?.toUpperCase().trim() || '';
-  return gradeColorMap[normalizedGrade] || defaultGradeConfig;
+  const gradeNum = parseGradeNumber(grade);
+  if (gradeNum === null) return defaultGradeConfig;
+  const range = gradeRanges.find(r => gradeNum >= r.min && gradeNum <= r.max);
+  return range?.config || defaultGradeConfig;
 }
 
 export function getGradeLabel(grade: string): string {
@@ -58,5 +86,10 @@ export function getGradeFullClass(grade: string): string {
 }
 
 export function isValidBoulderGrade(grade: string): grade is BoulderGrade {
-  return grade in gradeColorMap;
+  return parseGradeNumber(grade) !== null;
+}
+
+export function normalizeBoulderGrade(grade: string): BoulderGrade | null {
+  const gradeNum = parseGradeNumber(grade);
+  return gradeNum !== null ? (`V${gradeNum}` as BoulderGrade) : null;
 }
