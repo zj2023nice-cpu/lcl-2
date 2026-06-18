@@ -13,6 +13,7 @@ import Analytics from '@/pages/Analytics';
 import Profile from '@/pages/Profile';
 import Dashboard from '@/pages/Dashboard';
 import AdminUsers from '@/pages/AdminUsers';
+import Overview from '@/pages/Overview';
 
 function ProtectedLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -90,6 +91,14 @@ export default function App() {
           element={
             <ProtectedLayout>
               <Profile />
+            </ProtectedLayout>
+          }
+        />
+        <Route
+          path="/overview"
+          element={
+            <ProtectedLayout>
+              <Overview />
             </ProtectedLayout>
           }
         />

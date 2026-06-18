@@ -8,6 +8,7 @@ import {
   User,
   LayoutDashboard,
   Users,
+  PieChart,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -20,6 +21,7 @@ interface NavItem {
 
 const navItems: NavItem[] = [
   { path: '/', label: '首页', icon: Home },
+  { path: '/overview', label: '数据概览', icon: PieChart, adminOnly: true },
   { path: '/walls', label: '岩壁', icon: Mountain },
   { path: '/routes', label: '线路', icon: Route },
   { path: '/ascents', label: '攀爬记录', icon: ListTodo },
