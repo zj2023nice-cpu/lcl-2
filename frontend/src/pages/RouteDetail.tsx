@@ -126,19 +126,27 @@ export default function RouteDetail() {
           ascentApi.getAscents({ route_id: routeId }),
           voteApi.getVotes(routeId),
         ]);
-        setRoute(routeData);
+
+        const isAdmin = user?.role === 'platform_admin' || user?.role === 'gym_admin';
+        if (routeData.isArchived && !isAdmin) {
+          setRoute(null);
+        } else {
+          setRoute(routeData);
+        }
+
         setAscents(ascentsData);
         setVotes(votesData);
         const wallData = await wallApi.getWallById(routeData.wallId);
         setWall(wallData);
       } catch (err) {
         console.error('Failed to fetch route data:', err);
+        setRoute(null);
       } finally {
         setIsLoading(false);
       }
     };
     fetchData();
-  }, [id]);
+  }, [id, user]);
 
   useEffect(() => {
     if (route) {

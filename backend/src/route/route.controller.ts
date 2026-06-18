@@ -44,13 +44,28 @@ export class RouteController {
     @Query('grade') grade?: string,
     @Query('status') status?: RouteStatus,
     @Query('includeArchived') includeArchived?: boolean,
+    @CurrentUser() user: { id: number; role: UserRole; gym_id?: number },
   ) {
-    return this.routeService.findAllByWall(wallId, { type, grade, status, includeArchived });
+    const canIncludeArchived = includeArchived &&
+      (user.role === UserRole.PLATFORM_ADMIN || user.role === UserRole.GYM_ADMIN);
+    return this.routeService.findAllByWall(wallId, {
+      type,
+      grade,
+      status,
+      includeArchived: canIncludeArchived,
+    });
   }
 
   @Get('routes/:id')
-  findOne(@Param('id', ParseIntPipe) id: number) {
-    return this.routeService.findOne(id);
+  async findOne(
+    @Param('id', ParseIntPipe) id: number,
+    @CurrentUser() user: { id: number; role: UserRole; gym_id?: number },
+  ) {
+    const route = await this.routeService.findOneForUser(id, user);
+    if (!route) {
+      throw new NotFoundException(`Route with id ${id} not found`);
+    }
+    return route;
   }
 
   @Get('routes/:id/can-edit')
@@ -108,7 +123,13 @@ export class RouteController {
     @Param('id', ParseIntPipe) id: number,
     @Req() req: Request,
     @Res() res: Response,
+    @CurrentUser() user: { id: number; role: UserRole; gym_id?: number },
   ) {
+    const route = await this.routeService.findOneForUser(id, user);
+    if (!route) {
+      throw new NotFoundException(`Route with id ${id} not found`);
+    }
+
     const protocol = req.protocol || 'http';
     const host = req.get('host') || 'localhost:3000';
     const baseUrl = `${protocol}://${host}`;
@@ -125,7 +146,13 @@ export class RouteController {
   async getShareMetadata(
     @Param('id', ParseIntPipe) id: number,
     @Req() req: Request,
+    @CurrentUser() user: { id: number; role: UserRole; gym_id?: number },
   ) {
+    const route = await this.routeService.findOneForUser(id, user);
+    if (!route) {
+      throw new NotFoundException(`Route with id ${id} not found`);
+    }
+
     const protocol = req.protocol || 'http';
     const host = req.get('host') || 'localhost:3000';
     const baseUrl = `${protocol}://${host}`;

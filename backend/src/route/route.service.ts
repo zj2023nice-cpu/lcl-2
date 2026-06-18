@@ -59,6 +59,26 @@ export class RouteService {
     return this.routeRepository.findOne({ where: { id } });
   }
 
+  async findOneForUser(
+    id: number,
+    user: { id: number; role: UserRole; gym_id?: number } | null,
+  ): Promise<Route | null> {
+    const route = await this.findOne(id);
+    if (!route) return null;
+
+    if (route.isArchived) {
+      if (!user) return null;
+      if (user.role === UserRole.PLATFORM_ADMIN) return route;
+      if (user.role === UserRole.GYM_ADMIN && user.gym_id) {
+        const wall = await this.wallRepository.findOne({ where: { id: route.wall_id } });
+        if (wall && wall.gym_id === user.gym_id) return route;
+      }
+      return null;
+    }
+
+    return route;
+  }
+
   async update(id: number, updateRouteDto: UpdateRouteDto): Promise<Route> {
     const route = await this.findOne(id);
     if (!route) {
