@@ -7,6 +7,7 @@ import { Hold, HoldType } from '../entities/hold.entity';
 import { User } from '../entities/user.entity';
 import { Gym } from '../entities/gym.entity';
 import { createCanvas, loadImage, Image, SKRSContext2D } from '@napi-rs/canvas';
+import { parsePolygonCoords, getPolygonBounds, Point, PolygonBounds } from '../common/utils/geometry.util';
 import * as path from 'path';
 import * as fs from 'fs';
 
@@ -16,6 +17,8 @@ const HOLD_RADIUS = 8;
 const START_HOLD_RADIUS = 12;
 const END_HOLD_RADIUS = 12;
 const PATH_LINE_WIDTH = 4;
+const DEFAULT_IMG_WIDTH = 1200;
+const DEFAULT_IMG_HEIGHT = 1600;
 
 const ROUTE_TYPE_LABELS: Record<RouteType, string> = {
   [RouteType.BOULDER]: '抱石',
@@ -30,6 +33,12 @@ interface ShareImageData {
   holds: Hold[];
   setter: User | null;
   gym: Gym | null;
+}
+
+interface CoordinateMapper {
+  mapX: (x: number) => number;
+  mapY: (y: number) => number;
+  isNormalized: boolean;
 }
 
 interface BrightnessResult {
@@ -85,8 +94,8 @@ export class RouteShareService {
     const data = await this.fetchShareData(routeId);
     const wallImage = await this.loadWallImage(data.wall);
 
-    const imgWidth = wallImage ? wallImage.width : 1200;
-    const imgHeight = wallImage ? wallImage.height : 1600;
+    const imgWidth = wallImage ? wallImage.width : DEFAULT_IMG_WIDTH;
+    const imgHeight = wallImage ? wallImage.height : DEFAULT_IMG_HEIGHT;
 
     const canvasWidth = imgWidth * SHARE_IMAGE_SCALE;
     const canvasHeight = (imgHeight + INFO_PANEL_HEIGHT) * SHARE_IMAGE_SCALE;
@@ -103,10 +112,12 @@ export class RouteShareService {
       ctx.fillRect(0, 0, imgWidth, imgHeight);
     }
 
+    const coordMapper = this.createCoordinateMapper(data.wall, imgWidth, imgHeight);
     const brightness = this.detectBrightness(ctx, imgWidth, imgHeight);
+    const mappedHolds = this.mapHoldsToPixels(data.holds, coordMapper);
 
-    this.drawRoutePath(ctx, data.holds, data.route.color, brightness, imgWidth, imgHeight);
-    this.drawHolds(ctx, data.holds, data.route.color, brightness, imgWidth, imgHeight);
+    this.drawRoutePath(ctx, mappedHolds, data.route.color, brightness);
+    this.drawHolds(ctx, mappedHolds, data.route.color, brightness);
     this.drawInfoPanel(ctx, data, brightness, imgWidth, imgHeight);
 
     const imageBuffer = canvas.encodeSync('png');
@@ -123,9 +134,13 @@ export class RouteShareService {
 
   async getShareMetadata(routeId: number, baseUrl: string): Promise<{ metadata: SocialMetadata; width: number; height: number }> {
     const data = await this.fetchShareData(routeId);
+    const wallImage = await this.loadWallImage(data.wall);
 
-    const canvasWidth = 1200 * SHARE_IMAGE_SCALE;
-    const canvasHeight = (1600 + INFO_PANEL_HEIGHT) * SHARE_IMAGE_SCALE;
+    const imgWidth = wallImage ? wallImage.width : DEFAULT_IMG_WIDTH;
+    const imgHeight = wallImage ? wallImage.height : DEFAULT_IMG_HEIGHT;
+
+    const canvasWidth = imgWidth * SHARE_IMAGE_SCALE;
+    const canvasHeight = (imgHeight + INFO_PANEL_HEIGHT) * SHARE_IMAGE_SCALE;
 
     const metadata = this.buildSocialMetadata(data, baseUrl, canvasWidth, canvasHeight);
 
@@ -163,6 +178,38 @@ export class RouteShareService {
     }
 
     return { route, wall, holds, setter, gym };
+  }
+
+  private createCoordinateMapper(wall: Wall, imgWidth: number, imgHeight: number): CoordinateMapper {
+    const polygon = parsePolygonCoords(wall.polygon_coords);
+    const bounds = polygon ? getPolygonBounds(polygon) : null;
+
+    if (bounds) {
+      const coordWidth = bounds.maxX - bounds.minX;
+      const coordHeight = bounds.maxY - bounds.minY;
+
+      if (coordWidth > 0 && coordHeight > 0) {
+        return {
+          mapX: (x: number) => ((x - bounds.minX) / coordWidth) * imgWidth,
+          mapY: (y: number) => ((y - bounds.minY) / coordHeight) * imgHeight,
+          isNormalized: coordWidth <= 1.01 && coordHeight <= 1.01,
+        };
+      }
+    }
+
+    return {
+      mapX: (x: number) => x * imgWidth,
+      mapY: (y: number) => y * imgHeight,
+      isNormalized: true,
+    };
+  }
+
+  private mapHoldsToPixels(holds: Hold[], mapper: CoordinateMapper): Array<Hold & { pixelX: number; pixelY: number }> {
+    return holds.map((hold) => ({
+      ...hold,
+      pixelX: mapper.mapX(hold.position_x),
+      pixelY: mapper.mapY(hold.position_y),
+    }));
   }
 
   private async loadWallImage(wall: Wall): Promise<Image | null> {
@@ -232,23 +279,24 @@ export class RouteShareService {
     let totalLuminance = 0;
     let sampleCount = 0;
 
-    const imageData = ctx.getImageData(0, 0, Math.min(width, 100), Math.min(height, 100));
+    const sampleGridSize = 30;
+    const physicalWidth = width * SHARE_IMAGE_SCALE;
+    const physicalHeight = height * SHARE_IMAGE_SCALE;
+
+    const sampleCanvas = createCanvas(sampleGridSize, sampleGridSize);
+    const sampleCtx = sampleCanvas.getContext('2d');
+
+    sampleCtx.drawImage(ctx.canvas, 0, 0, physicalWidth, physicalHeight, 0, 0, sampleGridSize, sampleGridSize);
+
+    const imageData = sampleCtx.getImageData(0, 0, sampleGridSize, sampleGridSize);
     const data = imageData.data;
 
-    const imgW = imageData.width;
-    const imgH = imageData.height;
-    const sStepX = Math.max(1, Math.floor(imgW / 30));
-    const sStepY = Math.max(1, Math.floor(imgH / 30));
-
-    for (let y = 0; y < imgH; y += sStepY) {
-      for (let x = 0; x < imgW; x += sStepX) {
-        const idx = (y * imgW + x) * 4;
-        const r = data[idx];
-        const g = data[idx + 1];
-        const b = data[idx + 2];
-        totalLuminance += (0.299 * r + 0.587 * g + 0.114 * b) / 255;
-        sampleCount++;
-      }
+    for (let i = 0; i < data.length; i += 4) {
+      const r = data[i];
+      const g = data[i + 1];
+      const b = data[i + 2];
+      totalLuminance += (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+      sampleCount++;
     }
 
     const avgLuminance = sampleCount > 0 ? totalLuminance / sampleCount : 0.5;
@@ -269,34 +317,31 @@ export class RouteShareService {
 
   private drawRoutePath(
     ctx: SKRSContext2D,
-    holds: Hold[],
+    mappedHolds: Array<Hold & { pixelX: number; pixelY: number }>,
     routeColor: string | null,
     brightness: BrightnessResult,
-    imgWidth: number,
-    _imgHeight: number,
   ): void {
-    if (holds.length < 2) {
+    if (mappedHolds.length < 2) {
       return;
     }
 
-    const sortedHolds = [...holds].sort((a, b) => a.position_y - b.position_y);
-
+    const sortedHolds = [...mappedHolds].sort((a, b) => a.pixelY - b.pixelY);
     const strokeColor = routeColor || (brightness.isLight ? '#1a1a2e' : '#ffffff');
 
     ctx.save();
     ctx.beginPath();
-    ctx.moveTo(sortedHolds[0].position_x, sortedHolds[0].position_y);
+    ctx.moveTo(sortedHolds[0].pixelX, sortedHolds[0].pixelY);
 
     for (let i = 1; i < sortedHolds.length; i++) {
       const prev = sortedHolds[i - 1];
       const curr = sortedHolds[i];
-      const cpx = (prev.position_x + curr.position_x) / 2;
-      const cpy = (prev.position_y + curr.position_y) / 2;
-      ctx.quadraticCurveTo(prev.position_x, prev.position_y, cpx, cpy);
+      const cpx = (prev.pixelX + curr.pixelX) / 2;
+      const cpy = (prev.pixelY + curr.pixelY) / 2;
+      ctx.quadraticCurveTo(prev.pixelX, prev.pixelY, cpx, cpy);
     }
 
     const last = sortedHolds[sortedHolds.length - 1];
-    ctx.lineTo(last.position_x, last.position_y);
+    ctx.lineTo(last.pixelX, last.pixelY);
 
     ctx.strokeStyle = brightness.strokeColor;
     ctx.lineWidth = PATH_LINE_WIDTH + 3;
@@ -312,17 +357,15 @@ export class RouteShareService {
 
   private drawHolds(
     ctx: SKRSContext2D,
-    holds: Hold[],
+    mappedHolds: Array<Hold & { pixelX: number; pixelY: number }>,
     routeColor: string | null,
     brightness: BrightnessResult,
-    _imgWidth: number,
-    _imgHeight: number,
   ): void {
     const fillColor = routeColor || (brightness.isLight ? '#1a1a2e' : '#ffffff');
 
-    for (const hold of holds) {
-      const x = hold.position_x;
-      const y = hold.position_y;
+    for (const hold of mappedHolds) {
+      const x = hold.pixelX;
+      const y = hold.pixelY;
 
       ctx.save();
 
