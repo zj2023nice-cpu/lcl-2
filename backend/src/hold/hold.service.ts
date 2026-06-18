@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, DataSource } from 'typeorm';
+import { Repository, DataSource, EntityManager } from 'typeorm';
 import { Hold, HoldType } from '../entities/hold.entity';
 import { Route } from '../entities/route.entity';
 import { Wall } from '../entities/wall.entity';
@@ -35,41 +35,49 @@ export class HoldService {
   ) {}
 
   async create(routeId: number, createHoldDto: CreateHoldDto, userId?: number): Promise<Hold> {
-    const hold = this.holdRepository.create({
-      ...createHoldDto,
-      route_id: routeId,
-    });
-    const savedHold = await this.holdRepository.save(hold);
-    try {
-      await this.routeVersionService.createSnapshot(routeId, {
-        userId,
-        changeType: RouteVersionChangeType.HOLDS,
-        changeDescription: '添加岩点',
+    return this.dataSource.transaction(async (em: EntityManager) => {
+      const hold = em.create(Hold, {
+        ...createHoldDto,
+        route_id: routeId,
       });
-    } catch {
-      // 版本创建失败不应影响主操作
-    }
-    return savedHold;
+      const savedHold = await em.save(hold);
+
+      await this.routeVersionService.createSnapshot(
+        routeId,
+        {
+          userId,
+          changeType: RouteVersionChangeType.HOLDS,
+          changeDescription: '添加岩点',
+        },
+        em,
+      );
+
+      return savedHold;
+    });
   }
 
   async batchCreate(routeId: number, createHoldDtos: CreateHoldDto[], userId?: number): Promise<Hold[]> {
-    const holds = createHoldDtos.map((dto) =>
-      this.holdRepository.create({
-        ...dto,
-        route_id: routeId,
-      }),
-    );
-    const savedHolds = await this.holdRepository.save(holds);
-    try {
-      await this.routeVersionService.createSnapshot(routeId, {
-        userId,
-        changeType: RouteVersionChangeType.HOLDS,
-        changeDescription: `批量添加 ${savedHolds.length} 个岩点`,
-      });
-    } catch {
-      // 版本创建失败不应影响主操作
-    }
-    return savedHolds;
+    return this.dataSource.transaction(async (em: EntityManager) => {
+      const holds = createHoldDtos.map((dto) =>
+        em.create(Hold, {
+          ...dto,
+          route_id: routeId,
+        }),
+      );
+      const savedHolds = await em.save(holds);
+
+      await this.routeVersionService.createSnapshot(
+        routeId,
+        {
+          userId,
+          changeType: RouteVersionChangeType.HOLDS,
+          changeDescription: `批量添加 ${savedHolds.length} 个岩点`,
+        },
+        em,
+      );
+
+      return savedHolds;
+    });
   }
 
   async batchImportFromCsv(
@@ -143,6 +151,16 @@ export class HoldService {
 
       const savedHolds = await queryRunner.manager.save(holdEntities);
 
+      await this.routeVersionService.createSnapshot(
+        routeId,
+        {
+          userId,
+          changeType: RouteVersionChangeType.HOLDS,
+          changeDescription: `CSV 导入 ${savedHolds.length} 个岩点`,
+        },
+        queryRunner.manager,
+      );
+
       await queryRunner.commitTransaction();
 
       result.success = true;
@@ -153,16 +171,6 @@ export class HoldService {
         position_y: h.position_y,
         type: h.type,
       }));
-
-      try {
-        await this.routeVersionService.createSnapshot(routeId, {
-          userId,
-          changeType: RouteVersionChangeType.HOLDS,
-          changeDescription: `CSV 导入 ${savedHolds.length} 个岩点`,
-        });
-      } catch {
-        // 版本创建失败不应影响主操作
-      }
     } catch (error: any) {
       await queryRunner.rollbackTransaction();
       result.success = false;
@@ -308,42 +316,49 @@ export class HoldService {
   }
 
   async update(id: number, updateHoldDto: UpdateHoldDto, userId?: number): Promise<Hold> {
-    const hold = await this.findOne(id);
-    if (!hold) {
-      throw new NotFoundException('Hold with id ' + id + ' not found');
-    }
-    Object.assign(hold, updateHoldDto);
-    const savedHold = await this.holdRepository.save(hold);
-    try {
-      await this.routeVersionService.createSnapshot(savedHold.route_id, {
-        userId,
-        changeType: RouteVersionChangeType.HOLDS,
-        changeDescription: '修改岩点',
-      });
-    } catch {
-      // 版本创建失败不应影响主操作
-    }
-    return savedHold;
+    return this.dataSource.transaction(async (em: EntityManager) => {
+      const hold = await em.findOne(Hold, { where: { id } });
+      if (!hold) {
+        throw new NotFoundException('Hold with id ' + id + ' not found');
+      }
+      Object.assign(hold, updateHoldDto);
+      const savedHold = await em.save(hold);
+
+      await this.routeVersionService.createSnapshot(
+        savedHold.route_id,
+        {
+          userId,
+          changeType: RouteVersionChangeType.HOLDS,
+          changeDescription: '修改岩点',
+        },
+        em,
+      );
+
+      return savedHold;
+    });
   }
 
   async remove(id: number, userId?: number): Promise<void> {
-    const hold = await this.findOne(id);
-    if (!hold) {
-      throw new NotFoundException('Hold with id ' + id + ' not found');
-    }
-    const routeId = hold.route_id;
-    const result = await this.holdRepository.delete(id);
-    if (result.affected === 0) {
-      throw new NotFoundException('Hold with id ' + id + ' not found');
-    }
-    try {
-      await this.routeVersionService.createSnapshot(routeId, {
-        userId,
-        changeType: RouteVersionChangeType.HOLDS,
-        changeDescription: '删除岩点',
-      });
-    } catch {
-      // 版本创建失败不应影响主操作
-    }
+    await this.dataSource.transaction(async (em: EntityManager) => {
+      const hold = await em.findOne(Hold, { where: { id } });
+      if (!hold) {
+        throw new NotFoundException('Hold with id ' + id + ' not found');
+      }
+      const routeId = hold.route_id;
+      const result = await em.delete(Hold, id);
+      if (result.affected === 0) {
+        throw new NotFoundException('Hold with id ' + id + ' not found');
+      }
+
+      await this.routeVersionService.createSnapshot(
+        routeId,
+        {
+          userId,
+          changeType: RouteVersionChangeType.HOLDS,
+          changeDescription: '删除岩点',
+        },
+        em,
+      );
+    });
   }
 }

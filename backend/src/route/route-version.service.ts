@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException, BadRequestException, ForbiddenException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, DataSource } from 'typeorm';
+import { Repository, DataSource, EntityManager } from 'typeorm';
 import { Route, RouteStatus } from '../entities/route.entity';
 import { Hold } from '../entities/hold.entity';
 import { User, UserRole } from '../entities/user.entity';
@@ -15,10 +15,21 @@ import { Wall } from '../entities/wall.entity';
 const VERSIONED_FIELDS = ['grade', 'status', 'path_coords'] as const;
 const HOLDS_FIELDS = ['position_x', 'position_y', 'type'] as const;
 
+export const ROUTE_IMAGE_NOTE = '线路(Route)实体不存在独立图片字段；图片存储于岩壁(Wall)实体的 photo_url 字段。线路版本快照仅记录路径坐标(path_coords)，该坐标用于在岩壁图片上标注线路轨迹。';
+
 export interface FieldDiff {
   field: string;
   old_value: any;
   new_value: any;
+}
+
+export interface PathCoordsDiffDetail {
+  old_points_count: number;
+  new_points_count: number;
+  sample_old: any;
+  sample_new: any;
+  full_old: any;
+  full_new: any;
 }
 
 export interface HoldsDiff {
@@ -31,6 +42,10 @@ export interface HoldsDiff {
 }
 
 export interface VersionCompareResult {
+  meta: {
+    image_field_note: string;
+    route_id: number;
+  };
   from_version: {
     id: number;
     version: number;
@@ -46,6 +61,7 @@ export interface VersionCompareResult {
     creator_name: string | null;
   };
   field_diffs: FieldDiff[];
+  path_coords_detail: PathCoordsDiffDetail | null;
   holds_diff: HoldsDiff;
   change_summary: string[];
 }
@@ -56,6 +72,7 @@ export interface CreateSnapshotOptions {
   changeDescription?: string;
   changedFields?: string[];
   parentVersionId?: number;
+  forceCreate?: boolean;
 }
 
 @Injectable()
@@ -74,19 +91,16 @@ export class RouteVersionService {
     private dataSource: DataSource,
   ) {}
 
-  async createSnapshot(routeId: number, options: CreateSnapshotOptions = {}): Promise<RouteVersion> {
-    const route = await this.routeRepository.findOne({ where: { id: routeId } });
+  private async buildSnapshot(
+    manager: EntityManager,
+    routeId: number,
+  ): Promise<{ route: Route; holds: Hold[]; snapshot: RouteVersionSnapshot }> {
+    const route = await manager.findOne(Route, { where: { id: routeId } });
     if (!route) {
       throw new NotFoundException(`Route with id ${routeId} not found`);
     }
 
-    const holds = await this.holdRepository.find({ where: { route_id: routeId } });
-    const latestVersion = await this.routeVersionRepository.findOne({
-      where: { route_id: routeId },
-      order: { version: 'DESC' },
-    });
-
-    const nextVersion = latestVersion ? latestVersion.version + 1 : 1;
+    const holds = await manager.find(Hold, { where: { route_id: routeId } });
 
     const holdSnapshots: HoldSnapshot[] = holds.map((h) => ({
       id: h.id,
@@ -109,37 +123,21 @@ export class RouteVersionService {
       holds: holdSnapshots,
     };
 
-    let changeType = options.changeType;
-    let changedFields = options.changedFields;
-
-    if (!changeType && latestVersion) {
-      const detection = this.detectChanges(latestVersion.snapshot, snapshot);
-      changeType = detection.changeType;
-      changedFields = detection.changedFields;
-    }
-
-    if (!changeType) {
-      changeType = RouteVersionChangeType.MULTIPLE;
-    }
-
-    const version = this.routeVersionRepository.create({
-      route_id: routeId,
-      version: nextVersion,
-      change_type: changeType,
-      change_description: options.changeDescription || null,
-      snapshot,
-      changed_fields: changedFields || [],
-      created_by: options.userId || null,
-      parent_version_id: options.parentVersionId || (latestVersion ? latestVersion.id : null),
-    });
-
-    return this.routeVersionRepository.save(version);
+    return { route, holds, snapshot };
   }
 
   private detectChanges(
-    oldSnapshot: RouteVersionSnapshot,
+    oldSnapshot: RouteVersionSnapshot | null,
     newSnapshot: RouteVersionSnapshot,
-  ): { changeType: RouteVersionChangeType; changedFields: string[] } {
+  ): { hasChanges: boolean; changeType: RouteVersionChangeType; changedFields: string[] } {
+    if (!oldSnapshot) {
+      return {
+        hasChanges: true,
+        changeType: RouteVersionChangeType.MULTIPLE,
+        changedFields: [],
+      };
+    }
+
     const changedFields: string[] = [];
 
     for (const field of VERSIONED_FIELDS) {
@@ -156,10 +154,12 @@ export class RouteVersionService {
       changedFields.push('holds');
     }
 
-    let changeType: RouteVersionChangeType;
     if (changedFields.length === 0) {
-      changeType = RouteVersionChangeType.MULTIPLE;
-    } else if (changedFields.length === 1) {
+      return { hasChanges: false, changeType: RouteVersionChangeType.MULTIPLE, changedFields: [] };
+    }
+
+    let changeType: RouteVersionChangeType;
+    if (changedFields.length === 1) {
       const field = changedFields[0];
       if (field === 'grade') changeType = RouteVersionChangeType.GRADE;
       else if (field === 'status') changeType = RouteVersionChangeType.STATUS;
@@ -170,7 +170,7 @@ export class RouteVersionService {
       changeType = RouteVersionChangeType.MULTIPLE;
     }
 
-    return { changeType, changedFields };
+    return { hasChanges: true, changeType, changedFields };
   }
 
   private haveHoldsChanged(oldHolds: HoldSnapshot[], newHolds: HoldSnapshot[]): boolean {
@@ -192,6 +192,61 @@ export class RouteVersionService {
     }
 
     return false;
+  }
+
+  async createSnapshot(
+    routeId: number,
+    options: CreateSnapshotOptions = {},
+    manager?: EntityManager,
+  ): Promise<RouteVersion | null> {
+    const run = async (em: EntityManager): Promise<RouteVersion | null> => {
+      const { snapshot } = await this.buildSnapshot(em, routeId);
+
+      const latestVersion = await em.findOne(RouteVersion, {
+        where: { route_id: routeId },
+        order: { version: 'DESC' },
+      });
+
+      const detection = this.detectChanges(
+        latestVersion ? latestVersion.snapshot : null,
+        snapshot,
+      );
+
+      if (!options.forceCreate && !detection.hasChanges) {
+        return null;
+      }
+
+      const nextVersion = latestVersion ? latestVersion.version + 1 : 1;
+
+      let changeType = options.changeType;
+      let changedFields = options.changedFields;
+
+      if (!changeType) {
+        changeType = detection.changeType;
+      }
+      if (!changedFields) {
+        changedFields = detection.changedFields;
+      }
+
+      const version = em.create(RouteVersion, {
+        route_id: routeId,
+        version: nextVersion,
+        change_type: changeType,
+        change_description: options.changeDescription || null,
+        snapshot,
+        changed_fields: changedFields || [],
+        created_by: options.userId || null,
+        parent_version_id: options.parentVersionId || (latestVersion ? latestVersion.id : null),
+      });
+
+      return em.save(version);
+    };
+
+    if (manager) {
+      return run(manager);
+    }
+
+    return this.dataSource.transaction(run);
   }
 
   async getVersions(routeId: number): Promise<RouteVersion[]> {
@@ -229,6 +284,7 @@ export class RouteVersionService {
     const toVersion = await this.getVersion(routeId, toVersionId);
 
     const fieldDiffs: FieldDiff[] = [];
+    let pathCoordsDetail: PathCoordsDiffDetail | null = null;
 
     for (const field of VERSIONED_FIELDS) {
       const oldVal = fromVersion.snapshot[field];
@@ -239,6 +295,19 @@ export class RouteVersionService {
           old_value: oldVal,
           new_value: newVal,
         });
+
+        if (field === 'path_coords') {
+          const oldArr = Array.isArray(oldVal) ? oldVal : [];
+          const newArr = Array.isArray(newVal) ? newVal : [];
+          pathCoordsDetail = {
+            old_points_count: oldArr.length,
+            new_points_count: newArr.length,
+            sample_old: oldArr.slice(0, 3),
+            sample_new: newArr.slice(0, 3),
+            full_old: oldVal,
+            full_new: newVal,
+          };
+        }
       }
     }
 
@@ -247,9 +316,13 @@ export class RouteVersionService {
       toVersion.snapshot.holds,
     );
 
-    const changeSummary = this.buildChangeSummary(fieldDiffs, holdsDiff);
+    const changeSummary = this.buildChangeSummary(fieldDiffs, holdsDiff, pathCoordsDetail);
 
     return {
+      meta: {
+        image_field_note: ROUTE_IMAGE_NOTE,
+        route_id: routeId,
+      },
       from_version: {
         id: fromVersion.id,
         version: fromVersion.version,
@@ -265,6 +338,7 @@ export class RouteVersionService {
         creator_name: toVersion.creator?.name || null,
       },
       field_diffs: fieldDiffs,
+      path_coords_detail: pathCoordsDetail,
       holds_diff: holdsDiff,
       change_summary: changeSummary,
     };
@@ -306,7 +380,11 @@ export class RouteVersionService {
     return { added, removed, modified };
   }
 
-  private buildChangeSummary(fieldDiffs: FieldDiff[], holdsDiff: HoldsDiff): string[] {
+  private buildChangeSummary(
+    fieldDiffs: FieldDiff[],
+    holdsDiff: HoldsDiff,
+    pathCoordsDetail: PathCoordsDiffDetail | null,
+  ): string[] {
     const summary: string[] = [];
 
     const fieldLabels: Record<string, string> = {
@@ -317,7 +395,13 @@ export class RouteVersionService {
 
     for (const diff of fieldDiffs) {
       const label = fieldLabels[diff.field] || diff.field;
-      summary.push(`${label}: ${JSON.stringify(diff.old_value)} → ${JSON.stringify(diff.new_value)}`);
+      if (diff.field === 'path_coords' && pathCoordsDetail) {
+        summary.push(
+          `${label}: ${pathCoordsDetail.old_points_count} 点 → ${pathCoordsDetail.new_points_count} 点`,
+        );
+      } else {
+        summary.push(`${label}: ${JSON.stringify(diff.old_value)} → ${JSON.stringify(diff.new_value)}`);
+      }
     }
 
     if (holdsDiff.added.length > 0) {
@@ -338,7 +422,7 @@ export class RouteVersionService {
     targetVersionId: number,
     userId: number,
     reason?: string,
-  ): Promise<RouteVersion> {
+  ): Promise<RouteVersion | null> {
     const route = await this.routeRepository.findOne({ where: { id: routeId } });
     if (!route) {
       throw new NotFoundException(`Route with id ${routeId} not found`);
@@ -364,13 +448,13 @@ export class RouteVersionService {
           name: snapshot.name,
           type: snapshot.type,
           grade: snapshot.grade,
-          color: snapshot.color,
+          color: snapshot.color ?? undefined,
           status: snapshot.status,
-          path_coords: snapshot.path_coords,
-          tags: snapshot.tags,
-          length: snapshot.length,
-          open_date: snapshot.open_date,
-          planned_remove_date: snapshot.planned_remove_date,
+          path_coords: snapshot.path_coords ?? undefined,
+          tags: snapshot.tags ?? undefined,
+          length: snapshot.length ?? undefined,
+          open_date: snapshot.open_date ?? undefined,
+          planned_remove_date: snapshot.planned_remove_date ?? undefined,
         },
       );
 
@@ -389,19 +473,24 @@ export class RouteVersionService {
         await queryRunner.manager.save(newHolds);
       }
 
-      await queryRunner.commitTransaction();
-
       const rollbackDesc = reason
         ? `回滚到版本 v${targetVersion.version}: ${reason}`
         : `回滚到版本 v${targetVersion.version}`;
 
-      const newVersion = await this.createSnapshot(routeId, {
-        userId,
-        changeType: RouteVersionChangeType.ROLLBACK,
-        changeDescription: rollbackDesc,
-        changedFields: targetVersion.changed_fields,
-        parentVersionId: targetVersion.id,
-      });
+      const newVersion = await this.createSnapshot(
+        routeId,
+        {
+          userId,
+          changeType: RouteVersionChangeType.ROLLBACK,
+          changeDescription: rollbackDesc,
+          changedFields: targetVersion.changed_fields,
+          parentVersionId: targetVersion.id,
+          forceCreate: true,
+        },
+        queryRunner.manager,
+      );
+
+      await queryRunner.commitTransaction();
 
       return newVersion;
     } catch (error) {
