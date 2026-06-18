@@ -113,49 +113,64 @@ export default function CommentSection({ routeId }: CommentSectionProps) {
     setComments((prev) => updateRecursive(prev));
   }, []);
 
-  const deleteComment = useCallback(
-    (id: number, isMainComment: boolean) => {
-      if (isMainComment) {
-        const updateRecursive = (list: Comment[]): Comment[] => {
-          return list.map((c) => {
-            if (c.id === id) {
+  const deleteComment = useCallback((id: number) => {
+    let deletedCount = 0;
+    let isMainDeleted = false;
+
+    const processRecursive = (list: Comment[]): Comment[] => {
+      return list
+        .filter((c) => {
+          if (c.id === id) {
+            if (c.parentId === null || c.parentId === undefined) {
+              isMainDeleted = true;
+              deletedCount = 1 + (c.totalReplyCount ?? c.replyCount ?? 0);
+              return true;
+            } else {
+              deletedCount = 1;
+              return false;
+            }
+          }
+          return true;
+        })
+        .map((c) => {
+          if (c.id === id && isMainDeleted) {
+            return {
+              ...c,
+              status: 'deleted',
+              content: '[该评论已被删除]',
+              replies: [],
+              replyCount: 0,
+              totalReplyCount: 0,
+            };
+          }
+          if (c.replies && c.replies.length > 0) {
+            const newReplies = processRecursive(c.replies);
+            const replyRemoved = c.replies.length - newReplies.length;
+            if (replyRemoved > 0) {
               return {
                 ...c,
-                status: 'deleted',
-                content: '[该评论已被删除]',
-                replies: [],
-                replyCount: 0,
-                totalReplyCount: 0,
+                replies: newReplies,
+                replyCount: Math.max(0, (c.replyCount ?? 0) - replyRemoved),
+                totalReplyCount: Math.max(
+                  0,
+                  (c.totalReplyCount ?? c.replyCount ?? 0) - replyRemoved,
+                ),
               };
             }
-            if (c.replies && c.replies.length > 0) {
-              return { ...c, replies: updateRecursive(c.replies) };
-            }
-            return c;
-          });
-        };
-        setComments((prev) => updateRecursive(prev));
-        setTotalComments((t) => Math.max(0, t - 1));
-      } else {
-        const filterRecursive = (list: Comment[]): Comment[] => {
-          return list
-            .filter((c) => c.id !== id)
-            .map((c) => {
-              if (c.replies && c.replies.length > 0) {
-                return {
-                  ...c,
-                  replies: filterRecursive(c.replies),
-                };
-              }
-              return c;
-            });
-        };
-        setComments((prev) => filterRecursive(prev));
-        setTotalComments((t) => Math.max(0, t - 1));
+            return { ...c, replies: newReplies };
+          }
+          return c;
+        });
+    };
+
+    setComments((prev) => processRecursive(prev));
+    if (deletedCount > 0) {
+      setTotalComments((t) => Math.max(0, t - deletedCount));
+      if (isMainDeleted) {
+        setTotalParents((t) => Math.max(0, t - 1));
       }
-    },
-    [],
-  );
+    }
+  }, []);
 
   const addReply = useCallback(
     (parentId: number, reply: Comment) => {
@@ -299,7 +314,7 @@ export default function CommentSection({ routeId }: CommentSectionProps) {
                   comment={comment}
                   onUpdate={updateComment}
                   onAddReply={addReply}
-                  onDelete={(id) => deleteComment(id, true)}
+                  onDelete={deleteComment}
                 />
               ))}
             </>

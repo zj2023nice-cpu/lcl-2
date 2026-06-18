@@ -96,12 +96,6 @@ export default function CommentItem({
       await commentApi.deleteComment(comment.id);
       if (onDelete) {
         onDelete(comment.id);
-      } else {
-        onUpdate(comment.id, (c) => ({
-          ...c,
-          status: 'deleted',
-          content: '[该评论已被删除]',
-        }));
       }
       success('删除成功');
     } catch (e) {
@@ -109,7 +103,7 @@ export default function CommentItem({
     } finally {
       setIsDeleting(false);
     }
-  }, [canDelete, isDeleted, comment.id, onDelete, onUpdate, success, error]);
+  }, [canDelete, isDeleted, comment.id, onDelete, success, error]);
 
   const handleReport = useCallback(
     async (reason: any, description?: string) => {
@@ -342,13 +336,7 @@ export default function CommentItem({
                       }}
                       onDelete={(id) => {
                         setLocalReplies((prev) => prev.filter((r) => r.id !== id));
-                        onUpdate(comment.id, (c) => ({
-                          ...c,
-                          totalReplyCount: Math.max(
-                            0,
-                            (c.totalReplyCount ?? c.replyCount ?? 0) - 1,
-                          ),
-                        }));
+                        if (onDelete) onDelete(id);
                       }}
                       level={level + 1}
                     />
