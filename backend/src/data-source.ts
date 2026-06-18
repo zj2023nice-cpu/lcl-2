@@ -8,6 +8,9 @@ import { Ascent } from './entities/ascent.entity';
 import { GradeVote } from './entities/grade-vote.entity';
 import { UserProfile } from './entities/user-profile.entity';
 import { OperationLog } from './entities/operation-log.entity';
+import { Comment } from './entities/comment.entity';
+import { CommentLike } from './entities/comment-like.entity';
+import { CommentReport } from './entities/comment-report.entity';
 
 export default new DataSource({
   type: 'mysql',
@@ -26,6 +29,9 @@ export default new DataSource({
     GradeVote,
     UserProfile,
     OperationLog,
+    Comment,
+    CommentLike,
+    CommentReport,
   ],
   migrations: ['src/migrations/*.ts'],
 });

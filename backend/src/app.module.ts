@@ -17,6 +17,7 @@ import { AnalyticsModule } from './analytics/analytics.module';
 import { UserModule } from './user/user.module';
 import { UploadModule } from './upload/upload.module';
 import { SeedsModule } from './seeds/seeds.module';
+import { CommentModule } from './comment/comment.module';
 import { User } from './entities/user.entity';
 import { Gym } from './entities/gym.entity';
 import { Wall } from './entities/wall.entity';
@@ -26,6 +27,9 @@ import { Ascent } from './entities/ascent.entity';
 import { GradeVote } from './entities/grade-vote.entity';
 import { UserProfile } from './entities/user-profile.entity';
 import { OperationLog } from './entities/operation-log.entity';
+import { Comment } from './entities/comment.entity';
+import { CommentLike } from './entities/comment-like.entity';
+import { CommentReport } from './entities/comment-report.entity';
 import { JwtStrategy } from './auth/jwt.strategy';
 import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
 import { RolesGuard } from './common/guards/roles.guard';
@@ -49,6 +53,9 @@ import { RolesGuard } from './common/guards/roles.guard';
         GradeVote,
         UserProfile,
         OperationLog,
+        Comment,
+        CommentLike,
+        CommentReport,
       ],
       synchronize: process.env.NODE_ENV !== 'production',
     }),
@@ -77,6 +84,7 @@ import { RolesGuard } from './common/guards/roles.guard';
     UserModule,
     UploadModule,
     SeedsModule,
+    CommentModule,
   ],
   controllers: [AppController],
   providers: [AppService, JwtStrategy, JwtAuthGuard, RolesGuard],

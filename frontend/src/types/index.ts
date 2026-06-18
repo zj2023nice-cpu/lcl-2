@@ -268,3 +268,38 @@ export interface AdvancedSortProps {
   onReset: () => void;
   onClearFilters?: () => void;
 }
+
+export type CommentStatus = 'active' | 'deleted' | 'reported';
+export type ReportReason = 'spam' | 'harassment' | 'inappropriate' | 'false_info' | 'other';
+
+export interface Comment {
+  id: number;
+  routeId: number;
+  userId: number;
+  content: string;
+  parentId: number | null;
+  replyToUserId: number | null;
+  likeCount: number;
+  replyCount: number;
+  reportCount: number;
+  status: CommentStatus;
+  deletedAt: string | null;
+  deletedBy: number | null;
+  createdAt: string;
+  updatedAt: string;
+  user?: { id: number; name: string };
+  replyToUser?: { id: number; name: string } | null;
+  likedByCurrentUser?: boolean;
+  replies?: Comment[];
+  totalReplyCount?: number;
+}
+
+export interface PaginatedComments {
+  data: Comment[];
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+  hasMore: boolean;
+  totalComments: number;
+}

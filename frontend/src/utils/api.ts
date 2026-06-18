@@ -371,6 +371,62 @@ export const profileApi = {
   },
 };
 
+import type { Comment, PaginatedComments, ReportReason } from '@/types';
+
+export const commentApi = {
+  getComments: async (
+    routeId: number,
+    params?: { page?: number; limit?: number; replyLimit?: number },
+  ): Promise<PaginatedComments> => {
+    return get<PaginatedComments>(`/routes/${routeId}/comments`, { params });
+  },
+
+  getReplies: async (
+    commentId: number,
+    params?: { page?: number; limit?: number },
+  ): Promise<PaginatedComments> => {
+    return get<PaginatedComments>(`/comments/${commentId}/replies`, { params });
+  },
+
+  createComment: async (
+    routeId: number,
+    data: { content: string; parentId?: number; replyToUserId?: number },
+  ): Promise<Comment> => {
+    return post<Comment>(`/routes/${routeId}/comments`, data);
+  },
+
+  updateComment: async (commentId: number, content: string): Promise<Comment> => {
+    return put<Comment>(`/comments/${commentId}`, { content });
+  },
+
+  deleteComment: async (commentId: number): Promise<void> => {
+    return del<void>(`/comments/${commentId}`);
+  },
+
+  toggleLike: async (commentId: number): Promise<{ liked: boolean; likeCount: number }> => {
+    return post<{ liked: boolean; likeCount: number }>(`/comments/${commentId}/like`);
+  },
+
+  reportComment: async (
+    commentId: number,
+    reason: ReportReason,
+    description?: string,
+  ): Promise<{ success: boolean }> => {
+    return post<{ success: boolean }>(`/comments/${commentId}/report`, {
+      reason,
+      description,
+    });
+  },
+
+  getUserCommentStats: async (
+    userId: number,
+  ): Promise<{ totalComments: number; totalLikesReceived: number }> => {
+    return get<{ totalComments: number; totalLikesReceived: number }>(
+      `/users/${userId}/comments/stats`,
+    );
+  },
+};
+
 export const api = {
   request,
   get,

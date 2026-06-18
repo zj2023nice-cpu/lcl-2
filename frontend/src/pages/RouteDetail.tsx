@@ -30,6 +30,7 @@ import Card from '@/components/UI/Card';
 import Button from '@/components/UI/Button';
 import WallCanvas, { RouteWithPoints, RoutePoint } from '@/components/WallCanvas/WallCanvas';
 import RouteEditorPanel from '@/components/RouteEditor/RouteEditorPanel';
+import CommentSection from '@/components/Comment/CommentSection';
 import { routeApi, ascentApi, voteApi, wallApi } from '@/utils/api';
 import { useAuthStore } from '@/store/auth';
 import type { Route, Ascent, GradeVote, Wall } from '@/types';
@@ -596,6 +597,8 @@ export default function RouteDetail() {
           </Card>
         </div>
       </div>
+
+      <CommentSection routeId={Number(id)} />
 
       <RouteEditorPanel
         isOpen={isEditorOpen}
