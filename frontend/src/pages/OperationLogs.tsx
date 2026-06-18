@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
   FileText,
   Calendar,
@@ -514,9 +514,8 @@ export default function OperationLogs() {
                   const hasChanges = log.changes && log.changes.length > 0;
 
                   return (
-                    <>
+                    <React.Fragment key={log.id}>
                       <tr
-                        key={log.id}
                         className="hover:bg-rock-dark-800/30 transition-colors cursor-pointer"
                         onClick={() => hasChanges && toggleExpand(log.id)}
                       >
@@ -582,7 +581,7 @@ export default function OperationLogs() {
                         </td>
                       </tr>
                       {isExpanded && hasChanges && (
-                        <tr className="bg-rock-dark-800/20">
+                        <tr key={`${log.id}-expanded`} className="bg-rock-dark-800/20">
                           <td colSpan={6} className="px-5 py-4">
                             <div className="bg-rock-dark-900/50 rounded-lg p-4">
                               <h4 className="text-sm font-medium text-white mb-3 flex items-center gap-2">
@@ -605,9 +604,9 @@ export default function OperationLogs() {
                                     </tr>
                                   </thead>
                                   <tbody>
-                                    {log.changes?.map((change, idx) => (
+                                    {log.changes?.map((change) => (
                                       <tr
-                                        key={idx}
+                                        key={change.field}
                                         className="border-b border-rock-dark-700/50 last:border-0"
                                       >
                                         <td className="py-2 px-3 text-white font-medium">
@@ -628,7 +627,7 @@ export default function OperationLogs() {
                           </td>
                         </tr>
                       )}
-                    </>
+                    </React.Fragment>
                   );
                 })
               )}
