@@ -246,6 +246,10 @@ export const routeApi = {
     return get<Route>(`/routes/${id}`);
   },
 
+  canEditRoute: async (id: number): Promise<{ canEdit: boolean }> => {
+    return get<{ canEdit: boolean }>(`/routes/${id}/can-edit`);
+  },
+
   createRoute: async (wallId: number, routeData: Partial<Route>): Promise<Route> => {
     return post<Route>(`/walls/${wallId}/routes`, routeData);
   },

@@ -30,10 +30,11 @@ import Card from '@/components/UI/Card';
 import Button from '@/components/UI/Button';
 import WallCanvas, { RouteWithPoints, RoutePoint } from '@/components/WallCanvas/WallCanvas';
 import RouteEditorPanel from '@/components/RouteEditor/RouteEditorPanel';
-import { routeApi, ascentApi, voteApi } from '@/utils/api';
+import { routeApi, ascentApi, voteApi, wallApi } from '@/utils/api';
 import { useAuthStore } from '@/store/auth';
-import type { Route, Ascent, GradeVote } from '@/types';
+import type { Route, Ascent, GradeVote, Wall } from '@/types';
 import { cn } from '@/lib/utils';
+import { canEditRoute } from '@/lib/permissions';
 
 const routeTypeLabels: Record<string, string> = {
   boulder: '抱石',
@@ -94,6 +95,7 @@ export default function RouteDetail() {
   const navigate = useNavigate();
   const { user } = useAuthStore();
   const [route, setRoute] = useState<Route | null>(null);
+  const [wall, setWall] = useState<Wall | null>(null);
   const [ascents, setAscents] = useState<Ascent[]>([]);
   const [votes, setVotes] = useState<GradeVote[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -116,6 +118,8 @@ export default function RouteDetail() {
         setRoute(routeData);
         setAscents(ascentsData);
         setVotes(votesData);
+        const wallData = await wallApi.getWallById(routeData.wallId);
+        setWall(wallData);
       } catch (err) {
         console.error('Failed to fetch route data:', err);
       } finally {
@@ -188,6 +192,10 @@ export default function RouteDetail() {
   const displayedAscents = useMemo(() => {
     return showAllAscents ? ascents : ascents.slice(0, 5);
   }, [ascents, showAllAscents]);
+
+  const userCanEditRoute = useMemo(() => {
+    return canEditRoute(user, route, wall);
+  }, [user, route, wall]);
 
   const handleRouteUpdate = (routeId: number, points: RoutePoint[]) => {
     setRoutePoints(points);
@@ -297,10 +305,12 @@ export default function RouteDetail() {
           </div>
         </div>
         <div className="flex items-center gap-3">
-          <Button variant="outline" onClick={() => setIsEditorOpen(true)}>
-            <Edit size={16} className="mr-2" />
-            编辑线路
-          </Button>
+          {userCanEditRoute && (
+            <Button variant="outline" onClick={() => setIsEditorOpen(true)}>
+              <Edit size={16} className="mr-2" />
+              编辑线路
+            </Button>
+          )}
           <Button>
             <Plus size={16} className="mr-2" />
             记录攀爬
