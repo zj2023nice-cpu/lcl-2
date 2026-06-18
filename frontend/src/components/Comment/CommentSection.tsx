@@ -199,6 +199,34 @@ export default function CommentSection({ routeId }: CommentSectionProps) {
     [],
   );
 
+  const addReplies = useCallback(
+    (parentId: number, replies: Comment[]) => {
+      if (replies.length === 0) return;
+      setComments((prev) => {
+        const addToParent = (list: Comment[]): Comment[] => {
+          return list.map((c) => {
+            if (c.id === parentId) {
+              const currentReplies = c.replies || [];
+              const existingIds = new Set(currentReplies.map((r) => r.id));
+              const newReplies = replies.filter((r) => !existingIds.has(r.id));
+              return {
+                ...c,
+                replies: [...currentReplies, ...newReplies],
+                replyCount: currentReplies.length + newReplies.length,
+              };
+            }
+            if (c.replies && c.replies.length > 0) {
+              return { ...c, replies: addToParent(c.replies) };
+            }
+            return c;
+          });
+        };
+        return addToParent(prev);
+      });
+    },
+    [],
+  );
+
   const handleLoadMore = async () => {
     if (isLoadingMore || !hasMore) return;
     setIsLoadingMore(true);
@@ -314,6 +342,7 @@ export default function CommentSection({ routeId }: CommentSectionProps) {
                   comment={comment}
                   onUpdate={updateComment}
                   onAddReply={addReply}
+                  onAddReplies={addReplies}
                   onDelete={deleteComment}
                 />
               ))}

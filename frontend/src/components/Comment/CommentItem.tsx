@@ -23,6 +23,7 @@ interface CommentItemProps {
   isReply?: boolean;
   onUpdate: (id: number, updater: (c: Comment) => Comment) => void;
   onAddReply?: (parentId: number, reply: Comment) => void;
+  onAddReplies?: (parentId: number, replies: Comment[]) => void;
   onDelete?: (id: number) => void;
   level?: number;
 }
@@ -32,6 +33,7 @@ export default function CommentItem({
   isReply = false,
   onUpdate,
   onAddReply,
+  onAddReplies,
   onDelete,
   level = 0,
 }: CommentItemProps) {
@@ -150,13 +152,16 @@ export default function CommentItem({
     try {
       const result = await commentApi.getReplies(comment.id, { page: replyPage, limit: 10 });
       setLocalReplies((prev) => [...prev, ...result.data]);
+      if (onAddReplies) {
+        onAddReplies(comment.id, result.data);
+      }
       setReplyPage((p) => p + 1);
     } catch (e) {
       error('加载回复失败');
     } finally {
       setIsLoadingReplies(false);
     }
-  }, [comment.id, replyPage, isLoadingReplies, error]);
+  }, [comment.id, replyPage, isLoadingReplies, onAddReplies, error]);
 
   const totalReplyCount = comment.totalReplyCount ?? comment.replyCount ?? 0;
   const displayedReplyCount = localReplies.length;
@@ -334,6 +339,7 @@ export default function CommentItem({
                         }));
                         if (onAddReply) onAddReply(parentId, r);
                       }}
+                      onAddReplies={onAddReplies}
                       onDelete={(id) => {
                         setLocalReplies((prev) => prev.filter((r) => r.id !== id));
                         if (onDelete) onDelete(id);
