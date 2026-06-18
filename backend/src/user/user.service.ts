@@ -79,6 +79,28 @@ export class UserService {
     return this.userRepository.save(user);
   }
 
+  async banUser(
+    userId: number,
+    banned: boolean,
+    durationHours?: number,
+  ): Promise<User> {
+    const user = await this.userRepository.findOne({ where: { id: userId } });
+    if (!user) {
+      throw new NotFoundException(`User with id ${userId} not found`);
+    }
+
+    if (banned) {
+      const hours = durationHours && durationHours > 0 ? durationHours : 72;
+      const until = new Date();
+      until.setHours(until.getHours() + hours);
+      user.banned_until = until;
+    } else {
+      user.banned_until = null;
+    }
+
+    return this.userRepository.save(user);
+  }
+
   findOne(id: number): Promise<User | null> {
     return this.userRepository.findOne({ where: { id } });
   }

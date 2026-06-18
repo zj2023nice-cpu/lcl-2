@@ -33,6 +33,7 @@ import RouteEditorPanel from '@/components/RouteEditor/RouteEditorPanel';
 import CommentSection from '@/components/Comment/CommentSection';
 import { routeApi, ascentApi, voteApi, wallApi } from '@/utils/api';
 import { useAuthStore } from '@/store/auth';
+import { useMessage } from '@/hooks/useMessage';
 import type { Route, Ascent, GradeVote, Wall } from '@/types';
 import { cn, getGradeColorConfig, getGradeFullClass, getGradeLabel } from '@/lib/utils';
 import { canEditRoute } from '@/lib/permissions';
@@ -95,6 +96,7 @@ export default function RouteDetail() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { user } = useAuthStore();
+  const { error } = useMessage();
   const [route, setRoute] = useState<Route | null>(null);
   const [wall, setWall] = useState<Wall | null>(null);
   const [ascents, setAscents] = useState<Ascent[]>([]);
@@ -225,6 +227,9 @@ export default function RouteDetail() {
       });
       setSelectedGrade(grade);
     } catch (err) {
+      const reason =
+        (err as { message?: string })?.message || '投票失败，请稍后重试';
+      error(reason);
       console.error('Failed to submit vote:', err);
     }
   };

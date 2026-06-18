@@ -9,6 +9,7 @@ export interface User {
   role: UserRole;
   gymId?: number;
   verifiedAt?: string;
+  bannedUntil?: string;
   createdAt: string;
   updatedAt: string;
 }

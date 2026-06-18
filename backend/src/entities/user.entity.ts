@@ -57,6 +57,9 @@ export class User {
   @Column({ type: 'datetime', name: 'verified_at', nullable: true })
   verified_at: Date;
 
+  @Column({ type: 'datetime', name: 'banned_until', nullable: true })
+  banned_until: Date | null;
+
   @CreateDateColumn({ name: 'created_at' })
   created_at: Date;
 

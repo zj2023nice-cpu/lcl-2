@@ -11,6 +11,7 @@ import {
 import { UserService } from './user.service';
 import { VerifyUserDto } from './dto/verify-user.dto';
 import { UpdateRoleDto } from './dto/update-role.dto';
+import { BanUserDto } from './dto/ban-user.dto';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { RolesGuard } from '../common/guards/roles.guard';
 import { Roles } from '../common/decorators/roles.decorator';
@@ -58,5 +59,18 @@ export class UserController {
     @Body() updateRoleDto: UpdateRoleDto,
   ) {
     return this.userService.updateRole(id, updateRoleDto.role);
+  }
+
+  @Patch('users/:id/ban')
+  @Roles(UserRole.GYM_ADMIN, UserRole.PLATFORM_ADMIN)
+  banUser(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() banUserDto: BanUserDto,
+  ) {
+    return this.userService.banUser(
+      id,
+      banUserDto.banned,
+      banUserDto.duration_hours,
+    );
   }
 }

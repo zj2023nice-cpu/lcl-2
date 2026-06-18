@@ -12,6 +12,7 @@ import {
   Clock,
   Award,
   Wrench,
+  Ban,
   MoreVertical,
   ChevronLeft,
   ChevronRight,
@@ -37,6 +38,7 @@ interface UserItem {
   role: UserRole;
   verifyStatus: VerifyStatus;
   verifiedAt?: string;
+  bannedUntil?: string;
   createdAt: string;
   ascentCount: number;
 }
@@ -64,6 +66,7 @@ function mapUserToItem(user: UserType, pendingIds: Set<number>): UserItem {
     role: user.role,
     verifyStatus,
     verifiedAt: user.verifiedAt,
+    bannedUntil: user.bannedUntil,
     createdAt: user.createdAt,
     ascentCount: 0,
   };
@@ -182,6 +185,23 @@ export default function AdminUsers() {
       );
     } catch (error) {
       console.error('Failed to change user role:', error);
+    }
+  };
+
+  const handleBan = async (userId: number, banned: boolean) => {
+    try {
+      if (banned) {
+        const ok = window.confirm('确定禁言该用户 72 小时？禁言期间无法参与定级投票。');
+        if (!ok) return;
+      }
+      const updated = await userApi.banUser(userId, banned, banned ? 72 : undefined);
+      setUsers((prev) =>
+        prev.map((u) =>
+          u.id === userId ? { ...u, bannedUntil: updated.bannedUntil } : u
+        )
+      );
+    } catch (error) {
+      console.error('Failed to update ban status:', error);
     }
   };
 
@@ -413,6 +433,8 @@ export default function AdminUsers() {
                 paginatedUsers.map((user) => {
                   const statusConfig = verifyStatusConfig[user.verifyStatus];
                   const StatusIcon = statusConfig.icon;
+                  const isBanned = !!(user.bannedUntil && new Date(user.bannedUntil) > new Date());
+                  const canBan = authUser?.role === 'platform_admin' || authUser?.role === 'gym_admin';
                   return (
                     <tr key={user.id} className="hover:bg-rock-dark-800/30 transition-colors">
                       <td className="px-5 py-4">
@@ -443,12 +465,20 @@ export default function AdminUsers() {
                         <RoleTag role={user.role} highlight="current" />
                       </td>
                       <td className="px-5 py-4">
-                        <span
-                          className={`inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium rounded-full border ${statusConfig.color}`}
-                        >
-                          <StatusIcon size={12} />
-                          {statusConfig.label}
-                        </span>
+                        <div className="flex flex-col gap-1">
+                          <span
+                            className={`inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium rounded-full border ${statusConfig.color}`}
+                          >
+                            <StatusIcon size={12} />
+                            {statusConfig.label}
+                          </span>
+                          {isBanned && (
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 text-xs font-medium rounded-full border text-red-400 bg-red-500/20 border-red-500/30">
+                              <Ban size={10} />
+                              禁言中
+                            </span>
+                          )}
+                        </div>
                       </td>
                       <td className="px-5 py-4">
                         <span className="text-sm text-white font-medium">{user.ascentCount}</span>
@@ -507,6 +537,16 @@ export default function AdminUsers() {
                               );
                             })}
                           </div>
+                          {canBan && (
+                            <button
+                              type="button"
+                              onClick={() => handleBan(user.id, !isBanned)}
+                              className={`p-1.5 rounded-lg transition-colors ${isBanned ? 'text-green-400 hover:bg-green-500/10' : 'text-red-400 hover:bg-red-500/10'}`}
+                              title={isBanned ? '解除禁言' : '禁言用户'}
+                            >
+                              <Ban size={16} />
+                            </button>
+                          )}
                           <button className="p-1.5 hover:bg-rock-dark-700 rounded-lg transition-colors">
                             <MoreVertical size={16} className="text-rock-light-500" />
                           </button>

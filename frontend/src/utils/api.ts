@@ -343,6 +343,10 @@ export const userApi = {
   changeUserRole: async (userId: number, role: string): Promise<User> => {
     return patch<User>(`/users/${userId}/role`, { role });
   },
+
+  banUser: async (userId: number, banned: boolean, durationHours?: number): Promise<User> => {
+    return patch<User>(`/users/${userId}/ban`, { banned, durationHours });
+  },
 };
 
 export const profileApi = {

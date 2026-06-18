@@ -3,7 +3,12 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, MoreThan, IsNull, Not } from 'typeorm';
 import { GradeVote } from '../entities/grade-vote.entity';
 import { Route } from '../entities/route.entity';
+import { User } from '../entities/user.entity';
+import { Ascent } from '../entities/ascent.entity';
 import { VoteDto } from './dto/vote.dto';
+
+const RECENT_CLIMBING_WINDOW_DAYS = 30;
+const MAX_VOTE_DEVIATION = 1.5;
 
 const GRADE_ORDER: string[] = [
   'V0', 'V1', 'V2', 'V3', 'V4', 'V5', 'V6', 'V7', 'V8', 'V9', 'V10',
@@ -35,13 +40,22 @@ export class VoteService {
     private voteRepository: Repository<GradeVote>,
     @InjectRepository(Route)
     private routeRepository: Repository<Route>,
+    @InjectRepository(User)
+    private userRepository: Repository<User>,
+    @InjectRepository(Ascent)
+    private ascentRepository: Repository<Ascent>,
   ) {}
 
   async vote(routeId: number, userId: number, voteDto: VoteDto): Promise<GradeVote> {
-    const route = await this.routeRepository.findOne({ where: { id: routeId } });
+    const route = await this.routeRepository.findOne({
+      where: { id: routeId },
+      relations: { wall: { gym: true } },
+    });
     if (!route) {
       throw new BadRequestException('Route not found');
     }
+
+    await this.validateVoteEligibility(route, userId);
 
     const twentyFourHoursAgo = new Date();
     twentyFourHoursAgo.setHours(twentyFourHoursAgo.getHours() - 24);
@@ -65,6 +79,71 @@ export class VoteService {
     });
 
     return this.voteRepository.save(vote);
+  }
+
+  private async validateVoteEligibility(route: Route, userId: number): Promise<void> {
+    const user = await this.userRepository.findOne({ where: { id: userId } });
+    if (!user) {
+      throw new BadRequestException('用户不存在');
+    }
+
+    if (!user.verified_at) {
+      throw new BadRequestException('您尚未完成攀岩者认证，无法参与定级投票');
+    }
+
+    const now = new Date();
+    if (user.banned_until && new Date(user.banned_until) > now) {
+      const until = new Date(user.banned_until).toLocaleString('zh-CN');
+      throw new BadRequestException(
+        `您当前处于禁言状态（解禁时间：${until}），无法参与定级投票`,
+      );
+    }
+
+    const gymId = route.wall?.gym_id;
+    if (!gymId) {
+      throw new BadRequestException('无法确定线路所在岩馆');
+    }
+
+    const since = new Date();
+    since.setDate(since.getDate() - RECENT_CLIMBING_WINDOW_DAYS);
+    const recentAscentCount = await this.ascentRepository
+      .createQueryBuilder('ascent')
+      .innerJoin('ascent.route', 'route')
+      .innerJoin('route.wall', 'wall')
+      .where('ascent.user_id = :userId', { userId })
+      .andWhere('ascent.created_at >= :since', { since })
+      .andWhere('wall.gym_id = :gymId', { gymId })
+      .getCount();
+
+    if (recentAscentCount === 0) {
+      const gymName = route.wall?.gym?.name || '该岩馆';
+      throw new BadRequestException(
+        `近三十天内您未在${gymName}产生攀爬记录，无法参与定级投票`,
+      );
+    }
+
+    const pastVotes = await this.voteRepository.find({
+      where: { user_id: userId },
+      relations: ['route'],
+    });
+
+    let totalAbsDeviation = 0;
+    let validCount = 0;
+    for (const pastVote of pastVotes) {
+      if (pastVote.route) {
+        totalAbsDeviation += Math.abs(
+          compareGrades(pastVote.suggested_grade, pastVote.route.grade),
+        );
+        validCount += 1;
+      }
+    }
+
+    const avgDeviation = validCount > 0 ? totalAbsDeviation / validCount : 0;
+    if (avgDeviation > MAX_VOTE_DEVIATION) {
+      throw new BadRequestException(
+        `您的历史投票偏差率过高（平均偏差 ${avgDeviation.toFixed(2)} 级，阈值 ${MAX_VOTE_DEVIATION} 级），无法参与定级投票`,
+      );
+    }
   }
 
   async getVotes(routeId: number): Promise<{
