@@ -14,6 +14,7 @@ import Profile from '@/pages/Profile';
 import Dashboard from '@/pages/Dashboard';
 import AdminUsers from '@/pages/AdminUsers';
 import Overview from '@/pages/Overview';
+import OperationLogs from '@/pages/OperationLogs';
 
 function ProtectedLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -115,6 +116,14 @@ export default function App() {
           element={
             <ProtectedLayout>
               <AdminUsers />
+            </ProtectedLayout>
+          }
+        />
+        <Route
+          path="/admin/logs"
+          element={
+            <ProtectedLayout>
+              <OperationLogs />
             </ProtectedLayout>
           }
         />
