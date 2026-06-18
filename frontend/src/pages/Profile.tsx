@@ -20,26 +20,11 @@ import {
 } from 'lucide-react';
 import Card from '@/components/UI/Card';
 import Button from '@/components/UI/Button';
+import RoleTag from '@/components/UI/RoleTag';
 import useAuthStore from '@/store/auth';
 import { useNavigate } from 'react-router-dom';
 import type { UserRole } from '@/types';
 import { profileApi, ascentApi } from '@/utils/api';
-
-const roleLabels: Record<UserRole, string> = {
-  platform_admin: '平台管理员',
-  gym_admin: '岩馆管理员',
-  setter: '定线员',
-  verified_climber: '认证攀岩者',
-  guest: '游客',
-};
-
-const roleColors: Record<UserRole, string> = {
-  platform_admin: 'bg-red-500/20 text-red-400 border-red-500/30',
-  gym_admin: 'bg-green-500/20 text-green-400 border-green-500/30',
-  setter: 'bg-purple-500/20 text-purple-400 border-purple-500/30',
-  verified_climber: 'bg-blue-500/20 text-blue-400 border-blue-500/30',
-  guest: 'bg-gray-500/20 text-gray-400 border-gray-500/30',
-};
 
 const preferredStyles = [
   { label: '捏点', value: 'crimp' },
@@ -231,13 +216,7 @@ export default function Profile() {
                     <h2 className="text-xl font-bold text-white">
                       {user?.name || '攀岩爱好者'}
                     </h2>
-                    <span
-                      className={`px-2.5 py-0.5 text-xs font-medium rounded-full border ${
-                        roleColors[userRole]
-                      }`}
-                    >
-                      {roleLabels[userRole]}
-                    </span>
+                    <RoleTag role={userRole} highlight="current" size="sm" />
                     {userRole === 'verified_climber' && (
                       <span className="px-2.5 py-0.5 text-xs font-medium rounded-full bg-yellow-500/20 text-yellow-400 border border-yellow-500/30">
                         已认证

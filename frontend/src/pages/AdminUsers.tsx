@@ -19,10 +19,12 @@ import {
 } from 'lucide-react';
 import Card from '@/components/UI/Card';
 import Button from '@/components/UI/Button';
+import RoleTag, { roleLabels } from '@/components/UI/RoleTag';
 import type { UserRole, User as UserType } from '@/types';
 import { useGymStore } from '@/store/gym';
 import { useAuthStore } from '@/store/auth';
 import { userApi } from '@/utils/api';
+import { getRoleHighlight } from '@/lib/permissions';
 
 type VerifyStatus = 'pending' | 'approved' | 'rejected' | 'none';
 
@@ -38,22 +40,6 @@ interface UserItem {
   createdAt: string;
   ascentCount: number;
 }
-
-const roleLabels: Record<UserRole, string> = {
-  platform_admin: '平台管理员',
-  gym_admin: '岩馆管理员',
-  setter: '定线员',
-  verified_climber: '认证攀岩者',
-  guest: '游客',
-};
-
-const roleColors: Record<UserRole, string> = {
-  platform_admin: 'bg-red-500/20 text-red-400 border-red-500/30',
-  gym_admin: 'bg-green-500/20 text-green-400 border-green-500/30',
-  setter: 'bg-purple-500/20 text-purple-400 border-purple-500/30',
-  verified_climber: 'bg-blue-500/20 text-blue-400 border-blue-500/30',
-  guest: 'bg-gray-500/20 text-gray-400 border-gray-500/30',
-};
 
 const verifyStatusConfig: Record<VerifyStatus, { label: string; color: string; icon: typeof Clock }> = {
   pending: { label: '待审核', color: 'text-yellow-400 bg-yellow-500/20 border-yellow-500/30', icon: Clock },
@@ -401,11 +387,10 @@ export default function AdminUsers() {
                         </div>
                       </td>
                       <td className="px-5 py-4">
-                        <span
-                          className={`px-2.5 py-1 text-xs font-medium rounded-full border ${roleColors[user.role]}`}
-                        >
-                          {roleLabels[user.role]}
-                        </span>
+                        <RoleTag
+                          role={user.role}
+                          highlight={getRoleHighlight(authUser, user.role)}
+                        />
                       </td>
                       <td className="px-5 py-4">
                         <span
