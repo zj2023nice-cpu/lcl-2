@@ -8,31 +8,53 @@ const ROLE_HIERARCHY: UserRole[] = [
   'guest',
 ];
 
-export function canChangeRole(currentUser: User | null, targetRole: UserRole): boolean {
+export function canPromoteRole(currentUser: User | null, targetUserRole: UserRole, newRole: UserRole): boolean {
   if (!currentUser) return false;
   if (currentUser.role !== 'platform_admin' && currentUser.role !== 'gym_admin') return false;
 
   const currentIdx = ROLE_HIERARCHY.indexOf(currentUser.role);
-  const targetIdx = ROLE_HIERARCHY.indexOf(targetRole);
-  if (currentIdx < 0 || targetIdx < 0) return false;
+  const targetIdx = ROLE_HIERARCHY.indexOf(targetUserRole);
+  const newIdx = ROLE_HIERARCHY.indexOf(newRole);
+  if (currentIdx < 0 || targetIdx < 0 || newIdx < 0) return false;
 
-  return currentIdx < targetIdx;
+  if (newIdx >= targetIdx) return false;
+
+  return newIdx > currentIdx || currentUser.role === 'platform_admin';
+}
+
+export function canDemoteRole(currentUser: User | null, targetUserRole: UserRole, newRole: UserRole): boolean {
+  if (!currentUser) return false;
+  if (currentUser.role !== 'platform_admin' && currentUser.role !== 'gym_admin') return false;
+
+  const currentIdx = ROLE_HIERARCHY.indexOf(currentUser.role);
+  const targetIdx = ROLE_HIERARCHY.indexOf(targetUserRole);
+  const newIdx = ROLE_HIERARCHY.indexOf(newRole);
+  if (currentIdx < 0 || targetIdx < 0 || newIdx < 0) return false;
+
+  if (newIdx <= targetIdx) return false;
+
+  return targetIdx > currentIdx || currentUser.role === 'platform_admin';
+}
+
+export function canChangeRole(currentUser: User | null, targetUserRole: UserRole, newRole: UserRole): boolean {
+  if (!currentUser) return false;
+  if (targetUserRole === newRole) return false;
+
+  return canPromoteRole(currentUser, targetUserRole, newRole) || canDemoteRole(currentUser, targetUserRole, newRole);
 }
 
 export function getRoleHighlight(
   currentUser: User | null,
-  targetRole: UserRole,
+  targetUserRole: UserRole,
+  candidateRole: UserRole,
 ): 'promote' | 'demote' | 'current' | 'none' {
   if (!currentUser) return 'none';
-  if (currentUser.role === targetRole) return 'current';
+  if (targetUserRole === candidateRole) return 'current';
 
-  const currentIdx = ROLE_HIERARCHY.indexOf(currentUser.role);
-  const targetIdx = ROLE_HIERARCHY.indexOf(targetRole);
-  if (currentIdx < 0 || targetIdx < 0) return 'none';
+  if (canPromoteRole(currentUser, targetUserRole, candidateRole)) return 'promote';
+  if (canDemoteRole(currentUser, targetUserRole, candidateRole)) return 'demote';
 
-  if (!canChangeRole(currentUser, targetRole)) return 'none';
-
-  return targetIdx < currentIdx ? 'promote' : 'demote';
+  return 'none';
 }
 
 export function canEditRoute(

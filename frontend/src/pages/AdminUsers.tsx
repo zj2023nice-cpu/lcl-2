@@ -264,6 +264,59 @@ export default function AdminUsers() {
         </Card>
       </div>
 
+      <Card className="p-5">
+        <div className="flex items-center justify-between mb-4">
+          <div>
+            <h3 className="font-semibold text-white flex items-center gap-2">
+              <Shield size={18} className="text-climbing-orange-400" />
+              角色权限高亮演示
+            </h3>
+            <p className="text-xs text-rock-light-500 mt-1">
+              假设某目标用户当前角色为「认证攀岩者」，以下是当前登录用户（{authUser ? roleLabels[authUser.role] : '未登录'}）对其可执行的角色变更：
+            </p>
+          </div>
+          <div className="flex items-center gap-4 text-xs">
+            <span className="flex items-center gap-1.5">
+              <span className="w-2 h-2 rounded-full bg-green-400" />
+              <span className="text-rock-light-400">可提升</span>
+            </span>
+            <span className="flex items-center gap-1.5">
+              <span className="w-2 h-2 rounded-full bg-white/50" />
+              <span className="text-rock-light-400">当前</span>
+            </span>
+            <span className="flex items-center gap-1.5">
+              <span className="w-2 h-2 rounded-full bg-yellow-400" />
+              <span className="text-rock-light-400">可降低</span>
+            </span>
+            <span className="flex items-center gap-1.5">
+              <span className="w-2 h-2 rounded-full bg-rock-light-600 opacity-50" />
+              <span className="text-rock-light-400">无权限</span>
+            </span>
+          </div>
+        </div>
+        <div className="flex flex-wrap items-center gap-3">
+          {roleChangeOptions.map((opt) => {
+            const highlight = getRoleHighlight(authUser, 'verified_climber', opt.value);
+            return (
+              <div key={opt.value} className="flex flex-col items-center gap-2">
+                <RoleTag role={opt.value} highlight={highlight} size="md" />
+                <span className={
+                  highlight === 'promote' ? 'text-[10px] text-green-400 font-medium' :
+                  highlight === 'demote' ? 'text-[10px] text-yellow-400 font-medium' :
+                  highlight === 'current' ? 'text-[10px] text-white/60 font-medium' :
+                  'text-[10px] text-rock-light-600'
+                }>
+                  {highlight === 'promote' ? '⬆ 可提升' :
+                   highlight === 'demote' ? '⬇ 可降低' :
+                   highlight === 'current' ? '— 当前' :
+                   '✕ 无权限'}
+                </span>
+              </div>
+            );
+          })}
+        </div>
+      </Card>
+
       <Card className="p-1">
         <div className="flex">
           {tabs.map((tab) => {
@@ -387,10 +440,7 @@ export default function AdminUsers() {
                         </div>
                       </td>
                       <td className="px-5 py-4">
-                        <RoleTag
-                          role={user.role}
-                          highlight={getRoleHighlight(authUser, user.role)}
-                        />
+                        <RoleTag role={user.role} highlight="current" />
                       </td>
                       <td className="px-5 py-4">
                         <span
@@ -434,15 +484,29 @@ export default function AdminUsers() {
                               </Button>
                             </>
                           )}
-                          <select
-                            value={user.role}
-                            onChange={(e) => handleChangeRole(user.id, e.target.value as UserRole)}
-                            className="bg-rock-dark-900 border border-rock-dark-700 rounded-lg px-2 py-1.5 text-white text-xs focus:outline-none focus:border-climbing-orange-500"
-                          >
-                            {roleChangeOptions.map((opt) => (
-                              <option key={opt.value} value={opt.value}>{opt.label}</option>
-                            ))}
-                          </select>
+                          <div className="flex flex-wrap gap-1.5 max-w-xs">
+                            {roleChangeOptions.map((opt) => {
+                              const highlight = getRoleHighlight(authUser, user.role, opt.value);
+                              const disabled = highlight === 'none';
+                              return (
+                                <button
+                                  key={opt.value}
+                                  type="button"
+                                  disabled={disabled}
+                                  onClick={() => !disabled && handleChangeRole(user.id, opt.value)}
+                                  className={disabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer hover:scale-105 transition-transform'}
+                                  title={
+                                    highlight === 'promote' ? '可提升到此角色' :
+                                    highlight === 'demote' ? '可降低到此角色' :
+                                    highlight === 'current' ? '当前角色' :
+                                    '无权限修改到此角色'
+                                  }
+                                >
+                                  <RoleTag role={opt.value} highlight={highlight} size="sm" />
+                                </button>
+                              );
+                            })}
+                          </div>
                           <button className="p-1.5 hover:bg-rock-dark-700 rounded-lg transition-colors">
                             <MoreVertical size={16} className="text-rock-light-500" />
                           </button>
