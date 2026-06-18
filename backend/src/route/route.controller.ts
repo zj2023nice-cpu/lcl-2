@@ -8,11 +8,15 @@ import {
   Body,
   Param,
   Query,
+  Req,
+  Res,
   UseGuards,
   ParseIntPipe,
   NotFoundException,
 } from '@nestjs/common';
+import { Request, Response } from 'express';
 import { RouteService } from './route.service';
+import { RouteShareService } from './route-share.service';
 import { CreateRouteDto } from './dto/create-route.dto';
 import { UpdateRouteDto } from './dto/update-route.dto';
 import { UpdateRouteStatusDto } from './dto/update-route-status.dto';
@@ -26,7 +30,10 @@ import { RouteType, RouteStatus } from '../entities/route.entity';
 @Controller()
 @UseGuards(JwtAuthGuard, RolesGuard)
 export class RouteController {
-  constructor(private readonly routeService: RouteService) {}
+  constructor(
+    private readonly routeService: RouteService,
+    private readonly routeShareService: RouteShareService,
+  ) {}
 
   @Get('walls/:wallId/routes')
   findAllByWall(
@@ -91,5 +98,35 @@ export class RouteController {
   ) {
     await this.routeService.checkCanEditRoute(id, user);
     return this.routeService.updateStatus(id, updateRouteStatusDto.status);
+  }
+
+  @Get('routes/:id/share-image')
+  async getShareImage(
+    @Param('id', ParseIntPipe) id: number,
+    @Req() req: Request,
+    @Res() res: Response,
+  ) {
+    const protocol = req.protocol || 'http';
+    const host = req.get('host') || 'localhost:3000';
+    const baseUrl = `${protocol}://${host}`;
+
+    const result = await this.routeShareService.generateShareImage(id, baseUrl);
+
+    res.setHeader('Content-Type', result.mimeType);
+    res.setHeader('Content-Length', result.imageBuffer.length);
+    res.setHeader('Cache-Control', 'public, max-age=3600');
+    res.send(result.imageBuffer);
+  }
+
+  @Get('routes/:id/share-metadata')
+  async getShareMetadata(
+    @Param('id', ParseIntPipe) id: number,
+    @Req() req: Request,
+  ) {
+    const protocol = req.protocol || 'http';
+    const host = req.get('host') || 'localhost:3000';
+    const baseUrl = `${protocol}://${host}`;
+
+    return this.routeShareService.getShareMetadata(id, baseUrl);
   }
 }
