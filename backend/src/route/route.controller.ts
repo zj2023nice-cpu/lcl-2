@@ -17,12 +17,15 @@ import {
 import { Request, Response } from 'express';
 import { RouteService } from './route.service';
 import { RouteShareService } from './route-share.service';
+import { RouteVersionService } from './route-version.service';
 import { CreateRouteDto } from './dto/create-route.dto';
 import { UpdateRouteDto } from './dto/update-route.dto';
 import { UpdateRouteStatusDto } from './dto/update-route-status.dto';
 import { BatchUpdateRouteStatusDto } from './dto/batch-update-route-status.dto';
 import { ArchiveRouteDto } from './dto/archive-route.dto';
 import { QueryArchivedRoutesDto } from './dto/query-archived-routes.dto';
+import { CompareVersionsDto } from './dto/compare-versions.dto';
+import { RollbackVersionDto } from './dto/rollback-version.dto';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { RolesGuard } from '../common/guards/roles.guard';
 import { Roles } from '../common/decorators/roles.decorator';
@@ -36,6 +39,7 @@ export class RouteController {
   constructor(
     private readonly routeService: RouteService,
     private readonly routeShareService: RouteShareService,
+    private readonly routeVersionService: RouteVersionService,
   ) {}
 
   @Get('walls/:wallId/routes')
@@ -102,8 +106,9 @@ export class RouteController {
   create(
     @Param('wallId', ParseIntPipe) wallId: number,
     @Body() createRouteDto: CreateRouteDto,
+    @CurrentUser() user: { id: number },
   ) {
-    return this.routeService.create(wallId, createRouteDto);
+    return this.routeService.create(wallId, createRouteDto, user.id);
   }
 
   @Put('routes/:id')
@@ -114,7 +119,7 @@ export class RouteController {
     @CurrentUser() user: { id: number; role: UserRole; gym_id?: number },
   ) {
     await this.routeService.checkCanEditRoute(id, user);
-    return this.routeService.update(id, updateRouteDto);
+    return this.routeService.update(id, updateRouteDto, user.id);
   }
 
   @Delete('routes/:id')
@@ -135,7 +140,7 @@ export class RouteController {
     @CurrentUser() user: { id: number; role: UserRole; gym_id?: number },
   ) {
     await this.routeService.checkCanEditRoute(id, user);
-    return this.routeService.updateStatus(id, updateRouteStatusDto.status);
+    return this.routeService.updateStatus(id, updateRouteStatusDto.status, user.id);
   }
 
   @Get('routes/:id/share-image')
@@ -208,5 +213,58 @@ export class RouteController {
     @CurrentUser() user: { id: number; role: UserRole; gym_id?: number },
   ) {
     return this.routeService.findArchived(query, user);
+  }
+
+  @Get('routes/:id/versions')
+  @Roles(UserRole.GYM_ADMIN, UserRole.SETTER, UserRole.PLATFORM_ADMIN)
+  async getVersions(
+    @Param('id', ParseIntPipe) id: number,
+    @CurrentUser() user: { id: number; role: UserRole; gym_id?: number },
+  ) {
+    await this.routeVersionService.checkCanEditRoute(id, user);
+    return this.routeVersionService.getVersions(id);
+  }
+
+  @Get('routes/:id/versions/:versionId')
+  @Roles(UserRole.GYM_ADMIN, UserRole.SETTER, UserRole.PLATFORM_ADMIN)
+  async getVersion(
+    @Param('id', ParseIntPipe) id: number,
+    @Param('versionId', ParseIntPipe) versionId: number,
+    @CurrentUser() user: { id: number; role: UserRole; gym_id?: number },
+  ) {
+    await this.routeVersionService.checkCanEditRoute(id, user);
+    return this.routeVersionService.getVersion(id, versionId);
+  }
+
+  @Post('routes/:id/versions/compare')
+  @Roles(UserRole.GYM_ADMIN, UserRole.SETTER, UserRole.PLATFORM_ADMIN)
+  async compareVersions(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() compareVersionsDto: CompareVersionsDto,
+    @CurrentUser() user: { id: number; role: UserRole; gym_id?: number },
+  ) {
+    await this.routeVersionService.checkCanEditRoute(id, user);
+    return this.routeVersionService.compareVersions(
+      id,
+      compareVersionsDto.from_version_id,
+      compareVersionsDto.to_version_id,
+    );
+  }
+
+  @Post('routes/:id/versions/:versionId/rollback')
+  @Roles(UserRole.GYM_ADMIN, UserRole.SETTER, UserRole.PLATFORM_ADMIN)
+  async rollbackToVersion(
+    @Param('id', ParseIntPipe) id: number,
+    @Param('versionId', ParseIntPipe) versionId: number,
+    @Body() rollbackVersionDto: RollbackVersionDto,
+    @CurrentUser() user: { id: number; role: UserRole; gym_id?: number },
+  ) {
+    await this.routeVersionService.checkCanEditRoute(id, user);
+    return this.routeVersionService.rollbackToVersion(
+      id,
+      versionId,
+      user.id,
+      rollbackVersionDto.reason,
+    );
   }
 }

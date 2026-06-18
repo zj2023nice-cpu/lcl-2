@@ -5,6 +5,7 @@ import { Route, RouteType, RouteStatus } from '../entities/route.entity';
 import { User, UserRole } from '../entities/user.entity';
 import { Wall } from '../entities/wall.entity';
 import { OperationLog } from '../entities/operation-log.entity';
+import { RouteVersionService } from './route-version.service';
 import { CreateRouteDto } from './dto/create-route.dto';
 import { UpdateRouteDto } from './dto/update-route.dto';
 import { QueryArchivedRoutesDto } from './dto/query-archived-routes.dto';
@@ -53,14 +54,24 @@ export class RouteService {
     @InjectRepository(OperationLog)
     private operationLogRepository: Repository<OperationLog>,
     private dataSource: DataSource,
+    private routeVersionService: RouteVersionService,
   ) {}
 
-  create(wallId: number, createRouteDto: CreateRouteDto): Promise<Route> {
+  async create(wallId: number, createRouteDto: CreateRouteDto, userId?: number): Promise<Route> {
     const route = this.routeRepository.create({
       ...createRouteDto,
       wall_id: wallId,
     });
-    return this.routeRepository.save(route);
+    const savedRoute = await this.routeRepository.save(route);
+    try {
+      await this.routeVersionService.createSnapshot(savedRoute.id, {
+        userId,
+        changeDescription: '线路创建',
+      });
+    } catch {
+      // 版本创建失败不应影响主操作
+    }
+    return savedRoute;
   }
 
   findAllByWall(
@@ -117,22 +128,38 @@ export class RouteService {
     return route;
   }
 
-  async update(id: number, updateRouteDto: UpdateRouteDto): Promise<Route> {
+  async update(id: number, updateRouteDto: UpdateRouteDto, userId?: number): Promise<Route> {
     const route = await this.findOne(id);
     if (!route) {
       throw new NotFoundException(`Route with id ${id} not found`);
     }
     Object.assign(route, updateRouteDto);
-    return this.routeRepository.save(route);
+    const savedRoute = await this.routeRepository.save(route);
+    try {
+      await this.routeVersionService.createSnapshot(id, {
+        userId,
+      });
+    } catch {
+      // 版本创建失败不应影响主操作
+    }
+    return savedRoute;
   }
 
-  async updateStatus(id: number, status: RouteStatus): Promise<Route> {
+  async updateStatus(id: number, status: RouteStatus, userId?: number): Promise<Route> {
     const route = await this.findOne(id);
     if (!route) {
       throw new NotFoundException(`Route with id ${id} not found`);
     }
     route.status = status;
-    return this.routeRepository.save(route);
+    const savedRoute = await this.routeRepository.save(route);
+    try {
+      await this.routeVersionService.createSnapshot(id, {
+        userId,
+      });
+    } catch {
+      // 版本创建失败不应影响主操作
+    }
+    return savedRoute;
   }
 
   async remove(id: number): Promise<void> {
@@ -371,6 +398,7 @@ export class RouteService {
     await queryRunner.startTransaction();
 
     const failures: BatchStatusFailure[] = [];
+    const updatedRouteIds: number[] = [];
 
     try {
       for (const route of routes) {
@@ -393,6 +421,7 @@ export class RouteService {
             { id: route.id },
             { status: dto.status },
           );
+          updatedRouteIds.push(route.id);
         } catch (err: any) {
           failures.push({
             route_id: route.id,
@@ -414,6 +443,17 @@ export class RouteService {
         result.success = true;
         result.success_count = routes.length - skipped;
         result.failure_count = 0;
+
+        for (const routeId of updatedRouteIds) {
+          try {
+            await this.routeVersionService.createSnapshot(routeId, {
+              userId: user.id,
+              changeDescription: '批量更新状态',
+            });
+          } catch {
+            // 版本创建失败不应影响主操作
+          }
+        }
       }
     } catch (error: any) {
       try {

@@ -22,6 +22,7 @@ import { CsvHeaderMap } from './dto/batch-import-hold.dto';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { RolesGuard } from '../common/guards/roles.guard';
 import { Roles } from '../common/decorators/roles.decorator';
+import { CurrentUser } from '../common/decorators/current-user.decorator';
 import { UserRole } from '../entities/user.entity';
 
 const CSV_MAX_SIZE = 1 * 1024 * 1024;
@@ -55,8 +56,9 @@ export class HoldController {
   batchCreate(
     @Param('routeId', ParseIntPipe) routeId: number,
     @Body() batchCreateHoldDto: BatchCreateHoldDto,
+    @CurrentUser() user: { id: number },
   ) {
-    return this.holdService.batchCreate(routeId, batchCreateHoldDto.holds);
+    return this.holdService.batchCreate(routeId, batchCreateHoldDto.holds, user.id);
   }
 
   @Post('routes/:routeId/holds/import')
@@ -70,6 +72,7 @@ export class HoldController {
     @Param('routeId', ParseIntPipe) routeId: number,
     @UploadedFile() file: Express.Multer.File,
     @Body() body: any,
+    @CurrentUser() user: { id: number },
   ) {
     if (!file) {
       throw new BadRequestException('请上传 CSV 文件');
@@ -87,7 +90,7 @@ export class HoldController {
     }
 
     const csvContent = file.buffer.toString('utf-8');
-    return this.holdService.batchImportFromCsv(routeId, csvContent, headerMap);
+    return this.holdService.batchImportFromCsv(routeId, csvContent, headerMap, user.id);
   }
 
   @Put('holds/:id')
@@ -95,13 +98,14 @@ export class HoldController {
   update(
     @Param('id', ParseIntPipe) id: number,
     @Body() updateHoldDto: UpdateHoldDto,
+    @CurrentUser() user: { id: number },
   ) {
-    return this.holdService.update(id, updateHoldDto);
+    return this.holdService.update(id, updateHoldDto, user.id);
   }
 
   @Delete('holds/:id')
   @Roles(UserRole.SETTER)
-  remove(@Param('id', ParseIntPipe) id: number) {
-    return this.holdService.remove(id);
+  remove(@Param('id', ParseIntPipe) id: number, @CurrentUser() user: { id: number }) {
+    return this.holdService.remove(id, user.id);
   }
 }
