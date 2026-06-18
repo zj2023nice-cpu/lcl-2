@@ -50,6 +50,7 @@ export function useClimbTimer(options: UseClimbTimerOptions = {}) {
   const rafRef = useRef<number | null>(null);
   const startedAtRef = useRef<number>(0);
   const lastSegmentEndTimeRef = useRef<number>(0);
+  const perfToAbsOffsetRef = useRef<number>(0);
 
   const updateElapsed = useCallback(() => {
     if (state !== 'running') return;
@@ -74,12 +75,18 @@ export function useClimbTimer(options: UseClimbTimerOptions = {}) {
   }, [state, updateElapsed]);
 
   const start = useCallback(() => {
-    if (state !== 'idle') return;
-    const now = performance.now();
-    startTimeRef.current = now;
+    if (state !== 'idle') {
+      throw new Error(
+        `[ClimbTimer] Cannot start timer from state '${state}'. Expected state 'idle'.`
+      );
+    }
+    const nowPerf = performance.now();
+    const nowAbs = Date.now();
+    perfToAbsOffsetRef.current = nowAbs - nowPerf;
+    startTimeRef.current = nowPerf;
     accumulatedTimeRef.current = 0;
-    segmentStartTimeRef.current = now;
-    startedAtRef.current = Date.now();
+    segmentStartTimeRef.current = nowPerf;
+    startedAtRef.current = nowAbs;
     lastSegmentEndTimeRef.current = 0;
     setSegments([]);
     setRestIntervals([]);
@@ -89,9 +96,14 @@ export function useClimbTimer(options: UseClimbTimerOptions = {}) {
   }, [state]);
 
   const pause = useCallback(() => {
-    if (state !== 'running') return;
+    if (state !== 'running') {
+      throw new Error(
+        `[ClimbTimer] Cannot pause timer from state '${state}'. Expected state 'running'.`
+      );
+    }
     const now = performance.now();
     accumulatedTimeRef.current += now - startTimeRef.current;
+    startTimeRef.current = now;
     if (rafRef.current) {
       cancelAnimationFrame(rafRef.current);
       rafRef.current = null;
@@ -100,19 +112,30 @@ export function useClimbTimer(options: UseClimbTimerOptions = {}) {
   }, [state]);
 
   const resume = useCallback(() => {
-    if (state !== 'paused') return;
+    if (state !== 'paused') {
+      throw new Error(
+        `[ClimbTimer] Cannot resume timer from state '${state}'. Expected state 'paused'.`
+      );
+    }
     startTimeRef.current = performance.now();
     setState('running');
   }, [state]);
 
   const addSegment = useCallback(
     (route: Route | number | RouteInfo) => {
-      if (state !== 'running') return null;
+      if (state !== 'running') {
+        throw new Error(
+          `[ClimbTimer] Cannot add segment from state '${state}'. Expected state 'running'.`
+        );
+      }
 
-      const now = performance.now();
+      const nowPerf = performance.now();
+      const nowAbs = nowPerf + perfToAbsOffsetRef.current;
       const routeInfo = extractRouteInfo(route);
-      const segmentStart = segmentStartTimeRef.current;
-      const segmentDuration = now - segmentStart;
+      const segmentStartPerf = segmentStartTimeRef.current;
+      const segmentStartAbs = segmentStartPerf + perfToAbsOffsetRef.current;
+      const segmentDuration = nowPerf - segmentStartPerf;
+      const lastSegmentEndPerf = lastSegmentEndTimeRef.current;
 
       const newSegment: TimerSegment = {
         id: generateId(),
@@ -120,26 +143,26 @@ export function useClimbTimer(options: UseClimbTimerOptions = {}) {
         routeName: routeInfo.routeName,
         routeGrade: routeInfo.routeGrade,
         routeColor: routeInfo.routeColor,
-        startTime: segmentStart,
-        endTime: now,
+        startTime: segmentStartAbs,
+        endTime: nowAbs,
         duration: segmentDuration,
         index: segments.length,
       };
 
-      if (lastSegmentEndTimeRef.current > 0) {
+      if (lastSegmentEndPerf > 0) {
         const restInterval: RestInterval = {
           id: generateId(),
           previousSegmentId: segments[segments.length - 1].id,
           nextSegmentId: newSegment.id,
-          startTime: lastSegmentEndTimeRef.current,
-          endTime: segmentStart,
-          duration: segmentStart - lastSegmentEndTimeRef.current,
+          startTime: lastSegmentEndPerf + perfToAbsOffsetRef.current,
+          endTime: segmentStartAbs,
+          duration: segmentStartPerf - lastSegmentEndPerf,
         };
         setRestIntervals((prev) => [...prev, restInterval]);
       }
 
-      lastSegmentEndTimeRef.current = now;
-      segmentStartTimeRef.current = now;
+      lastSegmentEndTimeRef.current = nowPerf;
+      segmentStartTimeRef.current = nowPerf;
 
       const updatedSegments = [...segments, newSegment];
       setSegments(updatedSegments);
@@ -175,7 +198,7 @@ export function useClimbTimer(options: UseClimbTimerOptions = {}) {
   );
 
   const buildResult = useCallback(
-    (endTime: number): TimerResult => {
+    (endTime: number, endedAtAbs: number): TimerResult => {
       const totalDuration = accumulatedTimeRef.current + (endTime - startTimeRef.current);
       const totalClimbTime = segments.reduce((sum, s) => sum + s.duration, 0);
       const totalRestTime = restIntervals.reduce((sum, r) => sum + r.duration, 0);
@@ -188,25 +211,36 @@ export function useClimbTimer(options: UseClimbTimerOptions = {}) {
         restIntervals: [...restIntervals],
         restStats: calculateRestStats(restIntervals),
         startedAt: startedAtRef.current,
-        endedAt: Date.now(),
+        endedAt: endedAtAbs,
       };
     },
     [segments, restIntervals, calculateRestStats]
   );
 
-  const end = useCallback((): TimerResult | null => {
-    if (state !== 'running' && state !== 'paused') return null;
+  const end = useCallback((): TimerResult => {
+    if (state !== 'running' && state !== 'paused') {
+      throw new Error(
+        `[ClimbTimer] Cannot end timer from state '${state}'. Expected state 'running' or 'paused'.`
+      );
+    }
 
     const now = performance.now();
+    const nowAbs = now + perfToAbsOffsetRef.current;
+    let buildEndTime: number;
+
     if (state === 'running') {
       accumulatedTimeRef.current += now - startTimeRef.current;
+      startTimeRef.current = now;
+      buildEndTime = now;
       if (rafRef.current) {
         cancelAnimationFrame(rafRef.current);
         rafRef.current = null;
       }
+    } else {
+      buildEndTime = startTimeRef.current;
     }
 
-    const result = buildResult(now);
+    const result = buildResult(buildEndTime, nowAbs);
     setState('finished');
     setElapsed(accumulatedTimeRef.current);
     onFinish?.(result);
@@ -224,6 +258,7 @@ export function useClimbTimer(options: UseClimbTimerOptions = {}) {
     segmentStartTimeRef.current = 0;
     startedAtRef.current = 0;
     lastSegmentEndTimeRef.current = 0;
+    perfToAbsOffsetRef.current = 0;
     setSegments([]);
     setRestIntervals([]);
     setElapsed(0);
