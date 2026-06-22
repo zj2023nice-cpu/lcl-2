@@ -2,7 +2,12 @@ import { useMemo } from 'react';
 import PrintRouteCanvas from './PrintRouteCanvas';
 import { PrintHeader, PrintFooter } from './PrintHeaderFooter';
 import type { PrintTemplateProps } from './types';
-import { formatDate } from './types';
+import {
+  formatDate,
+  FIRST_ASCENT_PAGE_CAPACITY,
+  SUBSEQUENT_ASCENT_PAGE_CAPACITY,
+  computeFullReportPageCount,
+} from './types';
 import type { RoutePoint } from '@/components/WallCanvas/WallCanvas';
 import { getGradeLabel, getGradeFullClass } from '@/lib/utils';
 import { Tag, User, Calendar, Award, TrendingUp, Clock, CheckCircle2 } from 'lucide-react';
@@ -66,174 +71,226 @@ export default function FullReportTemplate({
     return sorted[0]?.[0] || 'N/A';
   }, [votes]);
 
-  const displayedAscents = ascents.slice(0, 8);
+  const totalPages = computeFullReportPageCount(ascents);
 
-  return (
-    <div className="print-container">
-      <div className="print-page">
-        <PrintHeader
-          title={`${route.name} · 完整报告`}
-          subtitle={`${route.grade} · ${getGradeLabel(route.grade)} · ${routeTypeLabels[route.type]}`}
-          qrCodeUrl={qrCodeUrl}
-          gymName={gymName}
-        />
+  const ascentPages = useMemo(() => {
+    const result: {
+      pageNumber: number;
+      ascents: typeof ascents;
+      isFirst: boolean;
+      isLast: boolean;
+    }[] = [];
+    if (ascents.length === 0) {
+      result.push({ pageNumber: 2, ascents: [], isFirst: true, isLast: true });
+      return result;
+    }
 
-        <div className="print-content">
-          <div className="print-section">
-            <div className="print-route-diagram">
-              <PrintRouteCanvas
-                points={points}
-                color={route.color || '#ff6b35'}
-                width={650}
-                height={420}
-                showLabels={true}
-              />
-            </div>
-          </div>
+    let pageNumber = 2;
+    let remaining = [...ascents];
+    const firstBatch = remaining.splice(0, FIRST_ASCENT_PAGE_CAPACITY);
+    result.push({
+      pageNumber,
+      ascents: firstBatch,
+      isFirst: true,
+      isLast: remaining.length === 0,
+    });
+    pageNumber++;
 
-          <div className="print-section">
-            <div className="print-section-title">基本信息</div>
-            <div className="print-info-grid">
-              <div className="print-info-item">
-                <span className="print-info-label">线路名称</span>
-                <span className="print-info-value">{route.name}</span>
-              </div>
-              <div className="print-info-item">
-                <span className="print-info-label">难度等级</span>
-                <span className="print-info-value">{route.grade} · {getGradeLabel(route.grade)}</span>
-              </div>
-              <div className="print-info-item">
-                <span className="print-info-label">线路类型</span>
-                <span className="print-info-value">{routeTypeLabels[route.type]}</span>
-              </div>
-              <div className="print-info-item">
-                <span className="print-info-label">岩壁</span>
-                <span className="print-info-value">{wall?.name || '-'}</span>
-              </div>
-              <div className="print-info-item">
-                <span className="print-info-label">定线员</span>
-                <span className="print-info-value">{route.setterName || '未知'}</span>
-              </div>
-              <div className="print-info-item">
-                <span className="print-info-label">开放日期</span>
-                <span className="print-info-value">{formatDate(route.createdAt)}</span>
-              </div>
-            </div>
-          </div>
+    while (remaining.length > 0) {
+      const batch = remaining.splice(0, SUBSEQUENT_ASCENT_PAGE_CAPACITY);
+      result.push({
+        pageNumber,
+        ascents: batch,
+        isFirst: false,
+        isLast: remaining.length === 0,
+      });
+      pageNumber++;
+    }
 
-          {route.tags && route.tags.length > 0 && (
-            <div className="print-section">
-              <div className="print-section-title">标签</div>
-              <div className="print-tags">
-                {route.tags.map((tagValue) => {
-                  const tag = tagOptions.find((t) => t.value === tagValue);
-                  return tag ? (
-                    <span key={tagValue} className="print-tag">{tag.label}</span>
-                  ) : null;
-                })}
-              </div>
-            </div>
-          )}
+    return result;
+  }, [ascents]);
 
-          <div className="print-section">
-            <div className="print-section-title">数据统计</div>
-            <div className="print-stats-grid">
-              <div className="print-stat-card">
-                <div className="print-stat-value">{completionStats.total}</div>
-                <div className="print-stat-label">总攀爬次数</div>
-              </div>
-              <div className="print-stat-card">
-                <div className="print-stat-value">{completionStats.rate}%</div>
-                <div className="print-stat-label">完攀率</div>
-              </div>
-              <div className="print-stat-card">
-                <div className="print-stat-value">{votes.length}</div>
-                <div className="print-stat-label">难度投票</div>
-              </div>
-            </div>
+  const renderOverviewPage = () => (
+    <div className="print-page">
+      <PrintHeader
+        title={`${route.name} · 完整报告`}
+        subtitle={`${route.grade} · ${getGradeLabel(route.grade)} · ${routeTypeLabels[route.type]}`}
+        qrCodeUrl={qrCodeUrl}
+        gymName={gymName}
+      />
+
+      <div className="print-content">
+        <div className="print-section">
+          <div className="print-route-diagram">
+            <PrintRouteCanvas
+              points={points}
+              color={route.color || '#ff6b35'}
+              width={650}
+              height={420}
+              showLabels={true}
+            />
           </div>
         </div>
 
-        <PrintFooter pageNumber={1} totalPages={2} gymName={gymName} />
-      </div>
-
-      <div className="print-page">
-        <PrintHeader
-          title={`${route.name} · 攀爬记录`}
-          subtitle={`共 ${ascents.length} 条记录`}
-          qrCodeUrl={qrCodeUrl}
-          gymName={gymName}
-        />
-
-        <div className="print-content">
-          <div className="print-section">
-            <div className="print-section-title">难度共识</div>
-            <div className="print-info-grid">
-              <div className="print-info-item">
-              <span className="print-info-label">定线定级</span>
+        <div className="print-section">
+          <div className="print-section-title">基本信息</div>
+          <div className="print-info-grid">
+            <div className="print-info-item">
+              <span className="print-info-label">线路名称</span>
+              <span className="print-info-value">{route.name}</span>
+            </div>
+            <div className="print-info-item">
+              <span className="print-info-label">难度等级</span>
               <span className="print-info-value">{route.grade} · {getGradeLabel(route.grade)}</span>
             </div>
             <div className="print-info-item">
-              <span className="print-info-label">社区共识</span>
-              <span className="print-info-value">
-                {consensusGrade !== 'N/A' 
-                  ? `${consensusGrade} · ${getGradeLabel(consensusGrade)}`
-                  : '暂无'
-                }
-              </span>
+              <span className="print-info-label">线路类型</span>
+              <span className="print-info-value">{routeTypeLabels[route.type]}</span>
             </div>
+            <div className="print-info-item">
+              <span className="print-info-label">岩壁</span>
+              <span className="print-info-value">{wall?.name || '-'}</span>
+            </div>
+            <div className="print-info-item">
+              <span className="print-info-label">定线员</span>
+              <span className="print-info-value">{route.setterName || '未知'}</span>
+            </div>
+            <div className="print-info-item">
+              <span className="print-info-label">开放日期</span>
+              <span className="print-info-value">{formatDate(route.createdAt)}</span>
             </div>
           </div>
+        </div>
 
+        {route.tags && route.tags.length > 0 && (
           <div className="print-section">
-            <div className="print-section-title">最近攀爬记录</div>
-            {displayedAscents.length === 0 ? (
-              <p style={{ textAlign: 'center', padding: '20px', color: '#9ca3af', fontSize: '10pt' }}>
+            <div className="print-section-title">标签</div>
+            <div className="print-tags">
+              {route.tags.map((tagValue) => {
+                const tag = tagOptions.find((t) => t.value === tagValue);
+                return tag ? (
+                  <span key={tagValue} className="print-tag">{tag.label}</span>
+                ) : null;
+              })}
+            </div>
+          </div>
+        )}
+
+        <div className="print-section">
+          <div className="print-section-title">数据统计</div>
+          <div className="print-stats-grid">
+            <div className="print-stat-card">
+              <div className="print-stat-value">{completionStats.total}</div>
+              <div className="print-stat-label">总攀爬次数</div>
+            </div>
+            <div className="print-stat-card">
+              <div className="print-stat-value">{completionStats.rate}%</div>
+              <div className="print-stat-label">完攀率</div>
+            </div>
+            <div className="print-stat-card">
+              <div className="print-stat-value">{votes.length}</div>
+              <div className="print-stat-label">难度投票</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <PrintFooter pageNumber={1} totalPages={totalPages} gymName={gymName} />
+    </div>
+  );
+
+  const renderAscentPage = (page: typeof ascentPages[0]) => (
+    <div className="print-page">
+      <PrintHeader
+        title={page.isFirst ? `${route.name} · 攀爬记录` : `${route.name} · 攀爬记录（续）`}
+        subtitle={`共 ${ascents.length} 条记录`}
+        qrCodeUrl={qrCodeUrl}
+        gymName={gymName}
+      />
+
+      <div className="print-content">
+        {page.isFirst && (
+          <>
+            <div className="print-section">
+              <div className="print-section-title">难度共识</div>
+              <div className="print-info-grid">
+                <div className="print-info-item">
+                  <span className="print-info-label">定线定级</span>
+                  <span className="print-info-value">{route.grade} · {getGradeLabel(route.grade)}</span>
+                </div>
+                <div className="print-info-item">
+                  <span className="print-info-label">社区共识</span>
+                  <span className="print-info-value">
+                    {consensusGrade !== 'N/A'
+                      ? `${consensusGrade} · ${getGradeLabel(consensusGrade)}`
+                      : '暂无'
+                    }
+                  </span>
+                </div>
+              </div>
+            </div>
+          </>
+        )}
+
+        <div className="print-section">
+          <div className="print-section-title">
+            {page.isFirst ? '最近攀爬记录' : '攀爬记录（续）'}
+          </div>
+          {page.ascents.length === 0 ? (
+            <p style={{ textAlign: 'center', padding: '20px', color: '#9ca3af', fontSize: '10pt' }}>
               暂无攀爬记录
             </p>
-            ) : (
-              <div className="print-ascent-list">
-                {displayedAscents.map((ascent) => (
-                  <div key={ascent.id} className="print-ascent-item">
-                    <div className="print-ascent-user">
-                      <div className="print-ascent-avatar">
-                        {(ascent.userName || 'U').charAt(0).toUpperCase()}
-                      </div>
-                      <div className="print-ascent-info">
-                        <span className="print-ascent-name">
-                          {ascent.userName || `用户${ascent.userId}`}
-                        </span>
-                        <span className="print-ascent-date">
-                          {new Date(ascent.createdAt).toLocaleDateString('zh-CN', {
-                            year: 'numeric',
-                            month: 'short',
-                            day: 'numeric',
-                          })}
-                          · 尝试 {ascent.attempts} 次
-                        </span>
-                      </div>
+          ) : (
+            <div className="print-ascent-list">
+              {page.ascents.map((ascent) => (
+                <div key={ascent.id} className="print-ascent-item">
+                  <div className="print-ascent-user">
+                    <div className="print-ascent-avatar">
+                      {(ascent.userName || 'U').charAt(0).toUpperCase()}
                     </div>
-                    <span className={`print-ascent-type print-ascent-type-${ascent.ascentType}`}>
-                      {ascentTypeLabels[ascent.ascentType]}
-                    </span>
+                    <div className="print-ascent-info">
+                      <span className="print-ascent-name">
+                        {ascent.userName || `用户${ascent.userId}`}
+                      </span>
+                      <span className="print-ascent-date">
+                        {new Date(ascent.createdAt).toLocaleDateString('zh-CN', {
+                          year: 'numeric',
+                          month: 'short',
+                          day: 'numeric',
+                        })}
+                        · 尝试 {ascent.attempts} 次
+                      </span>
+                    </div>
                   </div>
-                ))}
-              </div>
-            )}
-          </div>
-
-          {route.description && (
-            <div className="print-section">
-              <div className="print-section-title">线路描述</div>
-              <p style={{ fontSize: '10pt', color: '#4b5563', lineHeight: '1.6' }}>
-                {route.description}
-              </p>
+                  <span className={`print-ascent-type print-ascent-type-${ascent.ascentType}`}>
+                    {ascentTypeLabels[ascent.ascentType]}
+                  </span>
+                </div>
+              ))}
             </div>
           )}
         </div>
 
-        <PrintFooter pageNumber={2} totalPages={2} gymName={gymName} />
+        {page.isLast && route.description && (
+          <div className="print-section">
+            <div className="print-section-title">线路描述</div>
+            <p style={{ fontSize: '10pt', color: '#4b5563', lineHeight: '1.6' }}>
+              {route.description}
+            </p>
+          </div>
+        )}
       </div>
+
+      <PrintFooter pageNumber={page.pageNumber} totalPages={totalPages} gymName={gymName} />
+    </div>
+  );
+
+  return (
+    <div className="print-container">
+      {renderOverviewPage()}
+      {ascentPages.map((page) => (
+        <div key={page.pageNumber}>{renderAscentPage(page)}</div>
+      ))}
     </div>
   );
 }

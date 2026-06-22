@@ -34,6 +34,9 @@ export const PRINT_PADDING_MM = 15;
 export const PRINT_CONTENT_WIDTH_MM = A4_WIDTH_MM - PRINT_PADDING_MM * 2;
 export const PRINT_CONTENT_HEIGHT_MM = A4_HEIGHT_MM - PRINT_PADDING_MM * 2;
 
+export const FIRST_ASCENT_PAGE_CAPACITY = 6;
+export const SUBSEQUENT_ASCENT_PAGE_CAPACITY = 10;
+
 export function formatDate(dateStr: string): string {
   const date = new Date(dateStr);
   return date.toLocaleDateString('zh-CN', {
@@ -47,6 +50,16 @@ export function getRouteShareUrl(routeId: number): string {
   return `${window.location.origin}/routes/${routeId}`;
 }
 
+export function computeFullReportPageCount(
+  ascents: { id: number }[] = []
+): number {
+  if (ascents.length <= FIRST_ASCENT_PAGE_CAPACITY) {
+    return 2;
+  }
+  const remaining = ascents.length - FIRST_ASCENT_PAGE_CAPACITY;
+  return 2 + Math.ceil(remaining / SUBSEQUENT_ASCENT_PAGE_CAPACITY);
+}
+
 export function estimatePageCount(
   templateType: PrintTemplateType,
   route: Route,
@@ -56,13 +69,8 @@ export function estimatePageCount(
   switch (templateType) {
     case 'route_only':
       return 1;
-    case 'full_report': {
-      let pages = 1;
-      if (ascents.length > 5) {
-        pages += Math.ceil((ascents.length - 5) / 10);
-      }
-      return Math.max(pages, 2);
-    }
+    case 'full_report':
+      return computeFullReportPageCount(ascents);
     case 'batch':
       return Math.ceil(allRoutes.length / 6);
     default:
