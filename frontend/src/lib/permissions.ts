@@ -8,6 +8,17 @@ const ROLE_HIERARCHY: UserRole[] = [
   'guest',
 ];
 
+const ADMIN_ROLES: UserRole[] = ['platform_admin', 'gym_admin'];
+
+export function isAdmin(user: User | null): boolean {
+  if (!user) return false;
+  return ADMIN_ROLES.includes(user.role);
+}
+
+export function canViewGymAnalytics(user: User | null): boolean {
+  return isAdmin(user);
+}
+
 export function canPromoteRole(currentUser: User | null, targetUserRole: UserRole, newRole: UserRole): boolean {
   if (!currentUser) return false;
   if (currentUser.role !== 'platform_admin' && currentUser.role !== 'gym_admin') return false;

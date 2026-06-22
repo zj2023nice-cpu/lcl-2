@@ -368,6 +368,25 @@ export class AnalyticsService {
     return labels[angle] || '未知角度';
   }
 
+  private getDayKey(date: Date): string {
+    return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+  }
+
+  private getWeekKey(date: Date): string {
+    const d = new Date(date);
+    const day = d.getDay() || 7;
+    d.setDate(d.getDate() - day + 1);
+    const weekStart = new Date(d);
+    weekStart.setHours(0, 0, 0, 0);
+    const month = String(weekStart.getMonth() + 1).padStart(2, '0');
+    const dayNum = String(weekStart.getDate()).padStart(2, '0');
+    return `${weekStart.getFullYear()}-${month}-${dayNum} 周`;
+  }
+
+  private getMonthKey(date: Date): string {
+    return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+  }
+
   async getRouteCompletionAnalysis(
     gymId: number,
     groupBy: 'difficulty' | 'wall_angle' | 'period',
@@ -468,19 +487,70 @@ export class AnalyticsService {
 
     const groupMap = new Map<string, CompletionGroupItem[]>();
 
-    for (const item of routeItems) {
-      let key: string;
-      if (groupBy === 'difficulty') {
-        key = this.getGradeCategory(item.grade);
-      } else if (groupBy === 'wall_angle') {
-        key = this.getWallAngleLabel(item.wall_angle as WallAngle | null);
-      } else {
-        key = '全部';
+    if (groupBy === 'period') {
+      const routeAscentDatesMap = new Map<number, Date[]>();
+      for (const ascent of ascents) {
+        if (!routeAscentDatesMap.has(ascent.route_id)) {
+          routeAscentDatesMap.set(ascent.route_id, []);
+        }
+        routeAscentDatesMap.get(ascent.route_id)!.push(ascent.created_at);
       }
-      if (!groupMap.has(key)) {
-        groupMap.set(key, []);
+
+      for (const item of routeItems) {
+        const dates = routeAscentDatesMap.get(item.route_id) || [];
+        const periodItemsMap = new Map<string, { attempts: number; successes: number; falls: number; positions: { x: number; y: number; intensity: number }[] }>();
+
+        for (const date of dates) {
+          const key = this.getMonthKey(date);
+          if (!periodItemsMap.has(key)) {
+            periodItemsMap.set(key, { attempts: 0, successes: 0, falls: 0, positions: [] });
+          }
+        }
+
+        const routeAscentsList = routeAscentMap.get(item.route_id) || [];
+        for (const ascent of routeAscentsList) {
+          const key = this.getMonthKey(ascent.created_at);
+          const stats = periodItemsMap.get(key)!;
+          stats.attempts += 1;
+          if (sentTypes.includes(ascent.ascent_type)) {
+            stats.successes += 1;
+          }
+          if (ascent.ascent_type === AscentType.FALL || ascent.ascent_type === AscentType.HIGH_POINT) {
+            stats.falls += 1;
+            stats.positions.push(...item.fall_positions);
+          }
+        }
+
+        for (const [key, stats] of periodItemsMap) {
+          const periodItem: CompletionGroupItem = {
+            ...item,
+            attempt_count: stats.attempts,
+            success_count: stats.successes,
+            fall_count: stats.falls,
+            completion_rate: stats.attempts > 0 ? Number(((stats.successes / stats.attempts) * 100).toFixed(1)) : 0,
+            fall_positions: stats.positions.length > 0
+              ? stats.positions.map(p => ({ ...p, intensity: Number((p.intensity * (stats.falls / Math.max(item.fall_count, 1))).toFixed(1)) }))
+              : [],
+          };
+          if (!groupMap.has(key)) {
+            groupMap.set(key, []);
+          }
+          groupMap.get(key)!.push(periodItem);
+        }
       }
-      groupMap.get(key)!.push(item);
+    } else {
+      for (const item of routeItems) {
+        let key: string;
+        if (groupBy === 'difficulty') {
+          key = this.getGradeCategory(item.grade);
+        } else {
+          key = this.getWallAngleLabel(item.wall_angle as WallAngle | null);
+        }
+        if (!groupMap.has(key)) {
+          groupMap.set(key, []);
+        }
+        groupMap.get(key)!.push(item);
+      }
     }
 
     const groups: CompletionGroup[] = [];
@@ -524,19 +594,22 @@ export class AnalyticsService {
         }
       }
     } else {
-      const items = groupMap.get('全部') || [];
-      const attemptCount = items.reduce((s, i) => s + i.attempt_count, 0);
-      const successCount = items.reduce((s, i) => s + i.success_count, 0);
-      const fallCount = items.reduce((s, i) => s + i.fall_count, 0);
-      groups.push({
-        key: '全部',
-        label: '全部线路',
-        attempt_count: attemptCount,
-        success_count: successCount,
-        fall_count: fallCount,
-        completion_rate: attemptCount > 0 ? Number(((successCount / attemptCount) * 100).toFixed(1)) : 0,
-        routes: items.sort((a, b) => b.attempt_count - a.attempt_count),
-      });
+      const sortedKeys = Array.from(groupMap.keys()).sort();
+      for (const key of sortedKeys) {
+        const items = groupMap.get(key)!;
+        const attemptCount = items.reduce((s, i) => s + i.attempt_count, 0);
+        const successCount = items.reduce((s, i) => s + i.success_count, 0);
+        const fallCount = items.reduce((s, i) => s + i.fall_count, 0);
+        groups.push({
+          key,
+          label: `${key} 月`,
+          attempt_count: attemptCount,
+          success_count: successCount,
+          fall_count: fallCount,
+          completion_rate: attemptCount > 0 ? Number(((successCount / attemptCount) * 100).toFixed(1)) : 0,
+          routes: items.sort((a, b) => b.attempt_count - a.attempt_count),
+        });
+      }
     }
 
     const monthlyMap = new Map<string, { attempt: number; success: number; fall: number }>();

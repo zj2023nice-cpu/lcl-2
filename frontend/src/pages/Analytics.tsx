@@ -33,6 +33,7 @@ import RouteCompletionDashboard from '@/components/RouteCompletionDashboard';
 import type { Ascent } from '@/types';
 import { ascentApi } from '@/utils/api';
 import { useAuthStore } from '@/store/auth';
+import { canViewGymAnalytics } from '@/lib/permissions';
 
 const gradeColors: Record<string, string> = {
   'V0': '#22C55E', 'V1': '#4ADE80', 'V2': '#84CC16',
@@ -68,6 +69,7 @@ const CustomTooltip = ({ active, payload, label }: { active?: boolean; payload?:
 
 export default function Analytics() {
   const { user } = useAuthStore();
+  const canViewCompletion = canViewGymAnalytics(user);
   const [activeTab, setActiveTab] = useState<'pyramid' | 'progress' | 'style' | 'completion'>('pyramid');
   const [ascents, setAscents] = useState<Ascent[]>([]);
   const [loading, setLoading] = useState(true);
@@ -230,12 +232,22 @@ export default function Analytics() {
     ];
   }, [ascents, completedAscents]);
 
-  const tabs = [
+  const allTabs = [
     { key: 'pyramid' as const, label: '完攀金字塔', icon: Trophy },
     { key: 'progress' as const, label: '进步曲线', icon: TrendingUp },
     { key: 'style' as const, label: '风格分析', icon: Activity },
-    { key: 'completion' as const, label: '完成率分析', icon: PieChartIcon },
+    { key: 'completion' as const, label: '完成率分析', icon: PieChartIcon, requireAdmin: true },
   ];
+
+  const tabs = useMemo(() => {
+    return allTabs.filter((t) => !t.requireAdmin || canViewCompletion);
+  }, [canViewCompletion]);
+
+  useEffect(() => {
+    if (!canViewCompletion && activeTab === 'completion') {
+      setActiveTab('pyramid');
+    }
+  }, [canViewCompletion, activeTab]);
 
   if (loading) {
     return (
@@ -559,7 +571,7 @@ export default function Analytics() {
         </Card>
       )}
 
-      {activeTab === 'completion' && (
+      {activeTab === 'completion' && canViewCompletion && (
         <RouteCompletionDashboard />
       )}
     </div>
