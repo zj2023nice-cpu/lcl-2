@@ -1,23 +1,28 @@
-import { useRef, useEffect, useState, useCallback } from 'react';
-import { Canvas, Rect, Line, Circle, Group, FabricObject, Gradient } from 'fabric';
+import { useRef, useEffect, useState, useCallback, useMemo } from 'react';
+import { Canvas, Rect, Line, Gradient, Group } from 'fabric';
 import { ZoomIn, ZoomOut, Maximize2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import WallCanvasToolbar, { ToolType } from './WallCanvasToolbar';
-import type { Route } from '@/types';
+import { createPluginManager } from './pluginManager';
+import { HoldDrawingPlugin } from './plugins/HoldDrawingPlugin';
+import { RouteDrawingPlugin } from './plugins/RouteDrawingPlugin';
+import { HitDetectionPlugin } from './plugins/HitDetectionPlugin';
+import { UndoRedoPlugin } from './plugins/UndoRedoPlugin';
+import { ZoomPanPlugin } from './plugins/ZoomPanPlugin';
+import { SerializationPlugin } from './plugins/SerializationPlugin';
+import { ZoomControlsPlugin, handleZoomIn, handleZoomOut, handleZoomReset } from './plugins/ZoomControlsPlugin';
+import type { CanvasState, CanvasContext, WallCanvasPlugin, RoutePoint, RouteWithPoints } from './types';
+export type { RoutePoint, RouteWithPoints } from './types';
 
-export interface RoutePoint {
-  x: number;
-  y: number;
-  type: 'start' | 'hold' | 'end';
-}
-
-export interface RouteWithPoints extends Omit<Route, 'holds'> {
-  points: RoutePoint[];
-}
-
-interface FabricObjectWithData extends FabricObject {
-  data?: Record<string, unknown>;
-}
+const defaultPlugins: WallCanvasPlugin[] = [
+  HoldDrawingPlugin,
+  RouteDrawingPlugin,
+  HitDetectionPlugin,
+  UndoRedoPlugin,
+  ZoomPanPlugin,
+  SerializationPlugin,
+  ZoomControlsPlugin,
+];
 
 interface WallCanvasProps {
   wallId?: number;
@@ -30,15 +35,8 @@ interface WallCanvasProps {
   wallWidth?: number;
   wallHeight?: number;
   className?: string;
+  plugins?: WallCanvasPlugin[];
 }
-
-const HOLD_RADIUS = 8;
-const START_COLOR = '#22C55E';
-const END_COLOR = '#EF4444';
-const HOLD_STROKE_COLOR = '#ffffff';
-const HOLD_STROKE_WIDTH = 2;
-const LINE_WIDTH = 3;
-const LINE_OPACITY = 0.8;
 
 export default function WallCanvas({
   routes,
@@ -50,23 +48,74 @@ export default function WallCanvas({
   wallWidth = 800,
   wallHeight = 600,
   className,
+  plugins = defaultPlugins,
 }: WallCanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const fabricCanvasRef = useRef<Canvas | null>(null);
+  const pluginManagerRef = useRef<ReturnType<typeof createPluginManager> | null>(null);
+
   const [activeTool, setActiveTool] = useState<ToolType>('select');
   const [zoom, setZoom] = useState(1);
   const [history, setHistory] = useState<RoutePoint[][]>([]);
   const [editingRouteId, setEditingRouteId] = useState<number | null>(null);
   const [selectedPointIndex, setSelectedPointIndex] = useState<number | null>(null);
+
   const routeGroupsRef = useRef<Map<number, Group>>(new Map());
   const routeIdMapRef = useRef<Map<Group, number>>(new Map());
   const pendingEditRouteIdRef = useRef<number | null>(null);
 
-  const getEditingPoints = useCallback((): RoutePoint[] => {
-    if (!editingRouteId) return [];
-    const route = routes.find(r => r.id === editingRouteId);
-    return route ? [...route.points] : [];
-  }, [editingRouteId, routes]);
+  const getState = useCallback((): CanvasState => ({
+    routes,
+    selectedRouteId: selectedRouteId ?? null,
+    editingRouteId,
+    activeTool,
+    selectedPointIndex,
+    zoom,
+    history,
+  }), [routes, selectedRouteId, editingRouteId, activeTool, selectedPointIndex, zoom, history]);
+
+  const setState = useCallback((state: Partial<CanvasState>) => {
+    if (state.activeTool !== undefined) setActiveTool(state.activeTool);
+    if (state.zoom !== undefined) setZoom(state.zoom);
+    if (state.history !== undefined) setHistory(state.history);
+    if (state.editingRouteId !== undefined) setEditingRouteId(state.editingRouteId);
+    if (state.selectedPointIndex !== undefined) setSelectedPointIndex(state.selectedPointIndex);
+  }, []);
+
+  const getContext = useCallback((): Omit<CanvasContext, 'canvas'> & { canvas: Canvas | null } => ({
+    canvas: fabricCanvasRef.current,
+    routes,
+    selectedRouteId: selectedRouteId ?? null,
+    editingRouteId,
+    activeTool,
+    selectedPointIndex,
+    isEditable,
+    wallWidth,
+    wallHeight,
+    routeGroups: routeGroupsRef.current,
+    routeIdMap: routeIdMapRef.current,
+  }), [routes, selectedRouteId, editingRouteId, activeTool, selectedPointIndex, isEditable, wallWidth, wallHeight]);
+
+  const pluginManager = useMemo(() => {
+    const manager = createPluginManager(
+      getContext,
+      getState,
+      setState,
+      onRouteUpdate,
+      onRouteSelect,
+      onZoomChange
+    );
+    return manager;
+  }, [getContext, getState, setState, onRouteUpdate, onRouteSelect, onZoomChange]);
+
+  useEffect(() => {
+    pluginManagerRef.current = pluginManager;
+    plugins.forEach((p) => pluginManager.register(p));
+
+    return () => {
+      pluginManager.destroy();
+    };
+  }, [pluginManager, plugins]);
 
   const initCanvas = useCallback(() => {
     if (!canvasRef.current) return;
@@ -119,225 +168,62 @@ export default function WallCanvas({
     }
 
     fabricCanvasRef.current = canvas;
+    pluginManagerRef.current?.initPlugins(canvas);
+    pluginManagerRef.current?.emit('canvas:init', { canvas });
+    pluginManagerRef.current?.emit('render', undefined);
   }, [wallWidth, wallHeight, isEditable]);
-
-  const createRouteGroup = useCallback((route: RouteWithPoints, isSelected: boolean): Group => {
-    const objects: FabricObject[] = [];
-
-    if (route.points.length > 1) {
-      for (let i = 0; i < route.points.length - 1; i++) {
-        const p1 = route.points[i];
-        const p2 = route.points[i + 1];
-        const line = new Line([p1.x, p1.y, p2.x, p2.y], {
-          stroke: route.color,
-          strokeWidth: isSelected ? LINE_WIDTH + 2 : LINE_WIDTH,
-          opacity: isSelected ? 1 : LINE_OPACITY,
-          selectable: false,
-          evented: false,
-          strokeLineCap: 'round',
-          strokeLineJoin: 'round',
-        });
-        objects.push(line);
-      }
-    }
-
-    route.points.forEach((point, index) => {
-      let color = route.color;
-      if (point.type === 'start') color = START_COLOR;
-      else if (point.type === 'end') color = END_COLOR;
-
-      const circle = new Circle({
-        left: point.x - HOLD_RADIUS,
-        top: point.y - HOLD_RADIUS,
-        radius: HOLD_RADIUS,
-        fill: color,
-        stroke: isSelected ? '#fff' : HOLD_STROKE_COLOR,
-        strokeWidth: isSelected ? HOLD_STROKE_WIDTH + 1 : HOLD_STROKE_WIDTH,
-        selectable: isEditable,
-        hasControls: false,
-        hasBorders: false,
-      }) as FabricObjectWithData;
-
-      circle.data = {
-        routeId: route.id,
-        pointIndex: index,
-        pointType: point.type,
-      };
-
-      if (isSelected) {
-        const outerCircle = new Circle({
-          left: point.x - HOLD_RADIUS - 4,
-          top: point.y - HOLD_RADIUS - 4,
-          radius: HOLD_RADIUS + 4,
-          fill: 'transparent',
-          stroke: '#FF6B35',
-          strokeWidth: 2,
-          strokeDashArray: [4, 4],
-          selectable: false,
-          evented: false,
-        });
-        objects.push(outerCircle);
-      }
-
-      objects.push(circle);
-    });
-
-    const group = new Group(objects, {
-      selectable: false,
-      evented: true,
-    });
-
-    return group;
-  }, [isEditable]);
-
-  const renderRoutes = useCallback(() => {
-    const canvas = fabricCanvasRef.current;
-    if (!canvas) return;
-
-    routeGroupsRef.current.forEach((group) => {
-      canvas.remove(group);
-    });
-    routeGroupsRef.current.clear();
-    routeIdMapRef.current.clear();
-
-    routes.forEach((route) => {
-      const isSelected = route.id === selectedRouteId;
-      const group = createRouteGroup(route, isSelected);
-      routeGroupsRef.current.set(route.id, group);
-      routeIdMapRef.current.set(group, route.id);
-      canvas.add(group);
-    });
-
-    canvas.renderAll();
-  }, [routes, selectedRouteId, createRouteGroup]);
 
   const handleCanvasClick = useCallback((options: any) => {
     const canvas = fabricCanvasRef.current;
     if (!canvas) return;
 
     const pointer = canvas.getPointer(options.e);
+    pluginManagerRef.current?.emit('canvas:click', {
+      e: options.e,
+      pointer,
+      target: options.target,
+    });
+  }, []);
 
-    if (activeTool === 'select') {
-      if (options.target) {
-        const targetData = (options.target as FabricObjectWithData).data;
-        if (targetData?.routeId) {
-          onRouteSelect?.(targetData.routeId as number);
-        } else {
-          const group = options.target.group;
-          if (group) {
-            const routeId = routeIdMapRef.current.get(group);
-            if (routeId) {
-              onRouteSelect?.(routeId);
-            } else {
-              onRouteSelect?.(null);
-            }
-          } else {
-            onRouteSelect?.(null);
-          }
-        }
-      } else {
-        onRouteSelect?.(null);
-      }
-      return;
-    }
-
-    if (!editingRouteId && selectedRouteId) {
-      setEditingRouteId(selectedRouteId);
-      pendingEditRouteIdRef.current = selectedRouteId;
-    }
-
-    const effectiveEditingRouteId = editingRouteId || pendingEditRouteIdRef.current;
-
-    if (!effectiveEditingRouteId) {
-      return;
-    }
-
-    const currentPoints = getEditingPoints();
-    const newPoint: RoutePoint = {
-      x: pointer.x,
-      y: pointer.y,
-      type: activeTool === 'start' ? 'start' : activeTool === 'end' ? 'end' : 'hold',
-    };
-
-    let newPoints: RoutePoint[];
-    if (activeTool === 'start') {
-      const hasStart = currentPoints.some(p => p.type === 'start');
-      if (hasStart) {
-        newPoints = currentPoints.map(p => p.type === 'start' ? newPoint : p);
-      } else {
-        newPoints = [newPoint, ...currentPoints.filter(p => p.type !== 'start')];
-      }
-    } else if (activeTool === 'end') {
-      const hasEnd = currentPoints.some(p => p.type === 'end');
-      if (hasEnd) {
-        newPoints = currentPoints.map(p => p.type === 'end' ? newPoint : p);
-      } else {
-        newPoints = [...currentPoints.filter(p => p.type !== 'end'), newPoint];
-      }
-    } else {
-      newPoints = [...currentPoints, newPoint];
-    }
-
-    setHistory(prev => [...prev, currentPoints]);
-    onRouteUpdate?.(effectiveEditingRouteId, newPoints);
-  }, [activeTool, editingRouteId, selectedRouteId, getEditingPoints, onRouteSelect, onRouteUpdate]);
-
-  const handleDelete = useCallback(() => {
-    if (!editingRouteId && !selectedRouteId) return;
-    
-    const routeId = editingRouteId || selectedRouteId || 0;
-    const currentPoints = getEditingPoints();
-    
-    if (selectedPointIndex !== null) {
-      setHistory(prev => [...prev, currentPoints]);
-      const newPoints = currentPoints.filter((_, i) => i !== selectedPointIndex);
-      onRouteUpdate?.(routeId, newPoints);
-      setSelectedPointIndex(null);
-    }
-  }, [editingRouteId, selectedRouteId, selectedPointIndex, getEditingPoints, onRouteUpdate]);
-
-  const handleUndo = useCallback(() => {
-    if (history.length === 0) return;
-    const previousPoints = history[history.length - 1];
-    setHistory(prev => prev.slice(0, -1));
-    onRouteUpdate?.(editingRouteId || selectedRouteId || 0, previousPoints);
-  }, [history, editingRouteId, selectedRouteId, onRouteUpdate]);
-
-  const handleZoomIn = useCallback(() => {
+  const handleCanvasMouseDown = useCallback((opt: any) => {
     const canvas = fabricCanvasRef.current;
     if (!canvas) return;
-    const newZoom = Math.min(zoom * 1.2, 3);
-    setZoom(newZoom);
-    canvas.setZoom(newZoom);
-    onZoomChange?.(newZoom);
-  }, [zoom, onZoomChange]);
 
-  const handleZoomOut = useCallback(() => {
+    const pointer = canvas.getPointer(opt.e);
+    pluginManagerRef.current?.emit('canvas:mouse:down', {
+      e: opt.e,
+      pointer,
+    });
+  }, []);
+
+  const handleCanvasMouseMove = useCallback((opt: any) => {
     const canvas = fabricCanvasRef.current;
     if (!canvas) return;
-    const newZoom = Math.max(zoom / 1.2, 0.3);
-    setZoom(newZoom);
-    canvas.setZoom(newZoom);
-    onZoomChange?.(newZoom);
-  }, [zoom, onZoomChange]);
 
-  const handleZoomReset = useCallback(() => {
+    const pointer = canvas.getPointer(opt.e);
+    pluginManagerRef.current?.emit('canvas:mouse:move', {
+      e: opt.e,
+      pointer,
+    });
+  }, []);
+
+  const handleCanvasMouseUp = useCallback((opt: any) => {
+    pluginManagerRef.current?.emit('canvas:mouse:up', {
+      e: opt.e,
+    });
+  }, []);
+
+  const handleCanvasWheel = useCallback((opt: any) => {
     const canvas = fabricCanvasRef.current;
     if (!canvas) return;
-    const newZoom = 1;
-    setZoom(newZoom);
-    canvas.setZoom(newZoom);
-    canvas.setViewportTransform([1, 0, 0, 1, 0, 0]);
-    onZoomChange?.(newZoom);
-  }, [onZoomChange]);
 
-  const handleToolChange = useCallback((tool: ToolType) => {
-    setActiveTool(tool);
-    if (tool !== 'select' && selectedRouteId && !editingRouteId) {
-      setEditingRouteId(selectedRouteId);
-      pendingEditRouteIdRef.current = selectedRouteId;
-    }
-  }, [selectedRouteId, editingRouteId]);
+    const pointer = canvas.getPointer(opt.e);
+    pluginManagerRef.current?.emit('canvas:mouse:wheel', {
+      e: opt.e,
+      pointer,
+      delta: opt.e.deltaY,
+    });
+  }, []);
 
   useEffect(() => {
     initCanvas();
@@ -351,92 +237,86 @@ export default function WallCanvas({
   }, [initCanvas]);
 
   useEffect(() => {
-    renderRoutes();
-  }, [renderRoutes]);
+    pluginManagerRef.current?.emit('render', undefined);
+  }, [routes, selectedRouteId]);
 
   useEffect(() => {
     const canvas = fabricCanvasRef.current;
     if (!canvas) return;
 
     canvas.on('mouse:down', handleCanvasClick);
+    canvas.on('mouse:down', handleCanvasMouseDown);
+    canvas.on('mouse:move', handleCanvasMouseMove);
+    canvas.on('mouse:up', handleCanvasMouseUp);
+    canvas.on('mouse:wheel', handleCanvasWheel);
 
     return () => {
       canvas.off('mouse:down', handleCanvasClick);
+      canvas.off('mouse:down', handleCanvasMouseDown);
+      canvas.off('mouse:move', handleCanvasMouseMove);
+      canvas.off('mouse:up', handleCanvasMouseUp);
+      canvas.off('mouse:wheel', handleCanvasWheel);
     };
-  }, [handleCanvasClick]);
+  }, [handleCanvasClick, handleCanvasMouseDown, handleCanvasMouseMove, handleCanvasMouseUp, handleCanvasWheel]);
 
-  useEffect(() => {
-    const canvas = fabricCanvasRef.current;
-    if (!canvas) return;
+  const handleToolChange = useCallback((tool: ToolType) => {
+    setActiveTool(tool);
+    if (tool !== 'select' && selectedRouteId && !editingRouteId) {
+      setEditingRouteId(selectedRouteId);
+      pendingEditRouteIdRef.current = selectedRouteId;
+    }
+    pluginManagerRef.current?.emit('tool:change', { tool });
+  }, [selectedRouteId, editingRouteId]);
 
-    let isDragging = false;
-    let lastPosX = 0;
-    let lastPosY = 0;
+  const handleDelete = useCallback(() => {
+    if (!editingRouteId && !selectedRouteId) return;
 
-    const handleMouseDown = (opt: any) => {
-      if (opt.e.button === 1 || (opt.e.button === 0 && opt.e.shiftKey)) {
-        isDragging = true;
-        lastPosX = opt.e.clientX;
-        lastPosY = opt.e.clientY;
-        canvas.discardActiveObject();
-        canvas.renderAll();
-      }
-    };
+    const routeId = editingRouteId || selectedRouteId || 0;
 
-    const handleMouseMove = (opt: any) => {
-      if (isDragging) {
-        const deltaX = opt.e.clientX - lastPosX;
-        const deltaY = opt.e.clientY - lastPosY;
-        const vpt = canvas.viewportTransform;
-        if (vpt) {
-          vpt[4] += deltaX;
-          vpt[5] += deltaY;
-        }
-        lastPosX = opt.e.clientX;
-        lastPosY = opt.e.clientY;
-        canvas.requestRenderAll();
-      }
-    };
+    if (selectedPointIndex !== null) {
+      pluginManagerRef.current?.emit('point:delete', {
+        routeId,
+        pointIndex: selectedPointIndex,
+      });
+    }
+  }, [editingRouteId, selectedRouteId, selectedPointIndex]);
 
-    const handleMouseUp = () => {
-      isDragging = false;
-    };
-
-    canvas.on('mouse:down', handleMouseDown);
-    canvas.on('mouse:move', handleMouseMove);
-    canvas.on('mouse:up', handleMouseUp);
-
-    return () => {
-      canvas.off('mouse:down', handleMouseDown);
-      canvas.off('mouse:move', handleMouseMove);
-      canvas.off('mouse:up', handleMouseUp);
-    };
+  const handleUndo = useCallback(() => {
+    pluginManagerRef.current?.emit('history:undo', undefined);
   }, []);
 
-  useEffect(() => {
+  const handleZoomInClick = useCallback(() => {
+    const newZoom = handleZoomIn(zoom);
+    setZoom(newZoom);
     const canvas = fabricCanvasRef.current;
-    if (!canvas) return;
+    if (canvas) {
+      canvas.setZoom(newZoom);
+    }
+    onZoomChange?.(newZoom);
+    pluginManagerRef.current?.emit('zoom:change', { zoom: newZoom });
+  }, [zoom, onZoomChange]);
 
-    const handleWheel = (opt: any) => {
-      opt.e.preventDefault();
-      opt.e.stopPropagation();
+  const handleZoomOutClick = useCallback(() => {
+    const newZoom = handleZoomOut(zoom);
+    setZoom(newZoom);
+    const canvas = fabricCanvasRef.current;
+    if (canvas) {
+      canvas.setZoom(newZoom);
+    }
+    onZoomChange?.(newZoom);
+    pluginManagerRef.current?.emit('zoom:change', { zoom: newZoom });
+  }, [zoom, onZoomChange]);
 
-      const delta = opt.e.deltaY;
-      let currentZoom = canvas.getZoom();
-      currentZoom *= 0.999 ** delta;
-      currentZoom = Math.max(0.3, Math.min(3, currentZoom));
-      
-      const point = canvas.getPointer(opt.e);
-      canvas.zoomToPoint(point, currentZoom);
-      setZoom(currentZoom);
-      onZoomChange?.(currentZoom);
-    };
-
-    canvas.on('mouse:wheel', handleWheel);
-
-    return () => {
-      canvas.off('mouse:wheel', handleWheel);
-    };
+  const handleZoomResetClick = useCallback(() => {
+    const newZoom = handleZoomReset();
+    setZoom(newZoom);
+    const canvas = fabricCanvasRef.current;
+    if (canvas) {
+      canvas.setZoom(newZoom);
+      canvas.setViewportTransform([1, 0, 0, 1, 0, 0]);
+    }
+    onZoomChange?.(newZoom);
+    pluginManagerRef.current?.emit('zoom:change', { zoom: newZoom });
   }, [onZoomChange]);
 
   return (
@@ -448,9 +328,9 @@ export default function WallCanvas({
             onToolChange={handleToolChange}
             onDelete={handleDelete}
             onUndo={handleUndo}
-            onZoomIn={handleZoomIn}
-            onZoomOut={handleZoomOut}
-            onZoomReset={handleZoomReset}
+            onZoomIn={handleZoomInClick}
+            onZoomOut={handleZoomOutClick}
+            onZoomReset={handleZoomResetClick}
             canUndo={history.length > 0}
             canDelete={selectedPointIndex !== null}
           />
@@ -460,21 +340,21 @@ export default function WallCanvas({
       {!isEditable && (
         <div className="absolute top-4 right-4 z-10 flex items-center gap-1 p-2 bg-theme-card/90 backdrop-blur-sm rounded-xl border border-theme-border shadow-xl">
           <button
-            onClick={handleZoomOut}
+            onClick={handleZoomOutClick}
             title="缩小"
             className="p-2.5 rounded-lg text-theme-text-secondary hover:text-theme-text hover:bg-theme-hover transition-all duration-200"
           >
             <ZoomOut size={18} />
           </button>
           <button
-            onClick={handleZoomReset}
+            onClick={handleZoomResetClick}
             title="还原"
             className="p-2.5 rounded-lg text-theme-text-secondary hover:text-theme-text hover:bg-theme-hover transition-all duration-200"
           >
             <Maximize2 size={18} />
           </button>
           <button
-            onClick={handleZoomIn}
+            onClick={handleZoomInClick}
             title="放大"
             className="p-2.5 rounded-lg text-theme-text-secondary hover:text-theme-text hover:bg-theme-hover transition-all duration-200"
           >
@@ -507,3 +387,4 @@ export default function WallCanvas({
 }
 
 export { WallCanvasToolbar };
+
