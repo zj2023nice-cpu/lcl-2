@@ -12,6 +12,13 @@ import {
 import { Gym } from './gym.entity';
 import { Route } from './route.entity';
 
+export enum WallAngle {
+  SLAB = 'slab',
+  VERTICAL = 'vertical',
+  OVERHANG = 'overhang',
+  ROOF = 'roof',
+}
+
 @Entity('wall')
 @Index('idx_wall_gym', ['gym_id'])
 export class Wall {
@@ -29,6 +36,9 @@ export class Wall {
 
   @Column({ type: 'json', name: 'polygon_coords', nullable: true })
   polygon_coords: object;
+
+  @Column({ type: 'enum', enum: WallAngle, name: 'wall_angle', nullable: true })
+  wall_angle: WallAngle;
 
   @CreateDateColumn({ name: 'created_at' })
   created_at: Date;

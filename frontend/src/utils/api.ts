@@ -1,4 +1,4 @@
-import type { ApiResponse, User, UserRole, AuthResponse, EmailLoginCredentials, PhoneLoginCredentials, RegisterCredentials, Gym, Wall, Route, PaginatedResponse, Ascent, GradeVote, Hold, RouteHeat, ColdRoute, SetterWorkload, ActiveUsersStats, UserBadge, BadgeStats, BadgeProgressStats, BadgeCheckResult, BadgePosterData, BadgeShareData, BatchUpdateStatusPayload, BatchStatusPreviewResult, BatchStatusResult, ThemePreferences, FollowStatus, FollowListResponse, FeedResponse } from '@/types';
+import type { ApiResponse, User, UserRole, AuthResponse, EmailLoginCredentials, PhoneLoginCredentials, RegisterCredentials, Gym, Wall, Route, PaginatedResponse, Ascent, GradeVote, Hold, RouteHeat, ColdRoute, SetterWorkload, ActiveUsersStats, UserBadge, BadgeStats, BadgeProgressStats, BadgeCheckResult, BadgePosterData, BadgeShareData, BatchUpdateStatusPayload, BatchStatusPreviewResult, BatchStatusResult, ThemePreferences, FollowStatus, FollowListResponse, FeedResponse, RouteCompletionAnalysis } from '@/types';
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api';
 
@@ -340,6 +340,13 @@ export const analyticsApi = {
 
   getActiveUsers: async (gymId: number): Promise<ActiveUsersStats> => {
     return get<ActiveUsersStats>(`/gyms/${gymId}/stats/active-users`);
+  },
+
+  getRouteCompletionAnalysis: async (
+    gymId: number,
+    params?: { groupBy?: 'difficulty' | 'wall_angle' | 'period'; startDate?: string; endDate?: string },
+  ): Promise<RouteCompletionAnalysis> => {
+    return get<RouteCompletionAnalysis>(`/gyms/${gymId}/stats/route-completion`, { params });
   },
 };
 

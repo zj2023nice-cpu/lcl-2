@@ -7,7 +7,7 @@ import {
   ParseIntPipe,
   Request,
 } from '@nestjs/common';
-import { AnalyticsService, RouteHeat, ColdRoute, SetterWorkload } from './analytics.service';
+import { AnalyticsService, RouteHeat, ColdRoute, SetterWorkload, RouteCompletionAnalysis } from './analytics.service';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { RolesGuard } from '../common/guards/roles.guard';
 import { Roles } from '../common/decorators/roles.decorator';
@@ -62,5 +62,16 @@ export class AnalyticsController {
   @Get('analytics/style')
   getStyleAnalysis(@Request() req: any): Promise<Record<string, number>> {
     return this.analyticsService.getStyleAnalysis(req.user.id);
+  }
+
+  @Get('gyms/:gymId/stats/route-completion')
+  @Roles(UserRole.GYM_ADMIN, UserRole.PLATFORM_ADMIN)
+  getRouteCompletionAnalysis(
+    @Param('gymId', ParseIntPipe) gymId: number,
+    @Query('group_by') groupBy: 'difficulty' | 'wall_angle' | 'period' = 'difficulty',
+    @Query('start_date') startDate?: string,
+    @Query('end_date') endDate?: string,
+  ): Promise<RouteCompletionAnalysis> {
+    return this.analyticsService.getRouteCompletionAnalysis(gymId, groupBy, startDate, endDate);
   }
 }

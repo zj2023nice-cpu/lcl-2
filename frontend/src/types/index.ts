@@ -514,3 +514,41 @@ export interface FeedResponse {
   hasMore: boolean;
   total: number;
 }
+
+export type WallAngle = 'slab' | 'vertical' | 'overhang' | 'roof';
+
+export interface CompletionGroupItem {
+  routeId: number;
+  routeName: string;
+  grade: string;
+  wallAngle: string | null;
+  wallName: string;
+  attemptCount: number;
+  successCount: number;
+  fallCount: number;
+  completionRate: number;
+  fallPositions: { x: number; y: number; intensity: number }[];
+}
+
+export interface CompletionGroup {
+  key: string;
+  label: string;
+  attemptCount: number;
+  successCount: number;
+  fallCount: number;
+  completionRate: number;
+  routes: CompletionGroupItem[];
+}
+
+export interface CompletionTrend {
+  period: string;
+  attemptCount: number;
+  successCount: number;
+  fallCount: number;
+  completionRate: number;
+}
+
+export interface RouteCompletionAnalysis {
+  groups: CompletionGroup[];
+  trend: CompletionTrend[];
+}

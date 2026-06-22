@@ -4,11 +4,12 @@ import { Route } from '../entities/route.entity';
 import { Ascent } from '../entities/ascent.entity';
 import { User } from '../entities/user.entity';
 import { Wall } from '../entities/wall.entity';
+import { Hold } from '../entities/hold.entity';
 import { AnalyticsService } from './analytics.service';
 import { AnalyticsController } from './analytics.controller';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Route, Ascent, User, Wall])],
+  imports: [TypeOrmModule.forFeature([Route, Ascent, User, Wall, Hold])],
   controllers: [AnalyticsController],
   providers: [AnalyticsService],
   exports: [AnalyticsService],

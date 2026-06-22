@@ -8,6 +8,7 @@ import {
   Activity,
   Layers,
   Loader2,
+  PieChart as PieChartIcon,
 } from 'lucide-react';
 import {
   BarChart,
@@ -28,8 +29,9 @@ import {
   Cell,
 } from 'recharts';
 import Card from '@/components/UI/Card';
+import RouteCompletionDashboard from '@/components/RouteCompletionDashboard';
 import type { Ascent } from '@/types';
-import { ascentApi, profileApi } from '@/utils/api';
+import { ascentApi } from '@/utils/api';
 import { useAuthStore } from '@/store/auth';
 
 const gradeColors: Record<string, string> = {
@@ -66,7 +68,7 @@ const CustomTooltip = ({ active, payload, label }: { active?: boolean; payload?:
 
 export default function Analytics() {
   const { user } = useAuthStore();
-  const [activeTab, setActiveTab] = useState<'pyramid' | 'progress' | 'style'>('pyramid');
+  const [activeTab, setActiveTab] = useState<'pyramid' | 'progress' | 'style' | 'completion'>('pyramid');
   const [ascents, setAscents] = useState<Ascent[]>([]);
   const [loading, setLoading] = useState(true);
   const [targetGrade, setTargetGrade] = useState<string>('V7');
@@ -232,6 +234,7 @@ export default function Analytics() {
     { key: 'pyramid' as const, label: '完攀金字塔', icon: Trophy },
     { key: 'progress' as const, label: '进步曲线', icon: TrendingUp },
     { key: 'style' as const, label: '风格分析', icon: Activity },
+    { key: 'completion' as const, label: '完成率分析', icon: PieChartIcon },
   ];
 
   if (loading) {
@@ -554,6 +557,10 @@ export default function Analytics() {
             </div>
           </div>
         </Card>
+      )}
+
+      {activeTab === 'completion' && (
+        <RouteCompletionDashboard />
       )}
     </div>
   );
