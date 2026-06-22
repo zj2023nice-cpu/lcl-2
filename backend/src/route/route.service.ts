@@ -4,12 +4,26 @@ import { Repository, FindManyOptions, Between, Like, Brackets, DataSource, Entit
 import { Route, RouteType, RouteStatus } from '../entities/route.entity';
 import { User, UserRole } from '../entities/user.entity';
 import { Wall } from '../entities/wall.entity';
+import { Gym } from '../entities/gym.entity';
 import { OperationLog } from '../entities/operation-log.entity';
 import { RouteVersionService } from './route-version.service';
 import { CreateRouteDto } from './dto/create-route.dto';
 import { UpdateRouteDto } from './dto/update-route.dto';
 import { QueryArchivedRoutesDto } from './dto/query-archived-routes.dto';
 import { BatchUpdateRouteStatusDto } from './dto/batch-update-route-status.dto';
+import {
+  RouteCsvHeaderMap,
+  DEFAULT_ROUTE_HEADER_MAP,
+  ROUTE_TYPE_VALUES,
+  isValidGrade,
+  ParsedRouteRow,
+  ValidatedRouteRow,
+  RouteValidationFailure,
+  RouteBatchImportParseResult,
+  RouteBatchImportConfirmPayload,
+  RouteBatchImportResult,
+} from './dto/batch-import-route.dto';
+import { parseGenericCsv } from '../common/utils/generic-csv-parser.util';
 
 export interface RouteBatchPreviewItem {
   id: number;
@@ -51,6 +65,8 @@ export class RouteService {
     private routeRepository: Repository<Route>,
     @InjectRepository(Wall)
     private wallRepository: Repository<Wall>,
+    @InjectRepository(Gym)
+    private gymRepository: Repository<Gym>,
     @InjectRepository(OperationLog)
     private operationLogRepository: Repository<OperationLog>,
     private dataSource: DataSource,
@@ -516,5 +532,297 @@ export class RouteService {
     } catch {
       // logging should never break the business operation
     }
+  }
+
+  async batchImportParse(
+    csvContent: string,
+    gymId: number,
+    headerMap?: RouteCsvHeaderMap,
+  ): Promise<RouteBatchImportParseResult> {
+    const gym = await this.gymRepository.findOne({ where: { id: gymId } });
+    if (!gym) {
+      throw new NotFoundException(`Gym with id ${gymId} not found`);
+    }
+
+    const walls = await this.wallRepository.find({ where: { gym_id: gymId } });
+    const wallMap = new Map(walls.map((w) => [w.id, w]));
+
+    const effectiveHeaderMap = headerMap || DEFAULT_ROUTE_HEADER_MAP;
+    const { headers, rows } = parseGenericCsv(csvContent, effectiveHeaderMap as unknown as Record<string, string>);
+
+    if (rows.length === 0) {
+      throw new BadRequestException('CSV 文件为空或格式无效');
+    }
+
+    const parsedRows: ParsedRouteRow[] = rows.map((row, idx) => ({
+      lineNumber: idx + 2,
+      name: row.name || '',
+      type: row.type || '',
+      grade: row.grade || '',
+      color: row.color || '',
+      wall_id: row.wall_id || '',
+      setter_id: row.setter_id || '',
+      tags: row.tags || '',
+      length: row.length || '',
+      open_date: row.open_date || '',
+      planned_remove_date: row.planned_remove_date || '',
+      raw: row,
+    }));
+
+    const validRows: ValidatedRouteRow[] = [];
+    const failures: RouteValidationFailure[] = [];
+
+    for (const row of parsedRows) {
+      const reasons: string[] = [];
+
+      if (!row.name || row.name.trim() === '') {
+        reasons.push('线路名称不能为空');
+      } else if (row.name.length > 200) {
+        reasons.push('线路名称不能超过200字符');
+      }
+
+      let routeType: RouteType | null = null;
+      if (!row.type || row.type.trim() === '') {
+        reasons.push('线路类型不能为空');
+      } else {
+        const typeLower = row.type.trim().toLowerCase();
+        if (ROUTE_TYPE_VALUES.includes(typeLower)) {
+          routeType = typeLower as RouteType;
+        } else {
+          reasons.push(`线路类型无效: "${row.type}", 有效值: ${ROUTE_TYPE_VALUES.join(', ')}`);
+        }
+      }
+
+      if (!row.grade || row.grade.trim() === '') {
+        reasons.push('难度不能为空');
+      } else if (!isValidGrade(row.grade.trim())) {
+        reasons.push(`难度格式无效: "${row.grade}", 支持V等级(V0-V16)或YDS(5.6-5.15d)`);
+      }
+
+      let wallId: number | null = null;
+      if (!row.wall_id || row.wall_id.trim() === '') {
+        reasons.push('岩壁ID不能为空');
+      } else {
+        const parsedWallId = parseInt(row.wall_id, 10);
+        if (isNaN(parsedWallId)) {
+          reasons.push(`岩壁ID格式无效: "${row.wall_id}"`);
+        } else if (!wallMap.has(parsedWallId)) {
+          reasons.push(`岩壁ID ${parsedWallId} 不属于当前场馆`);
+        } else {
+          wallId = parsedWallId;
+        }
+      }
+
+      if (row.color && row.color.length > 50) {
+        reasons.push('颜色不能超过50字符');
+      }
+
+      let setterId: number | undefined;
+      if (row.setter_id && row.setter_id.trim() !== '') {
+        const parsedSetterId = parseInt(row.setter_id, 10);
+        if (isNaN(parsedSetterId)) {
+          reasons.push(`定线员ID格式无效: "${row.setter_id}"`);
+        } else {
+          setterId = parsedSetterId;
+        }
+      }
+
+      let tags: string[] | undefined;
+      if (row.tags && row.tags.trim() !== '') {
+        tags = row.tags.split(/[;；]/).map((t) => t.trim()).filter((t) => t !== '');
+      }
+
+      let routeLength: number | undefined;
+      if (row.length && row.length.trim() !== '') {
+        const parsedLength = parseFloat(row.length);
+        if (isNaN(parsedLength)) {
+          reasons.push(`长度格式无效: "${row.length}"`);
+        } else if (parsedLength < 0) {
+          reasons.push('长度不能为负数');
+        } else {
+          routeLength = parsedLength;
+        }
+      }
+
+      let openDate: string | undefined;
+      if (row.open_date && row.open_date.trim() !== '') {
+        const d = new Date(row.open_date);
+        if (isNaN(d.getTime())) {
+          reasons.push(`开放日期格式无效: "${row.open_date}"`);
+        } else {
+          openDate = row.open_date;
+        }
+      }
+
+      let plannedRemoveDate: string | undefined;
+      if (row.planned_remove_date && row.planned_remove_date.trim() !== '') {
+        const d = new Date(row.planned_remove_date);
+        if (isNaN(d.getTime())) {
+          reasons.push(`计划拆除日期格式无效: "${row.planned_remove_date}"`);
+        } else {
+          plannedRemoveDate = row.planned_remove_date;
+        }
+      }
+
+      if (reasons.length > 0) {
+        failures.push({
+          lineNumber: row.lineNumber,
+          row,
+          reasons,
+        });
+      } else if (routeType && wallId) {
+        validRows.push({
+          lineNumber: row.lineNumber,
+          name: row.name.trim(),
+          type: routeType,
+          grade: row.grade.trim(),
+          color: row.color?.trim() || undefined,
+          wall_id: wallId,
+          setter_id: setterId,
+          tags,
+          length: routeLength,
+          open_date: openDate,
+          planned_remove_date: plannedRemoveDate,
+        });
+      }
+    }
+
+    return {
+      totalRows: parsedRows.length,
+      validCount: validRows.length,
+      failureCount: failures.length,
+      validRows,
+      failures,
+      headers,
+      parsedRows,
+    };
+  }
+
+  async batchImportConfirm(
+    payload: RouteBatchImportConfirmPayload,
+    user: { id: number; role: UserRole; gym_id?: number },
+    ip?: string,
+  ): Promise<RouteBatchImportResult> {
+    const wall = await this.wallRepository.findOne({ where: { id: payload.wall_id } });
+    if (!wall) {
+      throw new NotFoundException(`Wall with id ${payload.wall_id} not found`);
+    }
+
+    if (user.role !== UserRole.PLATFORM_ADMIN) {
+      if (user.gym_id && wall.gym_id !== user.gym_id) {
+        throw new ForbiddenException('只能导入本场馆岩壁的线路');
+      }
+    }
+
+    if (payload.rows.length === 0) {
+      throw new BadRequestException('没有可导入的数据');
+    }
+
+    const result: RouteBatchImportResult = {
+      success: false,
+      totalRows: payload.rows.length,
+      successCount: 0,
+      failureCount: 0,
+      createdRoutes: [],
+      failures: [],
+    };
+
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
+    try {
+      for (const row of payload.rows) {
+        try {
+          const routeData: Partial<Route> = {
+            wall_id: row.wall_id,
+            name: row.name,
+            type: row.type,
+            grade: row.grade,
+            color: row.color || undefined,
+            setter_id: row.setter_id || undefined,
+            tags: row.tags || undefined,
+            length: row.length || undefined,
+            open_date: row.open_date || undefined,
+            planned_remove_date: row.planned_remove_date || undefined,
+            status: RouteStatus.DRAFTING,
+          };
+          const route = queryRunner.manager.create(Route, routeData as any);
+
+          const saved = await queryRunner.manager.save(route);
+
+          await this.routeVersionService.createSnapshot(
+            saved.id,
+            {
+              userId: user.id,
+              changeDescription: '批量导入线路',
+              forceCreate: true,
+            },
+            queryRunner.manager,
+          );
+
+          result.createdRoutes.push({
+            id: saved.id,
+            name: saved.name,
+            grade: saved.grade,
+            type: saved.type,
+            wall_id: saved.wall_id,
+          });
+        } catch (err: any) {
+          result.failures.push({
+            lineNumber: row.lineNumber,
+            reason: err?.message || '创建失败',
+          });
+        }
+      }
+
+      if (result.failures.length > 0) {
+        await queryRunner.rollbackTransaction();
+        result.success = false;
+        result.successCount = 0;
+        result.failureCount = result.failures.length;
+      } else {
+        await queryRunner.commitTransaction();
+        result.success = true;
+        result.successCount = result.createdRoutes.length;
+        result.failureCount = 0;
+      }
+    } catch (error: any) {
+      try {
+        await queryRunner.rollbackTransaction();
+      } catch {
+        // ignore rollback error
+      }
+      result.success = false;
+      result.successCount = 0;
+      result.failureCount = payload.rows.length;
+      result.failures.push({
+        lineNumber: 0,
+        reason: error?.message || '批量导入发生未知错误',
+      });
+    } finally {
+      await queryRunner.release();
+    }
+
+    try {
+      const log = this.operationLogRepository.create({
+        user_id: user.id,
+        action: 'batch_import_routes',
+        target_type: 'route',
+        details: {
+          wall_id: payload.wall_id,
+          total: result.totalRows,
+          success_count: result.successCount,
+          failure_count: result.failureCount,
+          failures: result.failures,
+        },
+        ip_address: ip,
+      });
+      await this.operationLogRepository.save(log);
+    } catch {
+      // logging should never break the business operation
+    }
+
+    return result;
   }
 }

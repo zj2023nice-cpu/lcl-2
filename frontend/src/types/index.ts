@@ -552,3 +552,61 @@ export interface RouteCompletionAnalysis {
   groups: CompletionGroup[];
   trend: CompletionTrend[];
 }
+
+export interface ParsedRouteRow {
+  lineNumber: number;
+  name: string;
+  type: string;
+  grade: string;
+  color: string;
+  wallId: string;
+  setterId: string;
+  tags: string;
+  length: string;
+  openDate: string;
+  plannedRemoveDate: string;
+}
+
+export interface ValidatedRouteRow {
+  lineNumber: number;
+  name: string;
+  type: RouteType;
+  grade: string;
+  color?: string;
+  wallId: number;
+  setterId?: number;
+  tags?: string[];
+  length?: number;
+  openDate?: string;
+  plannedRemoveDate?: string;
+}
+
+export interface RouteValidationFailure {
+  lineNumber: number;
+  row: ParsedRouteRow;
+  reasons: string[];
+}
+
+export interface RouteBatchImportParseResult {
+  totalRows: number;
+  validCount: number;
+  failureCount: number;
+  validRows: ValidatedRouteRow[];
+  failures: RouteValidationFailure[];
+  headers: string[];
+  parsedRows: ParsedRouteRow[];
+}
+
+export interface RouteBatchImportConfirmPayload {
+  wallId: number;
+  rows: ValidatedRouteRow[];
+}
+
+export interface RouteBatchImportResult {
+  success: boolean;
+  totalRows: number;
+  successCount: number;
+  failureCount: number;
+  createdRoutes: { id: number; name: string; grade: string; type: RouteType; wallId: number }[];
+  failures: { lineNumber: number; reason: string }[];
+}

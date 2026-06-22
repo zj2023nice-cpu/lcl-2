@@ -21,6 +21,7 @@ import {
   CheckCircle2,
   XCircle,
   Layers,
+  Upload,
 } from 'lucide-react';
 import Card from '@/components/UI/Card';
 import Button from '@/components/UI/Button';
@@ -344,18 +345,28 @@ export default function RouteManagement() {
           </h1>
           <p className="text-theme-text-muted mt-1">批量管理线路状态，支持跨页全选与按条件筛选后批量标记</p>
         </div>
-        <label className="flex items-center gap-2 text-sm text-theme-text-secondary cursor-pointer select-none">
-          <input
-            type="checkbox"
-            checked={includeArchived}
-            onChange={(e) => {
-              setIncludeArchived(e.target.checked);
-              setPage(1);
-            }}
-            className="w-4 h-4 rounded border-theme-border bg-theme-subtle text-climbing-orange-500 focus:ring-climbing-orange-500"
-          />
-          包含已归档线路
-        </label>
+        <div className="flex items-center gap-3">
+          <Button
+            variant="primary"
+            size="sm"
+            onClick={() => navigate('/admin/routes/import')}
+          >
+            <Upload size={14} className="mr-1" />
+            批量导入
+          </Button>
+          <label className="flex items-center gap-2 text-sm text-theme-text-secondary cursor-pointer select-none">
+            <input
+              type="checkbox"
+              checked={includeArchived}
+              onChange={(e) => {
+                setIncludeArchived(e.target.checked);
+                setPage(1);
+              }}
+              className="w-4 h-4 rounded border-theme-border bg-theme-subtle text-climbing-orange-500 focus:ring-climbing-orange-500"
+            />
+            包含已归档线路
+          </label>
+        </div>
       </div>
 
       <Card className="p-4">

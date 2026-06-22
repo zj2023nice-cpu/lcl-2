@@ -13,7 +13,12 @@ import {
   UseGuards,
   ParseIntPipe,
   NotFoundException,
+  UseInterceptors,
+  UploadedFile,
+  BadRequestException,
 } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { memoryStorage } from 'multer';
 import { Request, Response } from 'express';
 import { RouteService } from './route.service';
 import { RouteShareService } from './route-share.service';
@@ -26,6 +31,7 @@ import { ArchiveRouteDto } from './dto/archive-route.dto';
 import { QueryArchivedRoutesDto } from './dto/query-archived-routes.dto';
 import { CompareVersionsDto } from './dto/compare-versions.dto';
 import { RollbackVersionDto } from './dto/rollback-version.dto';
+import { RouteCsvHeaderMap, RouteBatchImportConfirmPayload } from './dto/batch-import-route.dto';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { RolesGuard } from '../common/guards/roles.guard';
 import { Roles } from '../common/decorators/roles.decorator';
@@ -78,6 +84,56 @@ export class RouteController {
     @Req() req: Request,
   ) {
     return this.routeService.batchUpdateStatus(dto, user, req.ip);
+  }
+
+  @Post('gyms/:gymId/routes/batch-import/parse')
+  @Roles(UserRole.GYM_ADMIN, UserRole.PLATFORM_ADMIN)
+  @UseInterceptors(FileInterceptor('file', {
+    storage: memoryStorage(),
+    limits: { fileSize: 2 * 1024 * 1024 },
+  }))
+  async batchImportParse(
+    @Param('gymId', ParseIntPipe) gymId: number,
+    @UploadedFile() file: Express.Multer.File,
+    @Body() body: any,
+    @CurrentUser() user: { id: number; role: UserRole; gym_id?: number },
+  ) {
+    if (!file) {
+      throw new BadRequestException('请上传 CSV 文件');
+    }
+
+    if (user.role !== UserRole.PLATFORM_ADMIN && user.gym_id !== gymId) {
+      throw new BadRequestException('只能导入本场馆的线路');
+    }
+
+    let headerMap: RouteCsvHeaderMap | undefined;
+    if (body.headerMap) {
+      try {
+        headerMap = typeof body.headerMap === 'string'
+          ? JSON.parse(body.headerMap)
+          : body.headerMap;
+      } catch {
+        throw new BadRequestException('headerMap 格式无效，应为 JSON 字符串');
+      }
+    }
+
+    const csvContent = file.buffer.toString('utf-8');
+    return this.routeService.batchImportParse(csvContent, gymId, headerMap);
+  }
+
+  @Post('gyms/:gymId/routes/batch-import/confirm')
+  @Roles(UserRole.GYM_ADMIN, UserRole.PLATFORM_ADMIN)
+  async batchImportConfirm(
+    @Param('gymId', ParseIntPipe) gymId: number,
+    @Body() payload: RouteBatchImportConfirmPayload,
+    @CurrentUser() user: { id: number; role: UserRole; gym_id?: number },
+    @Req() req: Request,
+  ) {
+    if (user.role !== UserRole.PLATFORM_ADMIN && user.gym_id !== gymId) {
+      throw new BadRequestException('只能导入本场馆的线路');
+    }
+
+    return this.routeService.batchImportConfirm(payload, user, req.ip);
   }
 
   @Get('routes/:id')

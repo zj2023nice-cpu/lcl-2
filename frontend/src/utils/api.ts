@@ -1,4 +1,4 @@
-import type { ApiResponse, User, UserRole, AuthResponse, EmailLoginCredentials, PhoneLoginCredentials, RegisterCredentials, Gym, Wall, Route, PaginatedResponse, Ascent, GradeVote, Hold, RouteHeat, ColdRoute, SetterWorkload, ActiveUsersStats, UserBadge, BadgeStats, BadgeProgressStats, BadgeCheckResult, BadgePosterData, BadgeShareData, BatchUpdateStatusPayload, BatchStatusPreviewResult, BatchStatusResult, ThemePreferences, FollowStatus, FollowListResponse, FeedResponse, RouteCompletionAnalysis } from '@/types';
+import type { ApiResponse, User, UserRole, AuthResponse, EmailLoginCredentials, PhoneLoginCredentials, RegisterCredentials, Gym, Wall, Route, PaginatedResponse, Ascent, GradeVote, Hold, RouteHeat, ColdRoute, SetterWorkload, ActiveUsersStats, UserBadge, BadgeStats, BadgeProgressStats, BadgeCheckResult, BadgePosterData, BadgeShareData, BatchUpdateStatusPayload, BatchStatusPreviewResult, BatchStatusResult, ThemePreferences, FollowStatus, FollowListResponse, FeedResponse, RouteCompletionAnalysis, RouteBatchImportParseResult, RouteBatchImportConfirmPayload, RouteBatchImportResult } from '@/types';
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api';
 
@@ -280,6 +280,37 @@ export const routeApi = {
 
   batchUpdateStatus: async (payload: BatchUpdateStatusPayload): Promise<BatchStatusResult> => {
     return patch<BatchStatusResult>('/routes/batch/status', payload);
+  },
+
+  batchImportParse: async (gymId: number, file: File): Promise<RouteBatchImportParseResult> => {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    const token = getToken();
+    const response = await fetch(`${BASE_URL}/gyms/${gymId}/routes/batch-import/parse`, {
+      method: 'POST',
+      headers: {
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
+      body: formData,
+    });
+
+    if (!response.ok) {
+      let errorData: ApiResponse | null = null;
+      try {
+        errorData = await response.json();
+      } catch {
+        // ignore parse error
+      }
+      throw errorData || new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const rawData = await response.json() as unknown;
+    return transformKeys<RouteBatchImportParseResult>(rawData);
+  },
+
+  batchImportConfirm: async (gymId: number, payload: RouteBatchImportConfirmPayload): Promise<RouteBatchImportResult> => {
+    return post<RouteBatchImportResult>(`/gyms/${gymId}/routes/batch-import/confirm`, payload);
   },
 };
 

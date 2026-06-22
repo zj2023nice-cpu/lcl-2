@@ -19,6 +19,7 @@ import Overview from '@/pages/Overview';
 import OperationLogs from '@/pages/OperationLogs';
 import ArchivedRoutes from '@/pages/ArchivedRoutes';
 import RouteManagement from '@/pages/RouteManagement';
+import RouteImport from '@/pages/RouteImport';
 import MessageTest from '@/pages/MessageTest';
 import BadgeShare from '@/pages/BadgeShare';
 
@@ -157,6 +158,14 @@ export default function App() {
             element={
               <ProtectedLayout>
                 <RouteManagement />
+              </ProtectedLayout>
+            }
+          />
+          <Route
+            path="/admin/routes/import"
+            element={
+              <ProtectedLayout>
+                <RouteImport />
               </ProtectedLayout>
             }
           />
