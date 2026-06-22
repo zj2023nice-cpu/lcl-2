@@ -61,6 +61,12 @@ export class User {
   @Column({ type: 'datetime', name: 'banned_until', nullable: true })
   banned_until: Date | null;
 
+  @Column({ type: 'int', name: 'following_count', default: 0 })
+  following_count: number;
+
+  @Column({ type: 'int', name: 'follower_count', default: 0 })
+  follower_count: number;
+
   @CreateDateColumn({ name: 'created_at' })
   created_at: Date;
 

@@ -6,6 +6,7 @@ import Button from '@/components/UI/Button';
 import Empty from '@/components/Empty';
 import { followApi } from '@/utils/api';
 import { useMessage } from '@/hooks/useMessage';
+import { FollowButton } from '@/components/Follow';
 import type { FeedGroup, FeedAscent } from '@/types';
 
 interface FeedSectionProps {
@@ -186,7 +187,7 @@ export default function FeedSection({ currentUserId }: FeedSectionProps) {
 
                 <div className="space-y-3">
                   {group.ascents.map((ascent) => (
-                    <AscentCard key={ascent.id} ascent={ascent} />
+                    <AscentCard key={ascent.id} ascent={ascent} currentUserId={currentUserId} />
                   ))}
                 </div>
               </div>
@@ -212,7 +213,7 @@ export default function FeedSection({ currentUserId }: FeedSectionProps) {
   );
 }
 
-function AscentCard({ ascent }: { ascent: FeedAscent }) {
+function AscentCard({ ascent, currentUserId }: { ascent: FeedAscent; currentUserId?: number | null }) {
   const formatTime = (dateStr: string) => {
     const date = new Date(dateStr);
     return date.toLocaleTimeString('zh-CN', {
@@ -225,12 +226,16 @@ function AscentCard({ ascent }: { ascent: FeedAscent }) {
     <div className="p-4 rounded-lg bg-theme-card hover:bg-theme-hover transition-colors border border-theme-border hover:border-theme-border">
       <div className="flex items-start justify-between gap-4">
         <div className="flex items-start gap-3 flex-1">
-          <div className="w-10 h-10 rounded-full bg-climbing-orange-500/20 flex items-center justify-center text-climbing-orange-500 font-semibold flex-shrink-0">
-            {ascent.userName.charAt(0).toUpperCase()}
-          </div>
+          <Link to={`/users/${ascent.userId}`} className="flex-shrink-0">
+            <div className="w-10 h-10 rounded-full bg-climbing-orange-500/20 flex items-center justify-center text-climbing-orange-500 font-semibold hover:opacity-80 transition-opacity">
+              {ascent.userName.charAt(0).toUpperCase()}
+            </div>
+          </Link>
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 mb-1">
-              <span className="font-medium text-theme-text">{ascent.userName}</span>
+              <Link to={`/users/${ascent.userId}`} className="font-medium text-theme-text hover:text-climbing-orange-500 transition-colors">
+                {ascent.userName}
+              </Link>
               <span className="text-xs text-theme-text-muted">
                 {formatTime(ascent.createdAt)}
               </span>
@@ -266,6 +271,13 @@ function AscentCard({ ascent }: { ascent: FeedAscent }) {
               </p>
             )}
           </div>
+        </div>
+        <div className="flex-shrink-0">
+          <FollowButton
+            targetUserId={ascent.userId}
+            currentUserId={currentUserId}
+            size="sm"
+          />
         </div>
       </div>
     </div>

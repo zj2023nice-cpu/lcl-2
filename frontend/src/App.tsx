@@ -12,6 +12,7 @@ import RouteDetail from '@/pages/RouteDetail';
 import Ascents from '@/pages/Ascents';
 import Analytics from '@/pages/Analytics';
 import Profile from '@/pages/Profile';
+import UserProfile from '@/pages/UserProfile';
 import Dashboard from '@/pages/Dashboard';
 import AdminUsers from '@/pages/AdminUsers';
 import Overview from '@/pages/Overview';
@@ -100,6 +101,14 @@ export default function App() {
             element={
               <ProtectedLayout>
                 <Profile />
+              </ProtectedLayout>
+            }
+          />
+          <Route
+            path="/users/:userId"
+            element={
+              <ProtectedLayout>
+                <UserProfile />
               </ProtectedLayout>
             }
           />

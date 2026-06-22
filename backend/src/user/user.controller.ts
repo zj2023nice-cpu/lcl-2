@@ -7,22 +7,42 @@ import {
   Query,
   UseGuards,
   ParseIntPipe,
+  NotFoundException,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { VerifyUserDto } from './dto/verify-user.dto';
 import { UpdateRoleDto } from './dto/update-role.dto';
 import { BanUserDto } from './dto/ban-user.dto';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
+import { OptionalJwtAuthGuard } from '../common/guards/optional-jwt-auth.guard';
 import { RolesGuard } from '../common/guards/roles.guard';
 import { Roles } from '../common/decorators/roles.decorator';
 import { UserRole } from '../entities/user.entity';
 
 @Controller()
-@UseGuards(JwtAuthGuard, RolesGuard)
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
+  @Get('users/:id')
+  @UseGuards(OptionalJwtAuthGuard)
+  async findOne(@Param('id', ParseIntPipe) id: number) {
+    const user = await this.userService.findOne(id);
+    if (!user) {
+      throw new NotFoundException('用户不存在');
+    }
+    return {
+      id: user.id,
+      name: user.name,
+      role: user.role,
+      verifiedAt: user.verified_at,
+      createdAt: user.created_at,
+      followingCount: user.following_count,
+      followerCount: user.follower_count,
+    };
+  }
+
   @Get('gyms/:gymId/users')
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.GYM_ADMIN, UserRole.PLATFORM_ADMIN)
   findByGym(
     @Param('gymId', ParseIntPipe) gymId: number,
@@ -38,12 +58,14 @@ export class UserController {
   }
 
   @Get('gyms/:gymId/pending-verifications')
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.GYM_ADMIN, UserRole.PLATFORM_ADMIN)
   getPendingVerifications(@Param('gymId', ParseIntPipe) gymId: number) {
     return this.userService.getPendingVerifications(gymId);
   }
 
   @Patch('users/:id/verify')
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.GYM_ADMIN, UserRole.PLATFORM_ADMIN)
   verifyUser(
     @Param('id', ParseIntPipe) id: number,
@@ -53,6 +75,7 @@ export class UserController {
   }
 
   @Patch('users/:id/role')
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.GYM_ADMIN, UserRole.PLATFORM_ADMIN)
   updateRole(
     @Param('id', ParseIntPipe) id: number,
@@ -62,6 +85,7 @@ export class UserController {
   }
 
   @Patch('users/:id/ban')
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.GYM_ADMIN, UserRole.PLATFORM_ADMIN)
   banUser(
     @Param('id', ParseIntPipe) id: number,

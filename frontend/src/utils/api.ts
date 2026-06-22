@@ -1,4 +1,4 @@
-import type { ApiResponse, User, AuthResponse, EmailLoginCredentials, PhoneLoginCredentials, RegisterCredentials, Gym, Wall, Route, PaginatedResponse, Ascent, GradeVote, Hold, RouteHeat, ColdRoute, SetterWorkload, ActiveUsersStats, UserBadge, BadgeStats, BadgeProgressStats, BadgeCheckResult, BadgePosterData, BadgeShareData, BatchUpdateStatusPayload, BatchStatusPreviewResult, BatchStatusResult, ThemePreferences, FollowStatus, FollowListResponse, FeedResponse } from '@/types';
+import type { ApiResponse, User, UserRole, AuthResponse, EmailLoginCredentials, PhoneLoginCredentials, RegisterCredentials, Gym, Wall, Route, PaginatedResponse, Ascent, GradeVote, Hold, RouteHeat, ColdRoute, SetterWorkload, ActiveUsersStats, UserBadge, BadgeStats, BadgeProgressStats, BadgeCheckResult, BadgePosterData, BadgeShareData, BatchUpdateStatusPayload, BatchStatusPreviewResult, BatchStatusResult, ThemePreferences, FollowStatus, FollowListResponse, FeedResponse } from '@/types';
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api';
 
@@ -343,7 +343,21 @@ export const analyticsApi = {
   },
 };
 
+export interface PublicUserProfile {
+  id: number;
+  name: string;
+  role: UserRole;
+  verifiedAt?: string;
+  createdAt: string;
+  followingCount: number;
+  followerCount: number;
+}
+
 export const userApi = {
+  getUserById: async (userId: number): Promise<PublicUserProfile> => {
+    return get<PublicUserProfile>(`/users/${userId}`);
+  },
+
   getGymUsers: async (gymId: number, filters?: { role?: string; verified?: boolean; search?: string }): Promise<User[]> => {
     const params: Record<string, string | number | boolean> = {};
     if (filters?.role) params.role = filters.role;

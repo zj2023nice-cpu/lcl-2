@@ -5,17 +5,12 @@ import {
   ConflictException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, Like, In, MoreThan } from 'typeorm';
+import { Repository, Like, In, MoreThan, DataSource } from 'typeorm';
 import { UserFollow } from '../entities/user-follow.entity';
 import { User, UserRole } from '../entities/user.entity';
 import { Ascent, AscentVisibility } from '../entities/ascent.entity';
 import { QueryFollowDto } from './dto/query-follow.dto';
 import { QueryFeedDto } from './dto/query-feed.dto';
-
-interface CacheEntry<T> {
-  value: T;
-  expiresAt: number;
-}
 
 interface RateLimitEntry {
   count: number;
@@ -24,13 +19,10 @@ interface RateLimitEntry {
 
 @Injectable()
 export class FollowService {
-  private readonly CACHE_TTL = 5 * 60 * 1000;
   private readonly FOLLOW_RATE_LIMIT = 50;
   private readonly RATE_LIMIT_WINDOW = 60 * 60 * 1000;
   private readonly MAX_FOLLOWING_PER_USER = 5000;
 
-  private followCountCache: Map<number, CacheEntry<number>> = new Map();
-  private followerCountCache: Map<number, CacheEntry<number>> = new Map();
   private followRateLimits: Map<number, RateLimitEntry> = new Map();
 
   constructor(
@@ -40,6 +32,7 @@ export class FollowService {
     private userRepository: Repository<User>,
     @InjectRepository(Ascent)
     private ascentRepository: Repository<Ascent>,
+    private dataSource: DataSource,
   ) {}
 
   private checkRateLimit(userId: number): void {
@@ -61,33 +54,6 @@ export class FollowService {
     }
 
     entry.count += 1;
-  }
-
-  private getCachedCount(
-    cache: Map<number, CacheEntry<number>>,
-    userId: number,
-  ): number | null {
-    const entry = cache.get(userId);
-    if (entry && entry.expiresAt > Date.now()) {
-      return entry.value;
-    }
-    return null;
-  }
-
-  private setCachedCount(
-    cache: Map<number, CacheEntry<number>>,
-    userId: number,
-    value: number,
-  ): void {
-    cache.set(userId, {
-      value,
-      expiresAt: Date.now() + this.CACHE_TTL,
-    });
-  }
-
-  private invalidateCountCaches(userId: number): void {
-    this.followCountCache.delete(userId);
-    this.followerCountCache.delete(userId);
   }
 
   async follow(followerId: number, followingId: number): Promise<UserFollow> {
@@ -115,24 +81,51 @@ export class FollowService {
       throw new ConflictException('已经关注该用户');
     }
 
-    const followingCount = await this.getFollowingCount(followerId);
-    if (followingCount >= this.MAX_FOLLOWING_PER_USER) {
+    const followerUser = await this.userRepository.findOne({
+      where: { id: followerId },
+    });
+
+    if (followerUser && followerUser.following_count >= this.MAX_FOLLOWING_PER_USER) {
       throw new BadRequestException(
         `关注数量已达上限(${this.MAX_FOLLOWING_PER_USER})`,
       );
     }
 
-    const follow = this.followRepository.create({
-      follower_id: followerId,
-      following_id: followingId,
-    });
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
 
-    const savedFollow = await this.followRepository.save(follow);
+    try {
+      const follow = queryRunner.manager.create(UserFollow, {
+        follower_id: followerId,
+        following_id: followingId,
+      });
 
-    this.invalidateCountCaches(followerId);
-    this.invalidateCountCaches(followingId);
+      const savedFollow = await queryRunner.manager.save(follow);
 
-    return savedFollow;
+      await queryRunner.manager
+        .createQueryBuilder()
+        .update(User)
+        .set({ following_count: () => 'following_count + 1' })
+        .where('id = :id', { id: followerId })
+        .execute();
+
+      await queryRunner.manager
+        .createQueryBuilder()
+        .update(User)
+        .set({ follower_count: () => 'follower_count + 1' })
+        .where('id = :id', { id: followingId })
+        .execute();
+
+      await queryRunner.commitTransaction();
+
+      return savedFollow;
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      throw error;
+    } finally {
+      await queryRunner.release();
+    }
   }
 
   async unfollow(followerId: number, followingId: number): Promise<void> {
@@ -153,10 +146,34 @@ export class FollowService {
       throw new NotFoundException('未关注该用户');
     }
 
-    await this.followRepository.delete(follow.id);
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
 
-    this.invalidateCountCaches(followerId);
-    this.invalidateCountCaches(followingId);
+    try {
+      await queryRunner.manager.delete(UserFollow, follow.id);
+
+      await queryRunner.manager
+        .createQueryBuilder()
+        .update(User)
+        .set({ following_count: () => 'GREATEST(following_count - 1, 0)' })
+        .where('id = :id', { id: followerId })
+        .execute();
+
+      await queryRunner.manager
+        .createQueryBuilder()
+        .update(User)
+        .set({ follower_count: () => 'GREATEST(follower_count - 1, 0)' })
+        .where('id = :id', { id: followingId })
+        .execute();
+
+      await queryRunner.commitTransaction();
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      throw error;
+    } finally {
+      await queryRunner.release();
+    }
   }
 
   async isFollowing(
@@ -211,27 +228,19 @@ export class FollowService {
   }
 
   async getFollowingCount(userId: number): Promise<number> {
-    const cached = this.getCachedCount(this.followCountCache, userId);
-    if (cached !== null) return cached;
-
-    const count = await this.followRepository.count({
-      where: { follower_id: userId },
+    const user = await this.userRepository.findOne({
+      where: { id: userId },
+      select: ['following_count'],
     });
-
-    this.setCachedCount(this.followCountCache, userId, count);
-    return count;
+    return user?.following_count ?? 0;
   }
 
   async getFollowerCount(userId: number): Promise<number> {
-    const cached = this.getCachedCount(this.followerCountCache, userId);
-    if (cached !== null) return cached;
-
-    const count = await this.followRepository.count({
-      where: { following_id: userId },
+    const user = await this.userRepository.findOne({
+      where: { id: userId },
+      select: ['follower_count'],
     });
-
-    this.setCachedCount(this.followerCountCache, userId, count);
-    return count;
+    return user?.follower_count ?? 0;
   }
 
   async getFollowingList(

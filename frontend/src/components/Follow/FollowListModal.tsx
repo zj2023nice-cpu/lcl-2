@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { Link } from 'react-router-dom';
 import { X, Search, UserPlus, UserCheck, Loader2 } from 'lucide-react';
 import Modal from '@/components/UI/Modal';
 import Button from '@/components/UI/Button';
@@ -163,23 +164,23 @@ export default function FollowListModal({
                 key={user.id}
                 className="flex items-center justify-between p-3 rounded-lg bg-theme-card hover:bg-theme-hover transition-colors"
               >
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-climbing-orange-500/20 flex items-center justify-center text-climbing-orange-500 font-semibold">
+                <Link to={`/users/${user.id}`} className="flex items-center gap-3 flex-1 min-w-0">
+                  <div className="w-10 h-10 rounded-full bg-climbing-orange-500/20 flex items-center justify-center text-climbing-orange-500 font-semibold flex-shrink-0">
                     {user.name.charAt(0).toUpperCase()}
                   </div>
-                  <div>
+                  <div className="min-w-0">
                     <div className="flex items-center gap-2">
-                      <span className="font-medium text-theme-text">{user.name}</span>
+                      <span className="font-medium text-theme-text truncate">{user.name}</span>
                       <RoleTag role={user.role} />
                     </div>
-                    <div className="text-xs text-theme-text-muted">
+                    <div className="text-xs text-theme-text-muted truncate">
                       {type === 'following' ? '关注于' : '关注于'} {formatDate(user.createdAt)}
                       {user.isMutual && (
                         <span className="ml-2 text-climbing-orange-400">· 互相关注</span>
                       )}
                     </div>
                   </div>
-                </div>
+                </Link>
 
                 {currentUserId && currentUserId !== user.id && (
                   <div>
