@@ -5,22 +5,22 @@ import { cn } from '@/lib/utils';
 import WallCanvasToolbar, { ToolType } from './WallCanvasToolbar';
 import { createPluginManager } from './pluginManager';
 import { HoldDrawingPlugin } from './plugins/HoldDrawingPlugin';
+import { RouteLineDrawingPlugin } from './plugins/RouteLineDrawingPlugin';
 import { RouteDrawingPlugin } from './plugins/RouteDrawingPlugin';
 import { HitDetectionPlugin } from './plugins/HitDetectionPlugin';
 import { UndoRedoPlugin } from './plugins/UndoRedoPlugin';
 import { ZoomPanPlugin } from './plugins/ZoomPanPlugin';
-import { SerializationPlugin } from './plugins/SerializationPlugin';
 import { ZoomControlsPlugin, handleZoomIn, handleZoomOut, handleZoomReset } from './plugins/ZoomControlsPlugin';
 import type { CanvasState, CanvasContext, WallCanvasPlugin, RoutePoint, RouteWithPoints } from './types';
 export type { RoutePoint, RouteWithPoints } from './types';
 
 const defaultPlugins: WallCanvasPlugin[] = [
+  RouteLineDrawingPlugin,
   HoldDrawingPlugin,
   RouteDrawingPlugin,
   HitDetectionPlugin,
   UndoRedoPlugin,
   ZoomPanPlugin,
-  SerializationPlugin,
   ZoomControlsPlugin,
 ];
 
@@ -60,7 +60,8 @@ export default function WallCanvas({
   const [editingRouteId, setEditingRouteId] = useState<number | null>(null);
   const [selectedPointIndex, setSelectedPointIndex] = useState<number | null>(null);
 
-  const routeGroupsRef = useRef<Map<number, Group>>(new Map());
+  const holdGroupsRef = useRef<Map<number, Group>>(new Map());
+  const lineGroupsRef = useRef<Map<number, Group>>(new Map());
   const routeIdMapRef = useRef<Map<Group, number>>(new Map());
   const pendingEditRouteIdRef = useRef<number | null>(null);
 
@@ -92,7 +93,8 @@ export default function WallCanvas({
     isEditable,
     wallWidth,
     wallHeight,
-    routeGroups: routeGroupsRef.current,
+    holdGroups: holdGroupsRef.current,
+    lineGroups: lineGroupsRef.current,
     routeIdMap: routeIdMapRef.current,
   }), [routes, selectedRouteId, editingRouteId, activeTool, selectedPointIndex, isEditable, wallWidth, wallHeight]);
 

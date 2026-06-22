@@ -26,7 +26,8 @@ export interface CanvasContext {
   isEditable: boolean;
   wallWidth: number;
   wallHeight: number;
-  routeGroups: Map<number, Group>;
+  holdGroups: Map<number, Group>;
+  lineGroups: Map<number, Group>;
   routeIdMap: Map<Group, number>;
 }
 

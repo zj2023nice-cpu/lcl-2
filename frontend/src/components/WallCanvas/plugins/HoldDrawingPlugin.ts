@@ -1,4 +1,4 @@
-import { Circle, Line, Group, FabricObject } from 'fabric';
+import { Circle, Group, FabricObject } from 'fabric';
 import type { WallCanvasPlugin, FabricObjectWithData, RouteWithPoints } from '../types';
 import {
   HOLD_RADIUS,
@@ -6,8 +6,6 @@ import {
   END_COLOR,
   HOLD_STROKE_COLOR,
   HOLD_STROKE_WIDTH,
-  LINE_WIDTH,
-  LINE_OPACITY,
 } from '../types';
 
 export const HoldDrawingPlugin: WallCanvasPlugin = {
@@ -16,18 +14,18 @@ export const HoldDrawingPlugin: WallCanvasPlugin = {
 
   on: {
     'render': (_, context) => {
-      const { canvas, routes, selectedRouteId, isEditable, routeGroups, routeIdMap } = context;
+      const { canvas, routes, selectedRouteId, isEditable, holdGroups, routeIdMap } = context;
 
-      routeGroups.forEach((group) => {
+      holdGroups.forEach((group) => {
         canvas.remove(group);
       });
-      routeGroups.clear();
+      holdGroups.clear();
       routeIdMap.clear();
 
       routes.forEach((route) => {
         const isSelected = route.id === selectedRouteId;
-        const group = createRouteGroupWithHolds(route, isSelected, isEditable);
-        routeGroups.set(route.id, group);
+        const group = createRouteHoldGroup(route, isSelected, isEditable);
+        holdGroups.set(route.id, group);
         routeIdMap.set(group, route.id);
         canvas.add(group);
       });
@@ -37,29 +35,12 @@ export const HoldDrawingPlugin: WallCanvasPlugin = {
   },
 };
 
-function createRouteGroupWithHolds(
+function createRouteHoldGroup(
   route: RouteWithPoints,
   isSelected: boolean,
   isEditable: boolean
 ): Group {
   const objects: FabricObject[] = [];
-
-  if (route.points.length > 1) {
-    for (let i = 0; i < route.points.length - 1; i++) {
-      const p1 = route.points[i];
-      const p2 = route.points[i + 1];
-      const line = new Line([p1.x, p1.y, p2.x, p2.y], {
-        stroke: route.color,
-        strokeWidth: isSelected ? LINE_WIDTH + 2 : LINE_WIDTH,
-        opacity: isSelected ? 1 : LINE_OPACITY,
-        selectable: false,
-        evented: false,
-        strokeLineCap: 'round',
-        strokeLineJoin: 'round',
-      });
-      objects.push(line);
-    }
-  }
 
   route.points.forEach((point, index) => {
     let color = route.color;
