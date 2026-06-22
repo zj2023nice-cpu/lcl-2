@@ -5,6 +5,7 @@ import { Route, RouteType, RouteStatus } from '../entities/route.entity';
 import { User, UserRole } from '../entities/user.entity';
 import { Wall } from '../entities/wall.entity';
 import { Gym } from '../entities/gym.entity';
+import { Hold, HoldType } from '../entities/hold.entity';
 import { OperationLog } from '../entities/operation-log.entity';
 import { RouteVersionService } from './route-version.service';
 import { CreateRouteDto } from './dto/create-route.dto';
@@ -15,10 +16,12 @@ import {
   RouteCsvHeaderMap,
   DEFAULT_ROUTE_HEADER_MAP,
   ROUTE_TYPE_VALUES,
+  ROUTE_HOLD_TYPE_VALUES,
   isValidGrade,
   ParsedRouteRow,
   ValidatedRouteRow,
   RouteValidationFailure,
+  RouteHoldError,
   RouteBatchImportParseResult,
   RouteBatchImportConfirmPayload,
   RouteBatchImportResult,
@@ -566,11 +569,16 @@ export class RouteService {
       length: row.length || '',
       open_date: row.open_date || '',
       planned_remove_date: row.planned_remove_date || '',
+      hold_x: row.hold_x || '',
+      hold_y: row.hold_y || '',
+      hold_type: row.hold_type || '',
       raw: row,
     }));
 
     const validRows: ValidatedRouteRow[] = [];
     const failures: RouteValidationFailure[] = [];
+    const holdErrors: RouteHoldError[] = [];
+    let holdCount = 0;
 
     for (const row of parsedRows) {
       const reasons: string[] = [];
@@ -664,6 +672,52 @@ export class RouteService {
         }
       }
 
+      const hasHoldX = row.hold_x && row.hold_x.trim() !== '';
+      const hasHoldY = row.hold_y && row.hold_y.trim() !== '';
+      const hasHoldType = row.hold_type && row.hold_type.trim() !== '';
+      const holdFieldCount = [hasHoldX, hasHoldY, hasHoldType].filter(Boolean).length;
+      let holdX: number | undefined;
+      let holdY: number | undefined;
+      let holdType: HoldType | undefined;
+
+      if (holdFieldCount > 0 && holdFieldCount < 3) {
+        const holdReason = '岩点坐标字段需同时填写 hold_x、hold_y、hold_type，或全部留空';
+        reasons.push(holdReason);
+        holdErrors.push({ lineNumber: row.lineNumber, reasons: [holdReason] });
+      } else if (holdFieldCount === 3) {
+        const holdReasons: string[] = [];
+
+        const parsedX = parseFloat(row.hold_x);
+        if (isNaN(parsedX)) {
+          holdReasons.push(`hold_x 格式无效: "${row.hold_x}"`);
+        } else if (parsedX < 0 || parsedX > 100) {
+          holdReasons.push(`hold_x 超出范围 (0-100): ${parsedX}`);
+        } else {
+          holdX = parsedX;
+        }
+
+        const parsedY = parseFloat(row.hold_y);
+        if (isNaN(parsedY)) {
+          holdReasons.push(`hold_y 格式无效: "${row.hold_y}"`);
+        } else if (parsedY < 0 || parsedY > 100) {
+          holdReasons.push(`hold_y 超出范围 (0-100): ${parsedY}`);
+        } else {
+          holdY = parsedY;
+        }
+
+        const typeLower = row.hold_type.trim().toLowerCase();
+        if (ROUTE_HOLD_TYPE_VALUES.includes(typeLower)) {
+          holdType = typeLower as HoldType;
+        } else {
+          holdReasons.push(`hold_type 无效: "${row.hold_type}", 有效值: ${ROUTE_HOLD_TYPE_VALUES.join(', ')}`);
+        }
+
+        if (holdReasons.length > 0) {
+          reasons.push(...holdReasons);
+          holdErrors.push({ lineNumber: row.lineNumber, reasons: holdReasons });
+        }
+      }
+
       if (reasons.length > 0) {
         failures.push({
           lineNumber: row.lineNumber,
@@ -683,7 +737,13 @@ export class RouteService {
           length: routeLength,
           open_date: openDate,
           planned_remove_date: plannedRemoveDate,
+          hold_x: holdX,
+          hold_y: holdY,
+          hold_type: holdType,
         });
+        if (holdX !== undefined && holdY !== undefined && holdType !== undefined) {
+          holdCount += 1;
+        }
       }
     }
 
@@ -691,6 +751,8 @@ export class RouteService {
       totalRows: parsedRows.length,
       validCount: validRows.length,
       failureCount: failures.length,
+      holdCount,
+      holdErrors,
       validRows,
       failures,
       headers,
@@ -723,9 +785,12 @@ export class RouteService {
       totalRows: payload.rows.length,
       successCount: 0,
       failureCount: 0,
+      createdHolds: 0,
       createdRoutes: [],
       failures: [],
     };
+
+    let createdHolds = 0;
 
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
@@ -743,13 +808,24 @@ export class RouteService {
             setter_id: row.setter_id || undefined,
             tags: row.tags || undefined,
             length: row.length || undefined,
-            open_date: row.open_date || undefined,
-            planned_remove_date: row.planned_remove_date || undefined,
+            open_date: row.open_date ? new Date(row.open_date) : undefined,
+            planned_remove_date: row.planned_remove_date ? new Date(row.planned_remove_date) : undefined,
             status: RouteStatus.DRAFTING,
           };
           const route = queryRunner.manager.create(Route, routeData as any);
 
           const saved = await queryRunner.manager.save(route);
+
+          if (row.hold_x !== undefined && row.hold_y !== undefined && row.hold_type !== undefined) {
+            const hold = queryRunner.manager.create(Hold, {
+              route_id: saved.id,
+              position_x: row.hold_x,
+              position_y: row.hold_y,
+              type: row.hold_type,
+            });
+            await queryRunner.manager.save(hold);
+            createdHolds += 1;
+          }
 
           await this.routeVersionService.createSnapshot(
             saved.id,
@@ -786,6 +862,7 @@ export class RouteService {
         result.success = true;
         result.successCount = result.createdRoutes.length;
         result.failureCount = 0;
+        result.createdHolds = createdHolds;
       }
     } catch (error: any) {
       try {

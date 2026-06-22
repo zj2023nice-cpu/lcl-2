@@ -12,6 +12,7 @@ export enum HoldType {
   HAND = 'hand',
   FOOT = 'foot',
   START = 'start',
+  HOLD = 'hold',
   END = 'end',
 }
 

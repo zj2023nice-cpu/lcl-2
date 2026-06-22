@@ -142,6 +142,9 @@ export default function RouteImport() {
       length: failure.row.length,
       openDate: failure.row.openDate,
       plannedRemoveDate: failure.row.plannedRemoveDate,
+      holdX: failure.row.holdX,
+      holdY: failure.row.holdY,
+      holdType: failure.row.holdType,
     });
   };
 
@@ -161,6 +164,9 @@ export default function RouteImport() {
           length: editForm.length || '',
           openDate: editForm.openDate || '',
           plannedRemoveDate: editForm.plannedRemoveDate || '',
+          holdX: editForm.holdX || '',
+          holdY: editForm.holdY || '',
+          holdType: editForm.holdType || '',
         };
         const reasons: string[] = [];
         if (!newRow.name.trim()) reasons.push('线路名称不能为空');
@@ -187,6 +193,27 @@ export default function RouteImport() {
 
         if (newRow.length && isNaN(parseFloat(newRow.length))) reasons.push('长度格式无效');
 
+        const hasHoldX = newRow.holdX.trim() !== '';
+        const hasHoldY = newRow.holdY.trim() !== '';
+        const hasHoldType = newRow.holdType.trim() !== '';
+        const holdFieldCount = [hasHoldX, hasHoldY, hasHoldType].filter(Boolean).length;
+        if (holdFieldCount > 0 && holdFieldCount < 3) {
+          reasons.push('岩点坐标字段需同时填写 hold_x、hold_y、hold_type，或全部留空');
+        } else if (holdFieldCount === 3) {
+          const xNum = parseFloat(newRow.holdX);
+          if (isNaN(xNum)) reasons.push('hold_x 格式无效');
+          else if (xNum < 0 || xNum > 100) reasons.push('hold_x 超出范围 (0-100)');
+
+          const yNum = parseFloat(newRow.holdY);
+          if (isNaN(yNum)) reasons.push('hold_y 格式无效');
+          else if (yNum < 0 || yNum > 100) reasons.push('hold_y 超出范围 (0-100)');
+
+          const validHoldTypes = ['start', 'hold', 'end'];
+          if (!validHoldTypes.includes(newRow.holdType.trim().toLowerCase())) {
+            reasons.push('hold_type 无效，有效值: start / hold / end');
+          }
+        }
+
         return { ...f, row: newRow, reasons };
       }),
     );
@@ -210,6 +237,19 @@ export default function RouteImport() {
           ? f.row.tags.split(/[;；]/).map((t) => t.trim()).filter((t) => t)
           : undefined;
 
+        const hasHoldX = f.row.holdX.trim() !== '';
+        const hasHoldY = f.row.holdY.trim() !== '';
+        const hasHoldType = f.row.holdType.trim() !== '';
+        const holdFieldCount = [hasHoldX, hasHoldY, hasHoldType].filter(Boolean).length;
+        let holdX: number | undefined;
+        let holdY: number | undefined;
+        let holdType: string | undefined;
+        if (holdFieldCount === 3) {
+          holdX = parseFloat(f.row.holdX);
+          holdY = parseFloat(f.row.holdY);
+          holdType = f.row.holdType.trim().toLowerCase();
+        }
+
         validRows.push({
           lineNumber: f.lineNumber,
           name: f.row.name.trim(),
@@ -222,6 +262,9 @@ export default function RouteImport() {
           length: parsedLength && !isNaN(parsedLength) ? parsedLength : undefined,
           openDate: f.row.openDate || undefined,
           plannedRemoveDate: f.row.plannedRemoveDate || undefined,
+          holdX,
+          holdY,
+          holdType,
         });
       }
     }
@@ -275,8 +318,8 @@ export default function RouteImport() {
   };
 
   const handleDownloadTemplate = () => {
-    const headers = 'name,type,grade,color,wall_id,setter_id,tags,length,open_date,planned_remove_date';
-    const example = '测试线路,boulder,V3,#FF6B35,1,1,力量;耐力,12,2025-01-01,2025-06-01';
+    const headers = 'name,type,grade,color,wall_id,setter_id,tags,length,open_date,planned_remove_date,hold_x,hold_y,hold_type';
+    const example = '测试线路,boulder,V3,#FF6B35,1,1,力量;耐力,12,2025-01-01,2025-06-01,20,50,start';
     const csv = `${headers}\n${example}`;
     const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8' });
     const url = URL.createObjectURL(blob);
@@ -423,6 +466,9 @@ export default function RouteImport() {
                   <tr><td className="px-2 py-1 font-mono">length</td><td className="px-2 py-1">否</td><td className="px-2 py-1">线路长度(米)</td></tr>
                   <tr><td className="px-2 py-1 font-mono">open_date</td><td className="px-2 py-1">否</td><td className="px-2 py-1">开放日期 YYYY-MM-DD</td></tr>
                   <tr><td className="px-2 py-1 font-mono">planned_remove_date</td><td className="px-2 py-1">否</td><td className="px-2 py-1">计划拆除日期</td></tr>
+                  <tr><td className="px-2 py-1 font-mono">hold_x</td><td className="px-2 py-1">否</td><td className="px-2 py-1">岩点X坐标 (0-100)，需与 hold_y/hold_type 同时填写</td></tr>
+                  <tr><td className="px-2 py-1 font-mono">hold_y</td><td className="px-2 py-1">否</td><td className="px-2 py-1">岩点Y坐标 (0-100)，需与 hold_x/hold_type 同时填写</td></tr>
+                  <tr><td className="px-2 py-1 font-mono">hold_type</td><td className="px-2 py-1">否</td><td className="px-2 py-1">岩点类型：start / hold / end</td></tr>
                 </tbody>
               </table>
             </div>
@@ -452,7 +498,7 @@ export default function RouteImport() {
       {step === 'preview' && parseResult && (
         <div className="space-y-4">
           <Card className="p-4">
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
               <div className="p-3 bg-theme-subtle rounded-lg text-center">
                 <p className="text-2xl font-bold text-theme-text">{parseResult.totalRows}</p>
                 <p className="text-xs text-theme-text-muted mt-1">总行数</p>
@@ -465,12 +511,49 @@ export default function RouteImport() {
                 <p className="text-2xl font-bold text-red-400">{parseResult.failureCount}</p>
                 <p className="text-xs text-theme-text-muted mt-1">存在错误</p>
               </div>
+              <div className="p-3 bg-purple-500/10 rounded-lg text-center">
+                <p className="text-2xl font-bold text-purple-400">{parseResult.holdCount}</p>
+                <p className="text-xs text-theme-text-muted mt-1">岩点数量</p>
+              </div>
               <div className="p-3 bg-blue-500/10 rounded-lg text-center">
                 <p className="text-2xl font-bold text-blue-400">{correctedFailuresCount}</p>
                 <p className="text-xs text-theme-text-muted mt-1">已手动修正</p>
               </div>
             </div>
           </Card>
+
+          {parseResult.holdErrors.length > 0 && (
+            <Card className="overflow-hidden">
+              <div className="px-5 py-3 border-b border-theme-border bg-orange-500/5 flex items-center gap-2">
+                <AlertTriangle size={16} className="text-orange-400" />
+                <span className="text-sm font-medium text-orange-400">岩点坐标错误明细 ({parseResult.holdErrors.length} 行)</span>
+              </div>
+              <div className="max-h-60 overflow-y-auto">
+                <table className="w-full text-sm">
+                  <thead className="bg-theme-subtle sticky top-0">
+                    <tr>
+                      <th className="text-left px-4 py-2 text-theme-text-muted font-medium w-16">行号</th>
+                      <th className="text-left px-4 py-2 text-theme-text-muted font-medium">坐标错误</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-theme-border/50">
+                    {parseResult.holdErrors.map((he) => (
+                      <tr key={he.lineNumber} className="hover:bg-theme-card/30">
+                        <td className="px-4 py-2 text-theme-text-muted">{he.lineNumber}</td>
+                        <td className="px-4 py-2">
+                          <div className="space-y-0.5">
+                            {he.reasons.map((r, i) => (
+                              <p key={i} className="text-xs text-orange-400">{r}</p>
+                            ))}
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </Card>
+          )}
 
           {parseResult.validCount > 0 && (
             <Card className="overflow-hidden">
@@ -724,6 +807,45 @@ export default function RouteImport() {
                       className="w-full px-3 py-2 bg-theme-subtle border border-theme-border rounded-lg text-theme-text text-sm focus:outline-none focus:border-climbing-orange-500"
                     />
                   </div>
+                  <div>
+                    <label className="block text-sm text-theme-text-secondary mb-1">岩点X坐标 (0-100)</label>
+                    <input
+                      type="number"
+                      min={0}
+                      max={100}
+                      step="0.01"
+                      value={editForm.holdX || ''}
+                      onChange={(e) => setEditForm((p) => ({ ...p, holdX: e.target.value }))}
+                      className="w-full px-3 py-2 bg-theme-subtle border border-theme-border rounded-lg text-theme-text text-sm focus:outline-none focus:border-climbing-orange-500"
+                      placeholder="可选，如 20"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm text-theme-text-secondary mb-1">岩点Y坐标 (0-100)</label>
+                    <input
+                      type="number"
+                      min={0}
+                      max={100}
+                      step="0.01"
+                      value={editForm.holdY || ''}
+                      onChange={(e) => setEditForm((p) => ({ ...p, holdY: e.target.value }))}
+                      className="w-full px-3 py-2 bg-theme-subtle border border-theme-border rounded-lg text-theme-text text-sm focus:outline-none focus:border-climbing-orange-500"
+                      placeholder="可选，如 50"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm text-theme-text-secondary mb-1">岩点类型</label>
+                    <select
+                      value={editForm.holdType || ''}
+                      onChange={(e) => setEditForm((p) => ({ ...p, holdType: e.target.value }))}
+                      className="w-full px-3 py-2 bg-theme-subtle border border-theme-border rounded-lg text-theme-text text-sm focus:outline-none focus:border-climbing-orange-500"
+                    >
+                      <option value="">不创建岩点</option>
+                      <option value="start">start (起点)</option>
+                      <option value="hold">hold (中途)</option>
+                      <option value="end">end (终点)</option>
+                    </select>
+                  </div>
                 </div>
 
                 <div className="flex justify-end gap-3 pt-2">
@@ -812,6 +934,7 @@ export default function RouteImport() {
                     <th className="text-left px-4 py-2 text-theme-text-muted font-medium">难度</th>
                     <th className="text-left px-4 py-2 text-theme-text-muted font-medium">岩壁ID</th>
                     <th className="text-left px-4 py-2 text-theme-text-muted font-medium">颜色</th>
+                    <th className="text-left px-4 py-2 text-theme-text-muted font-medium">岩点</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-theme-border/50">
@@ -834,6 +957,15 @@ export default function RouteImport() {
                             <div className="w-3 h-3 rounded-full border border-theme-border" style={{ backgroundColor: row.color }} />
                             <span className="text-theme-text-secondary text-xs">{row.color}</span>
                           </div>
+                        )}
+                      </td>
+                      <td className="px-4 py-2">
+                        {row.holdX !== undefined && row.holdY !== undefined && row.holdType ? (
+                          <span className="px-2 py-0.5 bg-purple-500/20 text-purple-400 rounded text-xs">
+                            ({row.holdX}, {row.holdY}) {row.holdType}
+                          </span>
+                        ) : (
+                          <span className="text-xs text-theme-text-muted">-</span>
                         )}
                       </td>
                     </tr>
@@ -876,7 +1008,7 @@ export default function RouteImport() {
                 <div className="text-sm">
                   <p className="font-medium text-green-400">批量导入成功</p>
                   <p className="text-theme-text-secondary mt-1">
-                    共导入 {importResult.totalRows} 条线路，全部成功创建为草稿状态。
+                    共导入 {importResult.totalRows} 条线路，全部成功创建为草稿状态{importResult.createdHolds > 0 ? `，并创建 ${importResult.createdHolds} 个岩点` : ''}。
                   </p>
                 </div>
               </div>
@@ -894,7 +1026,7 @@ export default function RouteImport() {
           </Card>
 
           <Card className="p-4">
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               <div className="p-3 bg-theme-subtle rounded-lg text-center">
                 <p className="text-2xl font-bold text-theme-text">{importResult.totalRows}</p>
                 <p className="text-xs text-theme-text-muted mt-1">总导入行数</p>
@@ -902,6 +1034,10 @@ export default function RouteImport() {
               <div className="p-3 bg-green-500/10 rounded-lg text-center">
                 <p className="text-2xl font-bold text-green-400">{importResult.successCount}</p>
                 <p className="text-xs text-theme-text-muted mt-1">成功创建</p>
+              </div>
+              <div className="p-3 bg-purple-500/10 rounded-lg text-center">
+                <p className="text-2xl font-bold text-purple-400">{importResult.createdHolds}</p>
+                <p className="text-xs text-theme-text-muted mt-1">岩点数量</p>
               </div>
               <div className="p-3 bg-red-500/10 rounded-lg text-center">
                 <p className="text-2xl font-bold text-red-400">{importResult.failureCount}</p>

@@ -1,4 +1,5 @@
 import { RouteType } from '../../entities/route.entity';
+import { HoldType } from '../../entities/hold.entity';
 
 export interface RouteCsvHeaderMap {
   name: string;
@@ -11,6 +12,9 @@ export interface RouteCsvHeaderMap {
   length: string;
   open_date: string;
   planned_remove_date: string;
+  hold_x: string;
+  hold_y: string;
+  hold_type: string;
 }
 
 export const DEFAULT_ROUTE_HEADER_MAP: RouteCsvHeaderMap = {
@@ -24,9 +28,14 @@ export const DEFAULT_ROUTE_HEADER_MAP: RouteCsvHeaderMap = {
   length: 'length',
   open_date: 'open_date',
   planned_remove_date: 'planned_remove_date',
+  hold_x: 'hold_x',
+  hold_y: 'hold_y',
+  hold_type: 'hold_type',
 };
 
 export const ROUTE_TYPE_VALUES: string[] = Object.values(RouteType);
+
+export const ROUTE_HOLD_TYPE_VALUES: string[] = ['start', 'hold', 'end'];
 
 export const VALID_GRADE_PATTERNS = [
   /^V\d+$/i,
@@ -49,6 +58,9 @@ export interface ParsedRouteRow {
   length: string;
   open_date: string;
   planned_remove_date: string;
+  hold_x: string;
+  hold_y: string;
+  hold_type: string;
   raw: Record<string, string>;
 }
 
@@ -64,6 +76,9 @@ export interface ValidatedRouteRow {
   length?: number;
   open_date?: string;
   planned_remove_date?: string;
+  hold_x?: number;
+  hold_y?: number;
+  hold_type?: HoldType;
 }
 
 export interface RouteValidationFailure {
@@ -72,10 +87,17 @@ export interface RouteValidationFailure {
   reasons: string[];
 }
 
+export interface RouteHoldError {
+  lineNumber: number;
+  reasons: string[];
+}
+
 export interface RouteBatchImportParseResult {
   totalRows: number;
   validCount: number;
   failureCount: number;
+  holdCount: number;
+  holdErrors: RouteHoldError[];
   validRows: ValidatedRouteRow[];
   failures: RouteValidationFailure[];
   headers: string[];
@@ -92,6 +114,7 @@ export interface RouteBatchImportResult {
   totalRows: number;
   successCount: number;
   failureCount: number;
+  createdHolds: number;
   createdRoutes: { id: number; name: string; grade: string; type: RouteType; wall_id: number }[];
   failures: { lineNumber: number; reason: string }[];
 }

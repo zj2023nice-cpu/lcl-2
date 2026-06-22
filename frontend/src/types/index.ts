@@ -565,6 +565,9 @@ export interface ParsedRouteRow {
   length: string;
   openDate: string;
   plannedRemoveDate: string;
+  holdX: string;
+  holdY: string;
+  holdType: string;
 }
 
 export interface ValidatedRouteRow {
@@ -579,6 +582,9 @@ export interface ValidatedRouteRow {
   length?: number;
   openDate?: string;
   plannedRemoveDate?: string;
+  holdX?: number;
+  holdY?: number;
+  holdType?: string;
 }
 
 export interface RouteValidationFailure {
@@ -587,10 +593,17 @@ export interface RouteValidationFailure {
   reasons: string[];
 }
 
+export interface RouteHoldError {
+  lineNumber: number;
+  reasons: string[];
+}
+
 export interface RouteBatchImportParseResult {
   totalRows: number;
   validCount: number;
   failureCount: number;
+  holdCount: number;
+  holdErrors: RouteHoldError[];
   validRows: ValidatedRouteRow[];
   failures: RouteValidationFailure[];
   headers: string[];
@@ -607,6 +620,7 @@ export interface RouteBatchImportResult {
   totalRows: number;
   successCount: number;
   failureCount: number;
+  createdHolds: number;
   createdRoutes: { id: number; name: string; grade: string; type: RouteType; wallId: number }[];
   failures: { lineNumber: number; reason: string }[];
 }
