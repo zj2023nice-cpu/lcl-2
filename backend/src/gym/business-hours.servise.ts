@@ -255,8 +255,10 @@ export class BusinessHoursService {
   }
 
   private dateDiffDays(fromStr: string, toStr: string): number {
-    const a = Date.UTC(...(fromStr.split('-').map(Number) as [number, number, number]));
-    const b = Date.UTC(...(toStr.split('-').map(Number) as [number, number, number]));
+    const [fy, fmo, fd] = fromStr.split('-').map(Number);
+    const [ty, tmo, td] = toStr.split('-').map(Number);
+    const a = Date.UTC(fy, fmo - 1, fd);
+    const b = Date.UTC(ty, tmo - 1, td);
     return Math.round((b - a) / 86400000);
   }
 
@@ -295,6 +297,12 @@ export class BusinessHoursService {
     return null;
   }
 
+  private addUTCDays(d: Date, days: number): Date {
+    const result = new Date(d.getTime());
+    result.setUTCDate(result.getUTCDate() + days);
+    return result;
+  }
+
   private findNextOpenFrom(day: Date, config: GymBusinessHours, maxDays: number): NextOpen | null {
     const timezone = config.timezone;
     let cursor = new Date(day.getTime());
@@ -307,14 +315,15 @@ export class BusinessHoursService {
           return { dateStr, timeStr: info.segments[0].open, instant: this.buildInstant(dateStr, info.segments[0].open, timezone) };
         }
       }
-      cursor = new Date(cursor.getTime() + 86400000);
+      cursor = this.addUTCDays(cursor, 1);
     }
     return null;
   }
 
   private findNextOpenAfterClosure(closure: TemporaryClosure, config: GymBusinessHours): NextOpen | null {
     const [y, mo, d] = closure.end_date.split('-').map(Number);
-    const dayAfter = new Date(Date.UTC(y, mo - 1, d + 1));
+    const lastDay = new Date(Date.UTC(y, mo - 1, d));
+    const dayAfter = this.addUTCDays(lastDay, 1);
     return this.findNextOpenFrom(dayAfter, config, 14);
   }
 
@@ -359,7 +368,7 @@ export class BusinessHoursService {
     const result: CalendarDay[] = [];
     const todayStr = this.toDateString(now);
     for (let i = 0; i < days; i++) {
-      const day = new Date(now.getTime() + i * 86400000);
+      const day = this.addUTCDays(now, i);
       const dateStr = this.toDateString(day);
       const closure = this.getActiveClosure(day, config);
       const info = this.getSegmentsForDate(day, config);
@@ -416,7 +425,7 @@ export class BusinessHoursService {
       if (!isOpen) {
         nextOpen = this.findNextOpenToday(now, segs, timezone);
         if (!nextOpen) {
-          const tomorrow = new Date(now.getTime() + 86400000);
+          const tomorrow = this.addUTCDays(now, 1);
           nextOpen = this.findNextOpenFrom(tomorrow, config, 7);
         }
       }

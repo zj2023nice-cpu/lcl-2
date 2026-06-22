@@ -9,6 +9,8 @@
     "start:prod": "node dist/main",
     "lint": "eslint .",
     "check": "tsc --noEmit",
+    "test": "jest",
+    "test:watch": "jest --watch",
     "typeorm": "typeorm-ts-node-commonjs",
     "migration:generate": "npm run typeorm -- migration:generate -d src/data-source.ts",
     "migration:run": "npm run typeorm -- migration:run -d src/data-source.ts",
@@ -42,10 +44,13 @@
     "@nestjs/schematics": "^10.2.3",
     "@types/bcrypt": "^5.0.2",
     "@types/express": "^5.0.0",
+    "@types/jest": "^30.0.0",
     "@types/multer": "^1.4.12",
     "@types/node": "^22.19.21",
     "@types/passport-jwt": "^4.0.1",
     "@types/uuid": "^10.0.0",
+    "jest": "^30.4.2",
+    "ts-jest": "^29.4.11",
     "ts-node": "^10.9.2",
     "typescript": "~5.8.3"
   }
