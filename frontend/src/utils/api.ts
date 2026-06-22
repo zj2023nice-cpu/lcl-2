@@ -1,4 +1,4 @@
-import type { ApiResponse, User, UserRole, AuthResponse, EmailLoginCredentials, PhoneLoginCredentials, RegisterCredentials, Gym, Wall, Route, PaginatedResponse, Ascent, GradeVote, Hold, RouteHeat, ColdRoute, SetterWorkload, ActiveUsersStats, UserBadge, BadgeStats, BadgeProgressStats, BadgeCheckResult, BadgePosterData, BadgeShareData, BatchUpdateStatusPayload, BatchStatusPreviewResult, BatchStatusResult, ThemePreferences, FollowStatus, FollowListResponse, FeedResponse, RouteCompletionAnalysis, RouteBatchImportParseResult, RouteBatchImportConfirmPayload, RouteBatchImportResult } from '@/types';
+import type { ApiResponse, User, UserRole, AuthResponse, EmailLoginCredentials, PhoneLoginCredentials, RegisterCredentials, Gym, Wall, Route, PaginatedResponse, Ascent, GradeVote, Hold, RouteHeat, ColdRoute, SetterWorkload, ActiveUsersStats, UserBadge, BadgeStats, BadgeProgressStats, BadgeCheckResult, BadgePosterData, BadgeShareData, BatchUpdateStatusPayload, BatchStatusPreviewResult, BatchStatusResult, ThemePreferences, FollowStatus, FollowListResponse, FeedResponse, RouteCompletionAnalysis, RouteBatchImportParseResult, RouteBatchImportConfirmPayload, RouteBatchImportResult, BusinessStatus, BusinessHoursConfig } from '@/types';
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api';
 
@@ -224,6 +224,23 @@ export const gymApi = {
 
   getGymById: async (id: number): Promise<Gym> => {
     return get<Gym>(`/gyms/${id}`);
+  },
+
+  getBusinessStatus: async (gymId: number): Promise<BusinessStatus> => {
+    return get<BusinessStatus>(`/gyms/${gymId}/business-status`);
+  },
+
+  getBusinessHours: async (gymId: number): Promise<BusinessHoursConfig> => {
+    return get<BusinessHoursConfig>(`/gyms/${gymId}/business-hours`);
+  },
+
+  updateBusinessHours: async (gymId: number, config: BusinessHoursConfig): Promise<BusinessHoursConfig> => {
+    return put<BusinessHoursConfig>(`/gyms/${gymId}/business-hours`, {
+      weeklySchedule: config.weeklySchedule,
+      specialDates: config.specialDates,
+      temporaryClosures: config.temporaryClosures,
+      timezone: config.timezone,
+    });
   },
 };
 

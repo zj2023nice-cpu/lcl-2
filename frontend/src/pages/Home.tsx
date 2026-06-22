@@ -150,33 +150,44 @@ export default function Home() {
           <h1 className="text-2xl font-bold text-theme-text">欢迎回来 👋</h1>
           <p className="text-theme-text-muted mt-1">今天想要爬什么线路？</p>
         </div>
-        <div className="relative">
-          <button
-            onClick={() => setShowGymDropdown(!showGymDropdown)}
-            className="flex items-center gap-2 px-4 py-2 bg-theme-card border border-theme-border rounded-lg hover:border-theme-border transition-colors"
-          >
-            <MapPin size={18} className="text-climbing-orange-500" />
-            <span className="text-theme-text font-medium">{currentGym?.name || '选择岩馆'}</span>
-            <ChevronRight size={16} className={`text-theme-text-muted transition-transform ${showGymDropdown ? 'rotate-90' : ''}`} />
-          </button>
-          {showGymDropdown && (
-            <div className="absolute right-0 top-full mt-2 w-64 bg-theme-card border border-theme-border rounded-lg shadow-xl z-50 overflow-hidden">
-              {gyms.map((gym) => (
-                <button
-                  key={gym.id}
-                  onClick={() => {
-                    setCurrentGym(gym);
-                    setShowGymDropdown(false);
-                  }}
-                  className={`w-full px-4 py-3 text-left hover:bg-theme-hover transition-colors ${
-                    currentGym?.id === gym.id ? 'bg-theme-hover' : ''
-                  }`}
-                >
-                  <p className="font-medium text-theme-text">{gym.name}</p>
-                  <p className="text-sm text-theme-text-muted truncate">{gym.address}</p>
-                </button>
-              ))}
-            </div>
+        <div className="flex items-center gap-2">
+          <div className="relative">
+            <button
+              onClick={() => setShowGymDropdown(!showGymDropdown)}
+              className="flex items-center gap-2 px-4 py-2 bg-theme-card border border-theme-border rounded-lg hover:border-theme-border transition-colors"
+            >
+              <MapPin size={18} className="text-climbing-orange-500" />
+              <span className="text-theme-text font-medium">{currentGym?.name || '选择岩馆'}</span>
+              <ChevronRight size={16} className={`text-theme-text-muted transition-transform ${showGymDropdown ? 'rotate-90' : ''}`} />
+            </button>
+            {showGymDropdown && (
+              <div className="absolute right-0 top-full mt-2 w-64 bg-theme-card border border-theme-border rounded-lg shadow-xl z-50 overflow-hidden">
+                {gyms.map((gym) => (
+                  <button
+                    key={gym.id}
+                    onClick={() => {
+                      setCurrentGym(gym);
+                      setShowGymDropdown(false);
+                    }}
+                    className={`w-full px-4 py-3 text-left hover:bg-theme-hover transition-colors ${
+                      currentGym?.id === gym.id ? 'bg-theme-hover' : ''
+                    }`}
+                  >
+                    <p className="font-medium text-theme-text">{gym.name}</p>
+                    <p className="text-sm text-theme-text-muted truncate">{gym.address}</p>
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+          {currentGym && (
+            <Link
+              to={`/gyms/${currentGym.id}`}
+              className="flex items-center gap-1 px-3 py-2 text-sm text-climbing-orange-500 hover:text-climbing-orange-400 transition-colors whitespace-nowrap"
+            >
+              营业状态
+              <ChevronRight size={14} />
+            </Link>
           )}
         </div>
       </div>

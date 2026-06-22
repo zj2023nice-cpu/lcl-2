@@ -3,6 +3,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { SeedsService } from './seeds.service';
 import { User } from '../entities/user.entity';
 import { Gym } from '../entities/gym.entity';
+import { GymBusinessHours } from '../entities/gym-business-hours.entity';
 import { Wall } from '../entities/wall.entity';
 import { Route } from '../entities/route.entity';
 import { Hold } from '../entities/hold.entity';
@@ -15,6 +16,7 @@ import { UserProfile } from '../entities/user-profile.entity';
     TypeOrmModule.forFeature([
       User,
       Gym,
+      GymBusinessHours,
       Wall,
       Route,
       Hold,

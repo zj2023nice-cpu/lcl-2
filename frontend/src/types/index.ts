@@ -39,6 +39,66 @@ export interface Gym {
   updatedAt: string;
 }
 
+export interface TimeSegment {
+  open: string;
+  close: string;
+}
+
+export interface SpecialDate {
+  date: string;
+  isClosed: boolean;
+  segments: TimeSegment[];
+  note?: string;
+}
+
+export interface TemporaryClosure {
+  id: string;
+  startDate: string;
+  endDate: string;
+  reason: string;
+  message?: string;
+  createdAt?: string;
+}
+
+export interface BusinessHoursConfig {
+  id?: number;
+  gymId: number;
+  weeklySchedule: TimeSegment[][];
+  specialDates: SpecialDate[];
+  temporaryClosures: TemporaryClosure[];
+  timezone: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface BusinessCalendarDay {
+  date: string;
+  dayOfWeek: number;
+  dayLabel: string;
+  isToday: boolean;
+  isOpen: boolean;
+  isSpecial: boolean;
+  specialNote: string | null;
+  isTemporarilyClosed: boolean;
+  segments: TimeSegment[];
+  openLabel: string;
+}
+
+export interface BusinessStatus {
+  isOpen: boolean;
+  isTemporarilyClosed: boolean;
+  closureMessage: string | null;
+  currentSegment: TimeSegment | null;
+  closesAt: string | null;
+  closesAtLabel: string;
+  nextOpenTime: string | null;
+  nextOpenLabel: string;
+  todaySegments: TimeSegment[];
+  timezone: string;
+  weeklyCalendar: BusinessCalendarDay[];
+  updatedAt: string;
+}
+
 export interface Wall {
   id: number;
   gymId: number;

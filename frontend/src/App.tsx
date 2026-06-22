@@ -22,6 +22,7 @@ import RouteManagement from '@/pages/RouteManagement';
 import RouteImport from '@/pages/RouteImport';
 import MessageTest from '@/pages/MessageTest';
 import BadgeShare from '@/pages/BadgeShare';
+import GymDetail from '@/pages/GymDetail';
 
 function ProtectedLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -46,6 +47,14 @@ export default function App() {
             element={
               <ProtectedLayout>
                 <Home />
+              </ProtectedLayout>
+            }
+          />
+          <Route
+            path="/gyms/:gymId"
+            element={
+              <ProtectedLayout>
+                <GymDetail />
               </ProtectedLayout>
             }
           />

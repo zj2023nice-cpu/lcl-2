@@ -13,21 +13,25 @@ import {
   Archive,
   Layers,
   Upload,
+  Building2,
   X,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useEffect } from 'react';
+import { useGymStore } from '@/store/gym';
 
 interface NavItem {
   path: string;
   label: string;
   icon: React.ComponentType<{ size?: number | string; className?: string }>;
   adminOnly?: boolean;
+  gymLink?: boolean;
 }
 
 const navItems: NavItem[] = [
   { path: '/', label: '首页', icon: Home },
   { path: '/overview', label: '数据概览', icon: PieChart, adminOnly: true },
+  { path: '/gym', label: '岩馆', icon: Building2, gymLink: true },
   { path: '/walls', label: '岩壁', icon: Mountain },
   { path: '/routes', label: '线路', icon: Route },
   { path: '/ascents', label: '攀爬记录', icon: ListTodo },
@@ -48,6 +52,9 @@ interface SidebarProps {
 }
 
 export default function Sidebar({ isOpen = true, isMobile = false, onClose }: SidebarProps) {
+  const { currentGym } = useGymStore();
+  const gymPath = currentGym ? `/gyms/${currentGym.id}` : '/';
+
   useEffect(() => {
     if (isMobile && isOpen) {
       const originalOverflow = document.body.style.overflow;
@@ -109,10 +116,11 @@ export default function Sidebar({ isOpen = true, isMobile = false, onClose }: Si
         <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
           {navItems.map((item) => {
             const Icon = item.icon;
+            const resolvedPath = item.gymLink ? gymPath : item.path;
             return (
               <NavLink
                 key={item.path}
-                to={item.path}
+                to={resolvedPath}
                 end={item.path === '/'}
                 className={({ isActive }) =>
                   cn(

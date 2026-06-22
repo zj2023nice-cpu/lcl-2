@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { User, UserRole } from '../entities/user.entity';
 import { Gym } from '../entities/gym.entity';
+import { GymBusinessHours, TimeSegment } from '../entities/gym-business-hours.entity';
 import { Wall } from '../entities/wall.entity';
 import { Route, RouteType, RouteStatus } from '../entities/route.entity';
 import { Hold, HoldType } from '../entities/hold.entity';
@@ -20,6 +21,8 @@ export class SeedsService {
     private userRepository: Repository<User>,
     @InjectRepository(Gym)
     private gymRepository: Repository<Gym>,
+    @InjectRepository(GymBusinessHours)
+    private businessHoursRepository: Repository<GymBusinessHours>,
     @InjectRepository(Wall)
     private wallRepository: Repository<Wall>,
     @InjectRepository(Route)
@@ -52,6 +55,9 @@ export class SeedsService {
 
       const gym = await this.createGym(gymAdmin.id);
       this.logger.log('岩馆创建完成');
+
+      await this.createBusinessHours(gym.id);
+      this.logger.log('岩馆营业时间配置完成');
 
       const walls = await this.createWalls(gym.id);
       this.logger.log('岩壁创建完成');
@@ -193,6 +199,36 @@ export class SeedsService {
     gym.admin_id = adminId;
 
     return this.gymRepository.save(gym);
+  }
+
+  private async createBusinessHours(gymId: number): Promise<GymBusinessHours> {
+    const existing = await this.businessHoursRepository.findOne({
+      where: { gym_id: gymId },
+    });
+    if (existing) return existing;
+
+    const weekday: TimeSegment[] = [{ open: '10:00', close: '14:00' }, { open: '15:00', close: '22:00' }];
+    const weekend: TimeSegment[] = [{ open: '09:00', close: '12:00' }, { open: '13:00', close: '22:00' }];
+
+    const config = new GymBusinessHours();
+    config.gym_id = gymId;
+    config.timezone = 'Asia/Shanghai';
+    config.weekly_schedule = [
+      weekend,
+      weekday,
+      weekday,
+      weekday,
+      weekday,
+      weekday,
+      [{ open: '09:00', close: '21:00' }],
+    ];
+    config.special_dates = [
+      { date: '2026-01-01', is_closed: false, segments: [{ open: '10:00', close: '18:00' }], note: '元旦' },
+      { date: '2026-02-07', is_closed: true, segments: [], note: '春节闭馆第一天' },
+    ];
+    config.temporary_closures = [];
+
+    return this.businessHoursRepository.save(config);
   }
 
   private async createWalls(gymId: number): Promise<Wall[]> {

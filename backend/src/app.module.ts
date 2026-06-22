@@ -22,6 +22,7 @@ import { BadgeModule } from './badge/badge.module';
 import { FollowModule } from './follow/follow.module';
 import { User } from './entities/user.entity';
 import { Gym } from './entities/gym.entity';
+import { GymBusinessHours } from './entities/gym-business-hours.entity';
 import { Wall } from './entities/wall.entity';
 import { Route } from './entities/route.entity';
 import { Hold } from './entities/hold.entity';
@@ -51,6 +52,7 @@ import { RolesGuard } from './common/guards/roles.guard';
       entities: [
         User,
         Gym,
+        GymBusinessHours,
         Wall,
         Route,
         Hold,
