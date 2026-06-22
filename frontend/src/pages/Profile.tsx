@@ -24,8 +24,9 @@ import Button from '@/components/UI/Button';
 import RoleTag from '@/components/UI/RoleTag';
 import useAuthStore from '@/store/auth';
 import { useNavigate } from 'react-router-dom';
-import type { UserRole, UserBadge, BadgeStats, BadgeProgressStats } from '@/types';
-import { profileApi, ascentApi, badgeApi } from '@/utils/api';
+import type { UserRole, UserBadge, BadgeStats, BadgeProgressStats, FollowStatus } from '@/types';
+import { profileApi, ascentApi, badgeApi, followApi } from '@/utils/api';
+import { FollowButton, FollowListModal } from '@/components/Follow';
 import {
   BadgeGallery,
   BadgeUnlockModal,
@@ -79,6 +80,8 @@ export default function Profile() {
   const [targetDate, setTargetDate] = useState(initialGoal.targetDate);
   const [loading, setLoading] = useState(true);
   const [savingGoal, setSavingGoal] = useState(false);
+  const [followStatus, setFollowStatus] = useState<FollowStatus | null>(null);
+  const [followModalType, setFollowModalType] = useState<'following' | 'followers' | null>(null);
   const [stats, setStats] = useState({
     totalAscents: 0,
     maxGrade: '-',
@@ -141,10 +144,15 @@ export default function Profile() {
       if (!user) return;
       setLoading(true);
       try {
-        const [ascentData, calibrationData] = await Promise.all([
+        const [ascentData, calibrationData, followData] = await Promise.all([
           ascentApi.getAscents(),
           profileApi.getCalibration(user.id).catch(() => null),
+          followApi.getFollowStatus(user.id).catch(() => null),
         ]);
+
+        if (followData) {
+          setFollowStatus(followData);
+        }
 
         const completedAscents = ascentData.filter((a) =>
           a.ascentType === 'flash' || a.ascentType === 'redpoint' || a.ascentType === 'onsight'
@@ -400,22 +408,24 @@ export default function Profile() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-4 gap-4 mt-6 pt-6 border-t border-theme-border">
+              <div className="grid grid-cols-3 gap-4 mt-6 pt-6 border-t border-theme-border">
+                <button
+                  onClick={() => setFollowModalType('following')}
+                  className="text-center p-3 bg-theme-subtle/50 rounded-lg hover:bg-theme-hover transition-colors"
+                >
+                  <p className="text-2xl font-bold text-climbing-orange-500">{followStatus?.followingCount ?? 0}</p>
+                  <p className="text-xs text-theme-text-muted mt-1">关注</p>
+                </button>
+                <button
+                  onClick={() => setFollowModalType('followers')}
+                  className="text-center p-3 bg-theme-subtle/50 rounded-lg hover:bg-theme-hover transition-colors"
+                >
+                  <p className="text-2xl font-bold text-green-400">{followStatus?.followerCount ?? 0}</p>
+                  <p className="text-xs text-theme-text-muted mt-1">粉丝</p>
+                </button>
                 <div className="text-center p-3 bg-theme-subtle/50 rounded-lg">
-                  <p className="text-2xl font-bold text-climbing-orange-500">{stats.totalAscents}</p>
-                  <p className="text-xs text-theme-text-muted mt-1">完攀线路</p>
-                </div>
-                <div className="text-center p-3 bg-theme-subtle/50 rounded-lg">
-                  <p className="text-2xl font-bold text-green-400">{stats.maxGrade}</p>
+                  <p className="text-2xl font-bold text-blue-400">{stats.maxGrade}</p>
                   <p className="text-xs text-theme-text-muted mt-1">最高难度</p>
-                </div>
-                <div className="text-center p-3 bg-theme-subtle/50 rounded-lg">
-                  <p className="text-2xl font-bold text-blue-400">{stats.climbingDays}</p>
-                  <p className="text-xs text-theme-text-muted mt-1">攀岩天数</p>
-                </div>
-                <div className="text-center p-3 bg-theme-subtle/50 rounded-lg">
-                  <p className="text-2xl font-bold text-purple-400">{stats.monthsClimbing}</p>
-                  <p className="text-xs text-theme-text-muted mt-1">岩龄(月)</p>
                 </div>
               </div>
             </div>
@@ -798,6 +808,17 @@ export default function Profile() {
           isOpen={posterBadgeId !== null}
           onClose={() => setPosterBadgeId(null)}
           badgeId={posterBadgeId}
+        />
+      )}
+
+      {followModalType && user && (
+        <FollowListModal
+          isOpen={!!followModalType}
+          onClose={() => setFollowModalType(null)}
+          userId={user.id}
+          userName={user.name}
+          type={followModalType}
+          currentUserId={user.id}
         />
       )}
     </div>

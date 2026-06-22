@@ -464,3 +464,53 @@ export interface BadgeShareData {
   unlockedAt: string;
   progress: number;
 }
+
+export interface FollowUser {
+  id: number;
+  name: string;
+  role: UserRole;
+  verifiedAt?: string;
+  createdAt: string;
+  isFollowing: boolean;
+  isMutual: boolean;
+}
+
+export interface FollowStatus {
+  isFollowing: boolean;
+  isMutual: boolean;
+  followingCount: number;
+  followerCount: number;
+}
+
+export interface FollowListResponse {
+  data: FollowUser[];
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+}
+
+export interface FeedAscent {
+  id: number;
+  userId: number;
+  userName: string;
+  routeId: number;
+  routeName: string;
+  routeGrade: string;
+  routeColor?: string | null;
+  ascentType: AscentType;
+  attempts: number;
+  notes?: string | null;
+  createdAt: string;
+}
+
+export interface FeedGroup {
+  date: string;
+  ascents: FeedAscent[];
+}
+
+export interface FeedResponse {
+  data: FeedGroup[];
+  hasMore: boolean;
+  total: number;
+}

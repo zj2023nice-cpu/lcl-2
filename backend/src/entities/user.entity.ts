@@ -16,6 +16,7 @@ import { GradeVote } from './grade-vote.entity';
 import { Route } from './route.entity';
 import { UserProfile } from './user-profile.entity';
 import { OperationLog } from './operation-log.entity';
+import { UserFollow } from './user-follow.entity';
 
 export enum UserRole {
   PLATFORM_ADMIN = 'platform_admin',
@@ -84,4 +85,10 @@ export class User {
 
   @OneToMany(() => OperationLog, (log) => log.user)
   operationLogs: OperationLog[];
+
+  @OneToMany(() => UserFollow, (follow) => follow.follower)
+  following: UserFollow[];
+
+  @OneToMany(() => UserFollow, (follow) => follow.following)
+  followers: UserFollow[];
 }

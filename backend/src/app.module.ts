@@ -19,6 +19,7 @@ import { UploadModule } from './upload/upload.module';
 import { SeedsModule } from './seeds/seeds.module';
 import { CommentModule } from './comment/comment.module';
 import { BadgeModule } from './badge/badge.module';
+import { FollowModule } from './follow/follow.module';
 import { User } from './entities/user.entity';
 import { Gym } from './entities/gym.entity';
 import { Wall } from './entities/wall.entity';
@@ -33,6 +34,7 @@ import { CommentLike } from './entities/comment-like.entity';
 import { CommentReport } from './entities/comment-report.entity';
 import { Badge } from './entities/badge.entity';
 import { UserBadge } from './entities/user-badge.entity';
+import { UserFollow } from './entities/user-follow.entity';
 import { JwtStrategy } from './auth/jwt.strategy';
 import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
 import { RolesGuard } from './common/guards/roles.guard';
@@ -61,6 +63,7 @@ import { RolesGuard } from './common/guards/roles.guard';
         CommentReport,
         Badge,
         UserBadge,
+        UserFollow,
       ],
       synchronize: process.env.NODE_ENV !== 'production',
     }),
@@ -91,6 +94,7 @@ import { RolesGuard } from './common/guards/roles.guard';
     SeedsModule,
     CommentModule,
     BadgeModule,
+    FollowModule,
   ],
   controllers: [AppController],
   providers: [AppService, JwtStrategy, JwtAuthGuard, RolesGuard],

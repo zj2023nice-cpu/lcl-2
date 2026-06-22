@@ -1,4 +1,4 @@
-import type { ApiResponse, User, AuthResponse, EmailLoginCredentials, PhoneLoginCredentials, RegisterCredentials, Gym, Wall, Route, PaginatedResponse, Ascent, GradeVote, Hold, RouteHeat, ColdRoute, SetterWorkload, ActiveUsersStats, UserBadge, BadgeStats, BadgeProgressStats, BadgeCheckResult, BadgePosterData, BadgeShareData, BatchUpdateStatusPayload, BatchStatusPreviewResult, BatchStatusResult, ThemePreferences } from '@/types';
+import type { ApiResponse, User, AuthResponse, EmailLoginCredentials, PhoneLoginCredentials, RegisterCredentials, Gym, Wall, Route, PaginatedResponse, Ascent, GradeVote, Hold, RouteHeat, ColdRoute, SetterWorkload, ActiveUsersStats, UserBadge, BadgeStats, BadgeProgressStats, BadgeCheckResult, BadgePosterData, BadgeShareData, BatchUpdateStatusPayload, BatchStatusPreviewResult, BatchStatusResult, ThemePreferences, FollowStatus, FollowListResponse, FeedResponse } from '@/types';
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api';
 
@@ -460,6 +460,46 @@ export const commentApi = {
     return get<{ totalComments: number; totalLikesReceived: number }>(
       `/users/${userId}/comments/stats`,
     );
+  },
+};
+
+export const followApi = {
+  follow: async (followingId: number): Promise<void> => {
+    await post<void>('/follow', { followingId });
+  },
+
+  unfollow: async (followingId: number): Promise<void> => {
+    await del<void>(`/follow/${followingId}`);
+  },
+
+  getFollowStatus: async (targetUserId: number): Promise<FollowStatus> => {
+    return get<FollowStatus>(`/follow/status/${targetUserId}`);
+  },
+
+  getFollowingList: async (
+    userId: number,
+    params?: { page?: number; limit?: number; search?: string },
+  ): Promise<FollowListResponse> => {
+    return get<FollowListResponse>(`/users/${userId}/following`, { params });
+  },
+
+  getFollowerList: async (
+    userId: number,
+    params?: { page?: number; limit?: number; search?: string },
+  ): Promise<FollowListResponse> => {
+    return get<FollowListResponse>(`/users/${userId}/followers`, { params });
+  },
+
+  getFeed: async (params?: { page?: number; limit?: number }): Promise<FeedResponse> => {
+    return get<FeedResponse>('/feed', { params });
+  },
+
+  getFollowingCount: async (userId: number): Promise<number> => {
+    return get<number>(`/users/${userId}/following-count`);
+  },
+
+  getFollowerCount: async (userId: number): Promise<number> => {
+    return get<number>(`/users/${userId}/follower-count`);
   },
 };
 

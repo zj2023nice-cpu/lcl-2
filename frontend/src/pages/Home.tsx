@@ -17,6 +17,8 @@ import {
 import Card from '@/components/UI/Card';
 import { useGymStore } from '@/store/gym';
 import { wallApi, routeApi, ascentApi } from '@/utils/api';
+import { FeedSection } from '@/components/Follow';
+import useAuthStore from '@/store/auth';
 import type { Route as RouteType, Wall, Ascent } from '@/types';
 
 const quickEntries = [
@@ -49,6 +51,7 @@ const routeStatusLabels: Record<string, string> = {
 };
 
 export default function Home() {
+  const { user } = useAuthStore();
   const { currentGym, gyms, fetchGyms, setCurrentGym } = useGymStore();
   const [showGymDropdown, setShowGymDropdown] = useState(false);
   const [recentRoutes, setRecentRoutes] = useState<RouteType[]>([]);
@@ -274,6 +277,8 @@ export default function Home() {
           )}
         </div>
       </Card>
+
+      <FeedSection currentUserId={user?.id} />
     </div>
   );
 }

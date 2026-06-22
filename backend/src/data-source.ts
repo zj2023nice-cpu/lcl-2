@@ -14,6 +14,7 @@ import { CommentLike } from './entities/comment-like.entity';
 import { CommentReport } from './entities/comment-report.entity';
 import { Badge } from './entities/badge.entity';
 import { UserBadge } from './entities/user-badge.entity';
+import { UserFollow } from './entities/user-follow.entity';
 
 export default new DataSource({
   type: 'mysql',
@@ -38,6 +39,7 @@ export default new DataSource({
     CommentReport,
     Badge,
     UserBadge,
+    UserFollow,
   ],
   migrations: ['src/migrations/*.ts'],
 });
