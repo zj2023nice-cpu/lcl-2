@@ -18,6 +18,7 @@ import {
   ChevronUp,
   Archive,
   RotateCcw,
+  Printer,
 } from 'lucide-react';
 import {
   BarChart,
@@ -34,6 +35,7 @@ import Modal from '@/components/UI/Modal';
 import WallCanvas, { RouteWithPoints, RoutePoint } from '@/components/WallCanvas/WallCanvas';
 import RouteEditorPanel from '@/components/RouteEditor/RouteEditorPanel';
 import CommentSection from '@/components/Comment/CommentSection';
+import PrintCenter from '@/components/PrintCenter';
 import { routeApi, ascentApi, voteApi, wallApi } from '@/utils/api';
 import { useAuthStore } from '@/store/auth';
 import { useMessage } from '@/hooks/useMessage';
@@ -114,6 +116,7 @@ export default function RouteDetail() {
   const [archiveReason, setArchiveReason] = useState('');
   const [isArchiving, setIsArchiving] = useState(false);
   const [isRestoring, setIsRestoring] = useState(false);
+  const [isPrintCenterOpen, setIsPrintCenterOpen] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -403,6 +406,13 @@ export default function RouteDetail() {
               恢复线路
             </Button>
           )}
+          <Button
+            variant="outline"
+            onClick={() => setIsPrintCenterOpen(true)}
+          >
+            <Printer size={16} className="mr-2" />
+            打印
+          </Button>
           <Button>
             <Plus size={16} className="mr-2" />
             记录攀爬
@@ -856,6 +866,15 @@ export default function RouteDetail() {
           </div>
         </div>
       </Modal>
+
+      <PrintCenter
+        isOpen={isPrintCenterOpen}
+        onClose={() => setIsPrintCenterOpen(false)}
+        route={route!}
+        wall={wall}
+        ascents={ascents}
+        votes={votes}
+      />
     </div>
   );
 }
